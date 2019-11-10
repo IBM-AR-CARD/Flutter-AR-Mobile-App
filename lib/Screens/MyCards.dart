@@ -60,6 +60,7 @@ class _MyCards extends State<MyCards> {
     double height = MediaQuery.of(context).size.height;
     // TODO: implement build
     return Scaffold(
+      backgroundColor: Color.fromARGB(255, 31, 34, 52),
       body: Column(
         children: <Widget>[
           Container(
@@ -157,24 +158,14 @@ class _MyCards extends State<MyCards> {
             ),
             color: Color.fromARGB(255, 41, 43, 66),
           ),
-          Container(
-            child: Column(children: <Widget>[
-              Expanded(
-                  child: new ListView.builder(
-                    scrollDirection: Axis.vertical,
-                    itemCount: 5,
-                    itemBuilder: (BuildContext ctxt, int index) {
-                      return new Text(
-                          "ctxt",
-                      );
-                    },
-                  ),
-              ),
-            ]),
-            color: Color.fromARGB(255, 31, 34, 52),
-            height: height - 6 - 200,
-            width: width,
-          )
+          Expanded(
+              child: new ListView.builder(
+                  itemCount: 5,
+                  itemBuilder: (BuildContext context, int index) {
+                    return new Center(
+                        child:Text("abcc")
+                    );
+                  }))
         ],
       ),
     );
