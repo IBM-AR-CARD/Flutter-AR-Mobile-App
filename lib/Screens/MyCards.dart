@@ -12,6 +12,9 @@ class MyCards extends StatefulWidget {
 }
 
 class _MyCards extends State<MyCards> {
+  double width;
+  double height;
+  var _futureBuilderFuture;
   Future<List> post;
   int _status = 0;
   List<String> _stringList = [
@@ -52,12 +55,13 @@ class _MyCards extends State<MyCards> {
     // TODO: implement initState
     super.initState();
 //    post = Request.getFavourite();
+    _futureBuilderFuture = _getData();
   }
 
   @override
   Widget build(BuildContext context) {
-    double width = MediaQuery.of(context).size.width;
-    double height = MediaQuery.of(context).size.height;
+    width = MediaQuery.of(context).size.width;
+    height = MediaQuery.of(context).size.height;
     // TODO: implement build
     return Scaffold(
       backgroundColor: Color.fromARGB(255, 31, 34, 52),
@@ -159,29 +163,128 @@ class _MyCards extends State<MyCards> {
             color: Color.fromARGB(255, 41, 43, 66),
           ),
           Expanded(
-              child: new ListView.builder(
-                  itemCount: 5,
-                  itemBuilder: (BuildContext context, int index) {
-                    return new Center(
-                        child:Text("abcc")
-                    );
-                  }))
+              child: RefreshIndicator(
+                onRefresh: _handleRefresh,
+                child: FutureBuilder(
+                  builder: _buildFuture,
+                  future: _futureBuilderFuture, // 用户定义的需要异步执行的代码，类型为Future<String>或者null的变量或函数
+            ),
+          )),
         ],
       ),
     );
   }
-}
 
-//  Widget getList(list){
-//    return ListView.builder(
-//      itemCount: list.length,
-//        itemBuilder: (context,index){
-//          return Container(
-//            color: Color.fromARGB(255, 74, 79, 100),
-//            width: 330,
-//            height: 80,
-//          );
-//        }
-//    );
-//  }
-//}
+  Future _getData() async {
+    var response = HttpUtils.get(
+        'https://ar-business-card.eu-gb.cf.appdomain.cloud/HistoryList');
+    return response;
+  }
+
+  Widget _buildFuture(BuildContext context, AsyncSnapshot snapshot) {
+    switch (snapshot.connectionState) {
+      case ConnectionState.none:
+        print('还没有开始网络请求');
+        return Text('还没有开始网络请求');
+      case ConnectionState.active:
+        print('active');
+        return Text('ConnectionState.active');
+      case ConnectionState.waiting:
+        print('waiting');
+        return Center(
+          child: CircularProgressIndicator(),
+        );
+      case ConnectionState.done:
+        print("done");
+        if (snapshot.hasError) return Text('Error: ${snapshot.error}');
+        return _createListView(context, snapshot);
+      default:
+        return Text('还没有开始网络请求');
+    }
+  }
+
+  Widget _createListView(BuildContext context, AsyncSnapshot snapshot) {
+    var list = snapshot.data["HistoryList"];
+    return ListView.separated(
+      itemBuilder: (context, index) => _itemBuilder(context, index, list),
+      itemCount: list.length + 1,
+      separatorBuilder: (context, index) => Divider(
+        height: 25,
+      ),
+    );
+  }
+
+  Widget _itemBuilder(BuildContext context, int index, list) {
+    if (index == list.length) {
+      return Divider();
+    }
+    return Center(
+        child: Container(
+      width: width * 0.9,
+      height: 100,
+      decoration: new BoxDecoration(
+        color: Color.fromARGB(255, 74, 79, 100),
+        borderRadius: new BorderRadius.all(const Radius.circular(15.0)),
+      ),
+      child: Row(
+        children: <Widget>[
+          Padding(
+            padding: EdgeInsets.only(left: 10),
+            child: ClipRRect(
+              borderRadius: new BorderRadius.all(const Radius.circular(50.0)),
+              child: Image.network(
+                list[index]["avatar"],
+                width: 70,
+                height: 70,
+              ),
+            ),
+          ),
+          Divider(
+            height: 20,
+          ),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              Padding(
+                  padding: EdgeInsets.only(top: 12, left: 20),
+                  child: SizedBox(
+                    width: width - width * 0.1 - 100,
+                    child: Text(
+                      list[index]["name"],
+                      overflow: TextOverflow.ellipsis,
+                      softWrap: false,
+                      maxLines: 1,
+                      style: TextStyle(
+                        fontSize: 30.0,
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  )),
+              Padding(
+                  padding: EdgeInsets.only(top: 15, left: 20),
+                  child: SizedBox(
+                    width: width - width * 0.1 - 100,
+                    child: Text(
+                      list[index]["description"],
+                      overflow: TextOverflow.ellipsis,
+                      softWrap: false,
+                      maxLines: 1,
+                      style: TextStyle(
+                        fontSize: 17.0,
+                        color: Colors.white,
+                      ),
+                    ),
+                  )),
+            ],
+          )
+        ],
+      ),
+    ));
+  }
+  Future<Null> _handleRefresh() async{
+    setState(() {
+      _futureBuilderFuture = _getData();
+    });
+  }
+}
