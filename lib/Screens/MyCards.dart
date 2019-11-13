@@ -14,7 +14,10 @@ class MyCards extends StatefulWidget {
 class _MyCards extends State<MyCards> {
   double width;
   double height;
-  var _futureBuilderFuture;
+  double containerHeight;
+  var _futureBuilderHistory;
+  var _futureBuilderFavourite;
+  Widget _myanimatedSwicher;
   Future<List> post;
   int _status = 0;
   List<String> _stringList = [
@@ -22,7 +25,6 @@ class _MyCards extends State<MyCards> {
     "History",
   ];
   List<Color> _colors = [
-    //Get list of colors
     Colors.white,
     Colors.blue,
   ];
@@ -33,6 +35,7 @@ class _MyCards extends State<MyCards> {
     }
     setState(() {
       _status = 0;
+      _myanimatedSwicher = _getAnimatedWidget();
     });
   }
 
@@ -42,6 +45,7 @@ class _MyCards extends State<MyCards> {
     }
     setState(() {
       _status = 1;
+      _myanimatedSwicher = _getAnimatedWidget();
     });
   }
 
@@ -54,14 +58,17 @@ class _MyCards extends State<MyCards> {
   void initState() {
     // TODO: implement initState
     super.initState();
-//    post = Request.getFavourite();
-    _futureBuilderFuture = _getData();
+    _futureBuilderHistory = _getHistory();
+    _futureBuilderFavourite = _getFavourite();
+    _myanimatedSwicher = _getAnimatedWidget();
   }
 
   @override
   Widget build(BuildContext context) {
     width = MediaQuery.of(context).size.width;
     height = MediaQuery.of(context).size.height;
+    containerHeight = height - 206;
+
     // TODO: implement build
     return Scaffold(
       backgroundColor: Color.fromARGB(255, 31, 34, 52),
@@ -162,30 +169,76 @@ class _MyCards extends State<MyCards> {
             ),
             color: Color.fromARGB(255, 41, 43, 66),
           ),
-          Expanded(
-              child: RefreshIndicator(
-                onRefresh: _handleRefresh,
-                child: FutureBuilder(
-                  builder: _buildFuture,
-                  future: _futureBuilderFuture, // 用户定义的需要异步执行的代码，类型为Future<String>或者null的变量或函数
-            ),
-          )),
+          AnimatedSwitcher(
+              transitionBuilder: (Widget child, Animation<double> animation) {
+                if (_status == 0) {
+                  return SlideTransition(
+                    position: Tween<Offset>(
+                      begin: const Offset(1, 0),
+                      end: Offset.zero,
+                    ).animate(animation),
+                    child: child,
+                  );
+                }else{
+                  return SlideTransition(
+                    position: Tween<Offset>(
+                      begin: const Offset(-1, 0),
+                      end: Offset.zero,
+                    ).animate(animation),
+                    child: child,
+                  );
+                }
+              },
+              duration: const Duration(milliseconds: 500),
+              child: _getAnimatedWidgetList(_status)
+          )
         ],
       ),
     );
   }
+  _getAnimatedWidgetList(index) {
+    List<Widget> _getAnimatedWidget = [
+      new SizedBox(
+          width: width,
+          height: containerHeight,
+          child: RefreshIndicator(
+            onRefresh: _handleHistoryRefresh,
+            child: FutureBuilder(
+              builder: _buildFuture,
+              future: _futureBuilderHistory,
+            ),
+          )
+      ), new SizedBox(
+          width: width,
+          height: containerHeight,
+          child: RefreshIndicator(
+            onRefresh: _handleFavouriteRefresh,
+            child: FutureBuilder(
+              builder: _buildFuture,
+              future: _futureBuilderFavourite,
+            ),
+          ))
+    ];
+    return _getAnimatedWidget[index];
+  }
 
-  Future _getData() async {
+  Future _getHistory() async {
     var response = HttpUtils.get(
         'https://ar-business-card.eu-gb.cf.appdomain.cloud/HistoryList');
+    return response;
+  }
+
+  Future _getFavourite() async {
+    var response = HttpUtils.get(
+        'https://ar-business-card.eu-gb.cf.appdomain.cloud/FavouriteList');
     return response;
   }
 
   Widget _buildFuture(BuildContext context, AsyncSnapshot snapshot) {
     switch (snapshot.connectionState) {
       case ConnectionState.none:
-        print('还没有开始网络请求');
-        return Text('还没有开始网络请求');
+        print('request not yet started');
+        return Text('request not yet started');
       case ConnectionState.active:
         print('active');
         return Text('ConnectionState.active');
@@ -199,12 +252,12 @@ class _MyCards extends State<MyCards> {
         if (snapshot.hasError) return Text('Error: ${snapshot.error}');
         return _createListView(context, snapshot);
       default:
-        return Text('还没有开始网络请求');
+        return Text('request not yet started');
     }
   }
 
   Widget _createListView(BuildContext context, AsyncSnapshot snapshot) {
-    var list = snapshot.data["HistoryList"];
+    var list = snapshot.data["List"];
     return ListView.separated(
       itemBuilder: (context, index) => _itemBuilder(context, index, list),
       itemCount: list.length + 1,
@@ -282,9 +335,16 @@ class _MyCards extends State<MyCards> {
       ),
     ));
   }
-  Future<Null> _handleRefresh() async{
+
+  Future<Null> _handleHistoryRefresh() async {
     setState(() {
-      _futureBuilderFuture = _getData();
+      _futureBuilderHistory = _getHistory();
+    });
+  }
+
+  Future<Null> _handleFavouriteRefresh() async {
+    setState(() {
+      _futureBuilderFavourite = _getHistory();
     });
   }
 }
