@@ -220,7 +220,7 @@ class _MyCards extends State<MyCards> with TickerProviderStateMixin {
               future: _futureBuilderHistory,
             ),
           )
-      ), new Container(
+      ),SizedBox(
           width: width,
           height: containerHeight,
           child: RefreshIndicator(
