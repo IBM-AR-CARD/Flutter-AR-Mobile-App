@@ -11,13 +11,14 @@ class MyCards extends StatefulWidget {
   _MyCards createState() => _MyCards();
 }
 
-class _MyCards extends State<MyCards> {
+class _MyCards extends State<MyCards> with SingleTickerProviderStateMixin {
   double width;
   double height;
   double containerHeight;
   var _futureBuilderHistory;
   var _futureBuilderFavourite;
-  Widget _myanimatedSwicher;
+  AnimationController controller;
+  Animation<Offset> offset;
   Future<List> post;
   int _status = 0;
   List<String> _stringList = [
@@ -35,7 +36,7 @@ class _MyCards extends State<MyCards> {
     }
     setState(() {
       _status = 0;
-      _myanimatedSwicher = _getAnimatedWidget();
+//      _myanimatedSwicher = _getAnimatedWidget();
     });
   }
 
@@ -45,7 +46,7 @@ class _MyCards extends State<MyCards> {
     }
     setState(() {
       _status = 1;
-      _myanimatedSwicher = _getAnimatedWidget();
+//      _myanimatedSwicher = _getAnimatedWidget();
     });
   }
 
@@ -60,7 +61,11 @@ class _MyCards extends State<MyCards> {
     super.initState();
     _futureBuilderHistory = _getHistory();
     _futureBuilderFavourite = _getFavourite();
-    _myanimatedSwicher = _getAnimatedWidget();
+    controller =
+        AnimationController(vsync: this, duration: Duration(seconds: 1));
+
+    offset = Tween<Offset>(begin: Offset.zero, end: Offset(0, 1))
+        .animate(controller);
   }
 
   @override
@@ -171,25 +176,15 @@ class _MyCards extends State<MyCards> {
           ),
           AnimatedSwitcher(
               transitionBuilder: (Widget child, Animation<double> animation) {
-                if (_status == 0) {
-                  return SlideTransition(
-                    position: Tween<Offset>(
-                      begin: const Offset(1, 0),
-                      end: Offset.zero,
-                    ).animate(animation),
-                    child: child,
-                  );
-                }else{
-                  return SlideTransition(
-                    position: Tween<Offset>(
-                      begin: const Offset(-1, 0),
-                      end: Offset.zero,
-                    ).animate(animation),
-                    child: child,
-                  );
-                }
+                return SlideTransition(
+                  position: Tween<Offset>(
+                    begin: const Offset(1, 0),
+                    end: const Offset(0, 0),
+                  ).animate(animation),
+                  child: child,
+                );
               },
-              duration: const Duration(milliseconds: 500),
+              duration: const Duration(milliseconds: 400),
               child: _getAnimatedWidgetList(_status)
           )
         ],
@@ -208,7 +203,7 @@ class _MyCards extends State<MyCards> {
               future: _futureBuilderHistory,
             ),
           )
-      ), new SizedBox(
+      ), new Container(
           width: width,
           height: containerHeight,
           child: RefreshIndicator(
@@ -344,7 +339,7 @@ class _MyCards extends State<MyCards> {
 
   Future<Null> _handleFavouriteRefresh() async {
     setState(() {
-      _futureBuilderFavourite = _getHistory();
+      _futureBuilderFavourite = _getFavourite();
     });
   }
 }
