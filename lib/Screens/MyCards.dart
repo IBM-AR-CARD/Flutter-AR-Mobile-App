@@ -16,6 +16,7 @@ class _MyCards extends State<MyCards> with TickerProviderStateMixin {
   bool leave = true;
   double width;
   double height;
+  bool init = false;
   double containerHeight;
   var _futureBuilderHistory;
   var _futureBuilderFavourite;
@@ -272,7 +273,7 @@ class _MyCards extends State<MyCards> with TickerProviderStateMixin {
     var list = snapshot.data["List"];
     return ListView.separated(
       itemBuilder: (context, index) => _itemBuilder(context, index, list),
-      itemCount: list.length + 1,
+      itemCount: list.length + 2,
       separatorBuilder: (context, index) => Divider(
         height: 25,
       ),
@@ -280,8 +281,16 @@ class _MyCards extends State<MyCards> with TickerProviderStateMixin {
   }
 
   Widget _itemBuilder(BuildContext context, int index, list) {
+    if (index == 0) {
+      return Divider(
+        height: 5,
+      );
+    }
+    index = index -1;
     if (index == list.length) {
-      return Divider();
+      return Divider(
+        height: 5,
+      );
     }
     return Center(
         child: Container(

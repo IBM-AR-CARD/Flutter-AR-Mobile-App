@@ -3,7 +3,6 @@ import 'Screens/MyCards.dart';
 import 'Models/SlideRoute.dart';
 import 'Screens/Settings.dart';
 import 'package:flutter/services.dart';
-
 void main() {
   runApp(MyApp());
 
@@ -13,9 +12,6 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
-      statusBarColor: Colors.transparent,
-    ));
     return MaterialApp(
       title: 'Flutter Demo',
       theme: ThemeData(
@@ -44,7 +40,11 @@ class _MyHomePageState extends State<MyHomePage> {
     Color.fromARGB(255,15,232,149),
   ];
 
-
+  @override
+  void initState(){
+    super.initState();
+    SystemChrome.setEnabledSystemUIOverlays([]);
+  }
   void _changeARColor() {
     setState(() {
       _currentColor = _currentColor ^ 1;
