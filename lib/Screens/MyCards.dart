@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_app/Request/request.dart';
 import 'dart:async';
+import 'package:swipedetector/swipedetector.dart';
 
 class MyCards extends StatefulWidget {
   MyCards({Key key, this.title}) : super(key: key);
@@ -11,14 +12,17 @@ class MyCards extends StatefulWidget {
   _MyCards createState() => _MyCards();
 }
 
-class _MyCards extends State<MyCards> with SingleTickerProviderStateMixin {
+class _MyCards extends State<MyCards> with TickerProviderStateMixin {
+  bool leave = true;
   double width;
   double height;
   double containerHeight;
   var _futureBuilderHistory;
   var _futureBuilderFavourite;
-  AnimationController controller;
-  Animation<Offset> offset;
+  AnimationController controller1;
+  AnimationController controller2;
+  Animation<Offset> offset1;
+  Animation<Offset> offset2;
   Future<List> post;
   int _status = 0;
   List<String> _stringList = [
@@ -34,9 +38,10 @@ class _MyCards extends State<MyCards> with SingleTickerProviderStateMixin {
     if (_status == 0) {
       return;
     }
+    controller2.forward();
+    controller1.reverse();
     setState(() {
       _status = 0;
-//      _myanimatedSwicher = _getAnimatedWidget();
     });
   }
 
@@ -44,16 +49,12 @@ class _MyCards extends State<MyCards> with SingleTickerProviderStateMixin {
     if (_status == 1) {
       return;
     }
+    controller1.forward();
+    controller2.reverse();
     setState(() {
       _status = 1;
-//      _myanimatedSwicher = _getAnimatedWidget();
     });
   }
-
-//  getListPerson() async {
-//    var request = new Request();
-//    var listPerson = await request.getFavourite().then();
-//  }
 
   @override
   void initState() {
@@ -61,11 +62,22 @@ class _MyCards extends State<MyCards> with SingleTickerProviderStateMixin {
     super.initState();
     _futureBuilderHistory = _getHistory();
     _futureBuilderFavourite = _getFavourite();
-    controller =
-        AnimationController(vsync: this, duration: Duration(seconds: 1));
-
-    offset = Tween<Offset>(begin: Offset.zero, end: Offset(0, 1))
-        .animate(controller);
+    controller1 = AnimationController(vsync: this, duration: Duration(milliseconds: 400));
+    controller2 = AnimationController(vsync: this, duration: Duration(milliseconds: 400));
+    offset1 = Tween<Offset>(begin: Offset(1.0, 0.0), end: Offset(0.0, 0.0)).animate(new CurvedAnimation(
+        parent: controller1,
+        curve: Curves.easeInOut
+    ));
+    offset2 = Tween<Offset>(begin: Offset(-1.0, 0.0), end: Offset(0.0, 0.0)).animate(new CurvedAnimation(
+        parent: controller2,
+        curve: Curves.easeInOut
+    ));
+    Future.delayed(const Duration(milliseconds: 100), () {
+      setState(() {
+        leave = false;
+      });
+    });
+    controller2.animateTo(1, duration: Duration(milliseconds:50), curve: Curves.easeInOut);
   }
 
   @override
@@ -73,7 +85,6 @@ class _MyCards extends State<MyCards> with SingleTickerProviderStateMixin {
     width = MediaQuery.of(context).size.width;
     height = MediaQuery.of(context).size.height;
     containerHeight = height - 206;
-
     // TODO: implement build
     return Scaffold(
       backgroundColor: Color.fromARGB(255, 31, 34, 52),
@@ -104,6 +115,9 @@ class _MyCards extends State<MyCards> with SingleTickerProviderStateMixin {
                           color: Colors.white,
                           iconSize: 36.0,
                           onPressed: () {
+                            setState(() {
+                              leave = true;
+                            });
                             Navigator.pop(context);
                           },
                         ),
@@ -174,19 +188,22 @@ class _MyCards extends State<MyCards> with SingleTickerProviderStateMixin {
             ),
             color: Color.fromARGB(255, 41, 43, 66),
           ),
-          AnimatedSwitcher(
-              transitionBuilder: (Widget child, Animation<double> animation) {
-                return SlideTransition(
-                  position: Tween<Offset>(
-                    begin: const Offset(1, 0),
-                    end: const Offset(0, 0),
-                  ).animate(animation),
-                  child: child,
-                );
-              },
-              duration: const Duration(milliseconds: 400),
-              child: _getAnimatedWidgetList(_status)
-          )
+          SwipeDetector(
+            onSwipeLeft:_changeToHistory,
+            onSwipeRight:_changeToFavourite,
+            child: leave ? Container() : Stack(
+                children:[
+                  SlideTransition(
+                    position:offset1,
+                    child: _getAnimatedWidgetList(1),
+                  ),
+                  SlideTransition(
+                    position:offset2,
+                    child: _getAnimatedWidgetList(0),
+                  ),
+                ]
+            ),
+          ),
         ],
       ),
     );
@@ -243,7 +260,7 @@ class _MyCards extends State<MyCards> with SingleTickerProviderStateMixin {
           child: CircularProgressIndicator(),
         );
       case ConnectionState.done:
-        print("done");
+//        print("done");
         if (snapshot.hasError) return Text('Error: ${snapshot.error}');
         return _createListView(context, snapshot);
       default:
@@ -341,5 +358,11 @@ class _MyCards extends State<MyCards> with SingleTickerProviderStateMixin {
     setState(() {
       _futureBuilderFavourite = _getFavourite();
     });
+  }
+  @override
+  void dispose() {
+    super.dispose();
+    controller1.dispose();
+    controller2.dispose();
   }
 }
