@@ -60,6 +60,8 @@ flutter {
 }
 
 dependencies {
+    implementation project(':unity-classes') // the unity classes module you added from step 1
+    implementation project(':VuforiaWrapper')
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'androidx.test:runner:1.1.1'

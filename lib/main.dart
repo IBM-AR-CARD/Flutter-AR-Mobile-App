@@ -3,6 +3,8 @@ import 'Screens/MyCards.dart';
 import 'Models/SlideRoute.dart';
 import 'Screens/Settings.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_unity_widget/flutter_unity_widget.dart';
+
 void main() {
   runApp(MyApp());
 
@@ -35,6 +37,7 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
 
   int _currentColor = 0;
+  UnityWidgetController _unityWidgetController;
   List<Color> _colors = [ //Get list of colors
     Color.fromARGB(255,112,112,112),
     Color.fromARGB(255,15,232,149),
@@ -92,9 +95,13 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Container(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
+        child: Stack(
           children: <Widget>[
+            UnityWidget(
+              onUnityViewCreated: onUnityCreated,
+              isARScene: true,
+              onUnityMessage: onUnityMessage,
+            ),
             Padding(
               padding: EdgeInsets.only(top:70.0,left: 20.0),
               child: FlatButton(
@@ -120,4 +127,14 @@ class _MyHomePageState extends State<MyHomePage> {
 
     );
   }
+
+  void onUnityMessage(controller, message) {
+    print('Received message from unity: ${message.toString()}');
+  }
+
+  // Callback that connects the created controller to the unity controller
+  void onUnityCreated(controller) {
+    this._unityWidgetController = controller;
+  }
+
 }
