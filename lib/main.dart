@@ -5,9 +5,16 @@ import 'Screens/Settings.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_unity_widget/flutter_unity_widget.dart';
 
-void main() {
-  runApp(MyApp());
+void main() async {
+  ///
+  /// Force the layout to Portrait mode
+  ///
+  await SystemChrome.setPreferredOrientations([
+    DeviceOrientation.portraitUp,
+    DeviceOrientation.portraitDown
+  ]);
 
+  runApp(new MyApp());
 }
 
 class MyApp extends StatelessWidget {
@@ -36,7 +43,7 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
 
-  int _currentColor = 0;
+  int _currentColor = 1;
   UnityWidgetController _unityWidgetController;
   List<Color> _colors = [ //Get list of colors
     Color.fromARGB(255,112,112,112),
@@ -97,10 +104,13 @@ class _MyHomePageState extends State<MyHomePage> {
       body: Container(
         child: Stack(
           children: <Widget>[
-            UnityWidget(
-              onUnityViewCreated: onUnityCreated,
-              isARScene: true,
-              onUnityMessage: onUnityMessage,
+            Opacity(
+              opacity: _currentColor==1? 1 : 0,
+              child: UnityWidget(
+                onUnityViewCreated: onUnityCreated,
+                isARScene: true,
+                onUnityMessage: onUnityMessage
+              )
             ),
             Padding(
               padding: EdgeInsets.only(top:70.0,left: 20.0),
