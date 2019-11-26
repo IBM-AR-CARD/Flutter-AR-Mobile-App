@@ -87,7 +87,7 @@ class _MyCards extends State<MyCards> with TickerProviderStateMixin {
     height = MediaQuery.of(context).size.height;
     containerHeight = height - 206;
     // TODO: implement build
-    return Scaffold(
+    return new WillPopScope(child: Scaffold(
       backgroundColor: Color.fromARGB(255, 31, 34, 52),
       body: Column(
         children: <Widget>[
@@ -207,6 +207,12 @@ class _MyCards extends State<MyCards> with TickerProviderStateMixin {
           ),
         ],
       ),
+    ),onWillPop: () async {
+      setState(() {
+        leave = true;
+      });
+      return true;
+      },
     );
   }
   _getAnimatedWidgetList(index) {
