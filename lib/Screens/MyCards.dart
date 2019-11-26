@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_app/Request/request.dart';
 import 'dart:async';
 import 'package:swipedetector/swipedetector.dart';
+//import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 class MyCards extends StatefulWidget {
   MyCards({Key key, this.title}) : super(key: key);
@@ -268,13 +269,25 @@ class _MyCards extends State<MyCards> with TickerProviderStateMixin {
         );
       case ConnectionState.done:
 //        print("done");
-        if (snapshot.hasError) return Text('Error: ${snapshot.error}');
+        if (snapshot.hasError) return errorPopup(snapshot);
         return _createListView(context, snapshot);
       default:
         return Text('request not yet started');
     }
   }
-
+  Widget errorPopup(AsyncSnapshot snapshot ){
+    return RefreshIndicator(
+      child: Stack(
+        children: <Widget>[
+          Center(
+            child: Text('Error: ${snapshot.error}'),
+          ),
+          ListView()
+        ],
+      ),
+      onRefresh: _handleAllRefresh,
+    );
+  }
   Widget _createListView(BuildContext context, AsyncSnapshot snapshot) {
     var list = snapshot.data["List"];
     return ListView.separated(
@@ -373,6 +386,11 @@ class _MyCards extends State<MyCards> with TickerProviderStateMixin {
     setState(() {
       _futureBuilderFavourite = _getFavourite();
     });
+  }
+
+  Future<Null> _handleAllRefresh() async {
+    _handleHistoryRefresh();
+    _handleFavouriteRefresh();
   }
   @override
   void dispose() {
