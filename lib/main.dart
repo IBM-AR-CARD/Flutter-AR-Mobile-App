@@ -5,15 +5,11 @@ import 'Screens/Settings.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_unity_widget/flutter_unity_widget.dart';
 
-void main() async {
-  ///
-  /// Force the layout to Portrait mode
-  ///
-  await SystemChrome.setPreferredOrientations([
+void main() {
+  SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,
     DeviceOrientation.portraitDown
   ]);
-
   runApp(new MyApp());
 }
 
@@ -22,8 +18,8 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
-      theme: ThemeData(
+        title: 'Flutter Demo',
+        theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
       home: MyHomePage(title: 'Flutter Demo Home Page'),
@@ -77,7 +73,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 iconSize: 40.0,
                 icon: Icon(
                   Icons.list,
-                  color: Colors.black,
+                  color: Colors.white,
                 ),
               ),
               IconButton(
@@ -91,7 +87,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 iconSize: 40.0,
                 icon: Icon(
                   Icons.person,
-                  color: Colors.black,
+                  color: Colors.white,
                 ),
               ),
           ]
