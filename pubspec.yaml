@@ -23,7 +23,7 @@ dependencies:
   swipedetector: ^1.2.0
   pull_to_refresh: ^1.4.5
   flutter_unity_widget: ^0.1.6+5
-
+  qr_code_scanner: ^0.0.12
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
