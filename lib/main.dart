@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'Screens/MyCards.dart';
+import 'Screens/scanQR.dart';
 import 'Models/SlideRoute.dart';
 import 'Screens/Settings.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_unity_widget/flutter_unity_widget.dart';
-
+import 'package:qr_code_scanner/qr_code_scanner.dart';
 void main() {
   SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,
@@ -38,8 +39,8 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-
   int _currentColor = 1;
+  String _QRText = 'QR';
   UnityWidgetController _unityWidgetController;
   List<Color> _colors = [ //Get list of colors
     Color.fromARGB(255,112,112,112),
@@ -51,10 +52,20 @@ class _MyHomePageState extends State<MyHomePage> {
     super.initState();
     SystemChrome.setEnabledSystemUIOverlays([]);
   }
-  void _changeARColor() {
+  void navigateToScan() async {
+    _unityWidgetController.pause();
+    final result = await Navigator.push(
+      context,
+      SlideTopRoute(page:ScanQR()),
+    );
     setState(() {
-      _currentColor = _currentColor ^ 1;
+      _QRText = result == '' ? 'QR' : result;
     });
+    _unityWidgetController.resume();
+
+//    setState(() {
+//      _currentColor = _currentColor ^ 1;
+//    });
   }
   Widget bottomRow(){
         return new Padding(
@@ -112,14 +123,14 @@ class _MyHomePageState extends State<MyHomePage> {
               padding: EdgeInsets.only(top:70.0,left: 20.0),
               child: FlatButton(
                 child: new  Text(
-                    'AR',
+                    _QRText,
                     textAlign: TextAlign.left,
                     style: TextStyle(
                       fontSize: 40.0,
                       color: _colors[_currentColor],
                     ),
                 ),
-                onPressed: _changeARColor,
+                onPressed: navigateToScan,
                 splashColor: Colors.transparent,
                 highlightColor: Colors.transparent,
               ),
@@ -142,5 +153,8 @@ class _MyHomePageState extends State<MyHomePage> {
   void onUnityCreated(controller) {
     this._unityWidgetController = controller;
   }
-
+  @override
+  void dispose() {
+    super.dispose();
+  }
 }
