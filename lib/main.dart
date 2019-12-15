@@ -54,14 +54,17 @@ class _MyHomePageState extends State<MyHomePage> {
   }
   void navigateToScan() async {
     _unityWidgetController.pause();
+    setMessage("opened scan");
     final result = await Navigator.push(
       context,
       SlideTopRoute(page:ScanQR()),
     );
     setState(() {
       _QRText = result == '' ? 'QR' : result;
+
     });
-    _unityWidgetController.resume();
+    await _unityWidgetController.resume();
+    setMessage(_QRText);
 
 //    setState(() {
 //      _currentColor = _currentColor ^ 1;
@@ -142,6 +145,15 @@ class _MyHomePageState extends State<MyHomePage> {
         floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
         floatingActionButton:bottomRow()
 
+    );
+  }
+
+  void setMessage(String msg) {
+    print("Sending message to unity: "+msg);
+    _unityWidgetController.postMessage(
+      'GameObject',
+      'changeText',
+      msg,
     );
   }
 
