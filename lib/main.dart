@@ -53,8 +53,8 @@ class _MyHomePageState extends State<MyHomePage> {
     SystemChrome.setEnabledSystemUIOverlays([]);
   }
   void navigateToScan() async {
-    _unityWidgetController.pause();
     setMessage("opened scan");
+    _unityWidgetController.pause();
     final result = await Navigator.push(
       context,
       SlideTopRoute(page:ScanQR()),
@@ -151,7 +151,7 @@ class _MyHomePageState extends State<MyHomePage> {
   void setMessage(String msg) {
     print("Sending message to unity: "+msg);
     _unityWidgetController.postMessage(
-      'GameObject',
+      'Main Camera',
       'changeText',
       msg,
     );
@@ -159,6 +159,10 @@ class _MyHomePageState extends State<MyHomePage> {
 
   void onUnityMessage(controller, message) {
     print('Received message from unity: ${message.toString()}');
+    setState(() {
+      _QRText = "TOUCHED!";
+    });
+
   }
 
   // Callback that connects the created controller to the unity controller
