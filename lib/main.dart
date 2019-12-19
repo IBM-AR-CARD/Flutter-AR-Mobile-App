@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'Screens/MyCards.dart';
 import 'Screens/scanQR.dart';
@@ -5,7 +6,8 @@ import 'Models/SlideRoute.dart';
 import 'Screens/Settings.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_unity_widget/flutter_unity_widget.dart';
-import 'package:qr_code_scanner/qr_code_scanner.dart';
+import 'package:speech_recognition/speech_recognition.dart';
+import 'dart:async';
 void main() {
   SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,
@@ -39,7 +41,13 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+  bool _isAvailable = false;
+  bool _isListening = false;
+  String resultText = "";
+  Timer _timer;
+  SpeechRecognition _speechRecognition;
   int _currentColor = 1;
+  int _start = 0;
   String _QRText = 'QR';
   UnityWidgetController _unityWidgetController;
   List<Color> _colors = [ //Get list of colors
@@ -51,7 +59,47 @@ class _MyHomePageState extends State<MyHomePage> {
   void initState(){
     super.initState();
     SystemChrome.setEnabledSystemUIOverlays([]);
+    initSpeechRecognizer();
   }
+  void startTimer() {
+    const oneSec = const Duration(seconds: 1);
+    _timer = new Timer.periodic(
+      oneSec,
+          (Timer timer) => setState(
+            () {
+          if (_start > 30) {
+            recordEnd();
+            _timer.cancel();
+            _start = 0;
+          } else if(_isListening) {
+            _start = _start + 1;
+          }else{
+            _start = 0;
+          }
+        },
+      ),
+    );
+  }
+
+  void initSpeechRecognizer(){
+    _speechRecognition = SpeechRecognition();
+    _speechRecognition.setAvailabilityHandler(
+            (bool result ) => setState(()=> _isAvailable=result)
+    );
+    _speechRecognition.setRecognitionStartedHandler(()=>setState(
+            ()=>_isListening=true)
+    );
+    _speechRecognition.setRecognitionResultHandler(
+            (String speech)=>setState(()=>resultText=speech)
+    );
+    _speechRecognition.setRecognitionCompleteHandler(()=>setState(
+            ()=>_isListening=false)
+    );
+    _speechRecognition.activate().then(
+            (result) => setState(()=>_isAvailable=result)
+    );
+  }
+
   void navigateToScan() async {
     setMessage("opened scan");
     _unityWidgetController.pause();
@@ -90,6 +138,16 @@ class _MyHomePageState extends State<MyHomePage> {
                   color: Colors.white,
                 ),
               ),
+              GestureDetector(
+                onTap: _isListening ? recordEnd : recordStart,
+                onPanEnd: recordCancel,
+                child: Icon(
+                  _isListening ? Icons.stop : Icons.mic,
+                  color: Colors.white,
+                  size: 60,
+                )
+
+              ),
               IconButton(
                 onPressed: (){
                   Navigator.push(
@@ -108,6 +166,33 @@ class _MyHomePageState extends State<MyHomePage> {
           )
         );
   }
+  void recordStart(){
+    if(_isAvailable && !_isListening){
+      _start = 0;
+      startTimer();
+      print("start record");
+      _speechRecognition.listen(locale: "en_GB").then(
+          (result) => print('record : $result')
+      );
+    }
+  }
+  void recordEnd(){
+    print("_isAvailable : $_isAvailable");
+    if(_isListening && _start>5) {
+      _speechRecognition.stop().then(
+              (result) => setState(() {
+                _start = 0;
+                _isListening = result;
+              }));
+    }
+  }
+  void recordCancel(ctx){
+      if(_isListening)
+        _speechRecognition.cancel().then((result)=>setState((){
+          _isListening = result;
+          resultText = "";
+        }));
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -121,6 +206,16 @@ class _MyHomePageState extends State<MyHomePage> {
                 isARScene: true,
                 onUnityMessage: onUnityMessage
               )
+            ),
+            Center(
+              child: Container(
+                width: MediaQuery.of(context).size.width*0.6,
+                height: 40,
+                decoration: BoxDecoration(
+                  color:Colors.cyanAccent[100],
+                ),
+                child:Text('$resultText : $_start'),
+              ),
             ),
             Padding(
               padding: EdgeInsets.only(top:70.0,left: 20.0),
@@ -171,6 +266,7 @@ class _MyHomePageState extends State<MyHomePage> {
   }
   @override
   void dispose() {
+    _timer.cancel();
     super.dispose();
   }
 }
