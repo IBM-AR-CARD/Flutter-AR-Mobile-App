@@ -3,7 +3,7 @@
   <supports-screens android:smallScreens="true" android:normalScreens="true" android:largeScreens="true" android:xlargeScreens="true" android:anyDensity="true" />
   <application>
     
-    <meta-data android:name="unity.build-id" android:value="d0e666c3-1453-475e-8f73-9db3d9a98345" />
+    <meta-data android:name="unity.build-id" android:value="ab5d973a-c906-42b7-9331-2724baf2731a" />
     <meta-data android:name="unity.splash-mode" android:value="0" />
     <meta-data android:name="unity.splash-enable" android:value="True" />
   </application>

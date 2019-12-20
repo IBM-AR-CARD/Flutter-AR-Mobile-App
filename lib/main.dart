@@ -90,7 +90,18 @@ class _MyHomePageState extends State<MyHomePage> {
             ()=>_isListening=true)
     );
     _speechRecognition.setRecognitionResultHandler(
-            (String speech)=>setState(()=>resultText=speech)
+            (String speech)=>setState((){
+              resultText=speech;
+              if(resultText=="start talking"){
+                setMessage('changeAnimator', "talking");
+              }
+              if(resultText=="stop"){
+                setMessage('changeAnimator', "idle");
+              }
+              if(resultText=="start dancing"){
+                setMessage('changeAnimator', "dancing");
+              }
+            })
     );
     _speechRecognition.setRecognitionCompleteHandler(()=>setState(
             ()=>_isListening=false)
@@ -101,7 +112,7 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   void navigateToScan() async {
-    setMessage("opened scan");
+    setMessage('changeText', "opened scan");
     _unityWidgetController.pause();
     final result = await Navigator.push(
       context,
@@ -112,7 +123,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
     });
     await _unityWidgetController.resume();
-    setMessage(_QRText);
+    setMessage('changeText', _QRText);
 
 //    setState(() {
 //      _currentColor = _currentColor ^ 1;
@@ -189,6 +200,7 @@ class _MyHomePageState extends State<MyHomePage> {
   void recordCancel(ctx){
       if(_isListening)
         _speechRecognition.cancel().then((result)=>setState((){
+
           _isListening = result;
           resultText = "";
         }));
@@ -208,14 +220,17 @@ class _MyHomePageState extends State<MyHomePage> {
               )
             ),
             Center(
-              child: Container(
-                width: MediaQuery.of(context).size.width*0.6,
-                height: 40,
-                decoration: BoxDecoration(
-                  color:Colors.cyanAccent[100],
-                ),
-                child:Text('$resultText : $_start'),
+              child: Opacity(
+                opacity: 0.5,
+                child: Container(
+                  width: MediaQuery.of(context).size.width*0.6,
+                  height: 40,
+                  decoration: BoxDecoration(
+                    color:Colors.white,
+                  ),
+                  child:Text('$resultText : $_start'),
               ),
+            ),
             ),
             Padding(
               padding: EdgeInsets.only(top:70.0,left: 20.0),
@@ -243,11 +258,11 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 
-  void setMessage(String msg) {
+  void setMessage(String function, String msg) {
     print("Sending message to unity: "+msg);
     _unityWidgetController.postMessage(
       'Main Camera',
-      'changeText',
+      function,
       msg,
     );
   }
