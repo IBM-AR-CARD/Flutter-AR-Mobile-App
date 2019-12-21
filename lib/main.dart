@@ -101,6 +101,9 @@ class _MyHomePageState extends State<MyHomePage> {
               if(resultText=="start dancing"){
                 setMessage('changeAnimator', "dancing");
               }
+              if(resultText=="random character"){
+                setMessage('randomModel', '');
+              }
             })
     );
     _speechRecognition.setRecognitionCompleteHandler(()=>setState(
