@@ -273,7 +273,7 @@ class _MyHomePageState extends State<MyHomePage> {
   void onUnityMessage(controller, message) {
     print('Received message from unity: ${message.toString()}');
     setState(() {
-      _QRText = "TOUCHED!";
+      _QRText = message.toString();
     });
 
   }
