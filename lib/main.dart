@@ -8,6 +8,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_unity_widget/flutter_unity_widget.dart';
 import 'package:speech_recognition/speech_recognition.dart';
 import 'dart:async';
+import 'package:flutter_tts/flutter_tts.dart';
 void main() {
   SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,
@@ -54,12 +55,27 @@ class _MyHomePageState extends State<MyHomePage> {
     Color.fromARGB(255,112,112,112),
     Color.fromARGB(255,15,232,149),
   ];
+  static final int age = 21;
+  static final String name = "henry";
+  static final String description = "second year university student";
+  final FlutterTts flutterTts = FlutterTts();
 
   @override
   void initState(){
     super.initState();
     SystemChrome.setEnabledSystemUIOverlays([]);
     initSpeechRecognizer();
+  }
+
+  speak (String text) async{
+    text = text.toLowerCase();
+    if(text.contains("age")){
+      await flutterTts.speak("I am $age years old");
+    }else if(text.contains("name")){
+      await flutterTts.speak("my name is $name");
+    }else if(text.contains("description")){
+      await flutterTts.speak("$description");
+    }
   }
   void startTimer() {
     const oneSec = const Duration(seconds: 1);
@@ -92,6 +108,7 @@ class _MyHomePageState extends State<MyHomePage> {
     _speechRecognition.setRecognitionResultHandler(
             (String speech)=>setState((){
               resultText=speech;
+              speak(resultText);
               if(resultText=="start talking"){
                 setMessage('changeAnimator', "talking");
               }
@@ -106,6 +123,7 @@ class _MyHomePageState extends State<MyHomePage> {
               }
             })
     );
+
     _speechRecognition.setRecognitionCompleteHandler(()=>setState(
             ()=>_isListening=false)
     );
