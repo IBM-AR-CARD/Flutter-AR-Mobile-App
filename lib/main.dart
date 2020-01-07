@@ -80,10 +80,12 @@ class _MyHomePageState extends State<MyHomePage> {
   talk(String text)async {
     setMessage('changeAnimator', "talking");
     await flutterTts.speak("$text");
+    await Future.delayed(Duration(milliseconds: 2000));
     setMessage('changeAnimator', "idle");
   }
   speak() async {
     String text = lastWords.toLowerCase();
+    print('recognized text : $text');
     if (text.contains("age")) {
       await talk("I am $age years old");
     } else if (text.contains("name")) {
@@ -109,8 +111,12 @@ class _MyHomePageState extends State<MyHomePage> {
             _start = 0;
           } else if (speech.isListening) {
             _start = _start + 1;
-          } else {
+          } else if(_hasSpeech){
+            speak();
+            lastWords = "";
             _start = 0;
+            setState(() {});
+            _hasSpeech = false;
           }
         },
       ),
@@ -118,6 +124,7 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   void startListening() {
+    _hasSpeech = true;
     startTimer();
     lastWords = "";
     speech.listen(onResult: resultListener);
@@ -127,14 +134,12 @@ class _MyHomePageState extends State<MyHomePage> {
   void stopListening() {
     speech.stop();
     setState(() {
-      speak();
     });
   }
 
   void cancelListening(ctx ) async{
     speech.cancel();
     setState(() {
-      speak();
     });
   }
 
