@@ -79,28 +79,20 @@ class _MyHomePageState extends State<MyHomePage> {
   }
   talk(String text)async {
     setMessage('changeAnimator', "talking");
-    await flutterTts.speak("text");
+    await flutterTts.speak("$text");
     setMessage('changeAnimator', "idle");
   }
-  speak(String text) async {
-    text = text.toLowerCase();
+  speak() async {
+    String text = lastWords.toLowerCase();
     if (text.contains("age")) {
       await talk("I am $age years old");
     } else if (text.contains("name")) {
       await talk("my name is $name");
     } else if (text.contains("description")) {
       await talk("$description");
-    }
-    if(lastWords=="start talking"){
-      setMessage('changeAnimator', "talking");
-    }
-    if(lastWords=="stop"){
-      setMessage('changeAnimator', "idle");
-    }
-    if(lastWords=="start dancing"){
+    }else if(text=="start dancing"){
       setMessage('changeAnimator', "dancing");
-    }
-    if(lastWords=="random character"){
+    }else if(text=="random character"){
       setMessage('randomModel', '');
     }
   }
@@ -135,13 +127,14 @@ class _MyHomePageState extends State<MyHomePage> {
   void stopListening() {
     speech.stop();
     setState(() {
+      speak();
     });
   }
 
   void cancelListening(ctx ) async{
     speech.cancel();
     setState(() {
-      speak(lastWords);
+      speak();
     });
   }
 
