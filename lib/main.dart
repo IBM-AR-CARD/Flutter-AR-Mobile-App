@@ -65,6 +65,7 @@ class _MyHomePageState extends State<MyHomePage> {
     super.initState();
     SystemChrome.setEnabledSystemUIOverlays([]);
     initSpeechRecognizer();
+    flutterTts.setLanguage("en-US");
   }
 
   speak (String text) async{
