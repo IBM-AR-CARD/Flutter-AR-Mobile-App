@@ -10,7 +10,9 @@ import 'dart:async';
 import 'package:flutter_tts/flutter_tts.dart';
 import 'package:speech_to_text/speech_to_text.dart';
 import 'package:speech_to_text/speech_recognition_result.dart';
-import 'package:speech_to_text/speech_recognition_error.dart';
+import 'package:bubble/bubble.dart';
+import 'Models/BubblePair.dart';
+import 'package:flutter/foundation.dart';
 
 void main() {
   SystemChrome.setPreferredOrientations(
@@ -44,15 +46,17 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   Timer _timer;
   int _currentColor = 1;
-  int _start = 0;
   String _QRText = 'QR';
+  String currentLocal;
   UnityWidgetController _unityWidgetController;
+  final ScrollController bubbleScrollController = ScrollController();
   List<Color> _colors = [
     //Get list of colors
     Color.fromARGB(255, 112, 112, 112),
     Color.fromARGB(255, 15, 232, 149),
   ];
   bool _hasSpeech = false;
+  List<BubblePair> bubbleMap = new List();
   String lastWords = "";
   String lastStatus = "";
   final SpeechToText speech = SpeechToText();
@@ -69,20 +73,42 @@ class _MyHomePageState extends State<MyHomePage> {
     initSpeechState();
   }
 
+  initLocal() async {
+    List<LocaleName> locales = await speech.locales();
+    bool hasen_US = false;
+    for (LocaleName local in locales) {
+      if (local.localeId == 'en_US') {
+        hasen_US = true;
+      }
+    }
+    if (hasen_US) {
+      currentLocal = 'en_US';
+    } else {
+      currentLocal = 'en_GB';
+    }
+  }
+
   Future<void> initSpeechState() async {
     bool hasSpeech = await speech.initialize(onStatus: statusListener);
-
+    await initLocal();
     if (!mounted) return;
     setState(() {
       _hasSpeech = hasSpeech;
     });
   }
-  talk(String text)async {
+
+  talk(String text) async {
     setMessage('changeAnimator', "talking");
+    bubbleMap.insert(0,BubblePair(text, BubblePair.FROM_OTHER));
+    setState(() {});
     await flutterTts.speak("$text");
-    await Future.delayed(Duration(milliseconds: 2000));
+    await bubbleScrollController.animateTo(
+        0.0,
+        duration: Duration(milliseconds: 200),
+        curve: Curves.easeIn);
     setMessage('changeAnimator', "idle");
   }
+
   speak() async {
     String text = lastWords.toLowerCase();
     print('recognized text : $text');
@@ -92,61 +118,44 @@ class _MyHomePageState extends State<MyHomePage> {
       await talk("my name is $name");
     } else if (text.contains("description")) {
       await talk("$description");
-    }else if(text=="start dancing"){
+    } else if (text == "start dancing") {
       setMessage('changeAnimator', "dancing");
-    }else if(text=="random character"){
+    } else if (text == "random character") {
       setMessage('randomModel', '');
     }
   }
 
-  void startTimer() {
-    const oneSec = const Duration(seconds: 1);
-    _timer = new Timer.periodic(
-      oneSec,
-      (Timer timer) => setState(
-        () {
-          if (_start > 30) {
-            stopListening();
-            _timer.cancel();
-            _start = 0;
-          } else if (speech.isListening) {
-            _start = _start + 1;
-          } else if(_hasSpeech){
-            speak();
-            lastWords = "";
-            _start = 0;
-            setState(() {});
-            _hasSpeech = false;
-          }
-        },
-      ),
-    );
-  }
-
   void startListening() {
     _hasSpeech = true;
-    startTimer();
     lastWords = "";
-    speech.listen(onResult: resultListener);
+    speech.listen(
+        listenFor: Duration(seconds: 25),
+        localeId: currentLocal,
+        onResult: resultListener);
     setState(() {});
   }
 
   void stopListening() {
     speech.stop();
-    setState(() {
-    });
+    setState(() {});
   }
 
-  void cancelListening(ctx ) async{
+  void cancelListening(ctx) async {
     speech.cancel();
-    setState(() {
-    });
+    setState(() {});
   }
 
-  void resultListener(SpeechRecognitionResult result) {
-    setState(() {
-      lastWords = "${result.recognizedWords}";
-    });
+  void resultListener(SpeechRecognitionResult result) async {
+    lastWords = "${result.recognizedWords}";
+    if (result.finalResult) {
+      bubbleMap.insert(0,BubblePair(lastWords, BubblePair.FROM_ME));
+      setState(() {
+      });
+      await speak();
+      await bubbleScrollController.animateTo(0.0,
+          duration: Duration(milliseconds: 200),
+          curve: Curves.bounceIn);
+    };
   }
 
   void statusListener(String status) {
@@ -154,7 +163,6 @@ class _MyHomePageState extends State<MyHomePage> {
       lastStatus = "$status";
     });
   }
-
 
   void navigateToScan() async {
     setMessage('changeText', "opened scan");
@@ -168,10 +176,6 @@ class _MyHomePageState extends State<MyHomePage> {
     });
     await _unityWidgetController.resume();
     setMessage('changeText', _QRText);
-
-//    setState(() {
-//      _currentColor = _currentColor ^ 1;
-//    });
   }
 
   Widget bottomRow() {
@@ -221,6 +225,22 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
+    double pixelRatio = MediaQuery.of(context).devicePixelRatio;
+    double px = 1 / pixelRatio;
+    BubbleStyle styleSomebody = BubbleStyle(
+      nip: BubbleNip.leftTop,
+      color: Colors.white,
+      elevation: 1 * px,
+      margin: BubbleEdges.only(top: 8.0, right: 50.0),
+      alignment: Alignment.topLeft,
+    );
+    BubbleStyle styleMe = BubbleStyle(
+      nip: BubbleNip.rightTop,
+      color: Color.fromARGB(255, 225, 255, 199),
+      elevation: 1 * px,
+      margin: BubbleEdges.only(top: 8.0, left: 50.0),
+      alignment: Alignment.topRight,
+    );
     return Scaffold(
         body: Container(
           child: Stack(
@@ -231,17 +251,37 @@ class _MyHomePageState extends State<MyHomePage> {
                       onUnityViewCreated: onUnityCreated,
                       isARScene: true,
                       onUnityMessage: onUnityMessage)),
-              Center(
-                child: Opacity(
-                  opacity: 0.5,
-                  child: Container(
-                    width: MediaQuery.of(context).size.width * 0.6,
-                    height: 40,
-                    decoration: BoxDecoration(
-                      color: Colors.white,
+              Padding(
+                padding: EdgeInsets.only(top: 200),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    Opacity(
+                      opacity: 0.7,
+                      child: Container(
+                          width: MediaQuery.of(context).size.width * 0.6,
+                          height: 200,
+                          child: ListView.builder(
+                              physics: ClampingScrollPhysics(),
+                              reverse: true,
+                              controller: bubbleScrollController,
+                              itemBuilder: (BuildContext ctxt, int Index) {
+                                BubblePair bubble = bubbleMap.elementAt(Index);
+                                if (bubble.type == BubblePair.FROM_ME) {
+                                  return Bubble(
+                                    style: styleMe,
+                                    child: Text(bubble.content),
+                                  );
+                                } else {
+                                  return Bubble(
+                                    style: styleSomebody,
+                                    child: Text(bubble.content),
+                                  );
+                                }
+                              },
+                              itemCount: bubbleMap.length)),
                     ),
-                    child: Text('$lastWords : $_start'),
-                  ),
+                  ],
                 ),
               ),
               Padding(
