@@ -113,7 +113,7 @@ class _MyCards extends State<MyCards> with TickerProviderStateMixin {
                     children: <Widget>[
                       Padding(
                         child: IconButton(
-                          icon: Icon(Icons.arrow_forward),
+                          icon: Icon(Icons.arrow_forward_ios),
                           color: Colors.white,
                           iconSize: 36.0,
                           onPressed: () {

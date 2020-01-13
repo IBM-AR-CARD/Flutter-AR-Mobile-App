@@ -31,6 +31,8 @@ dependencies:
   cupertino_icons: ^0.1.2
   bubble: ^1.1.9+1
   flutter_widgets: ^0.1.8
+  auto_size_text: ^2.1.0
+  flutter_svg: ^0.15.0
   flutter_tts:
 
 dev_dependencies:
@@ -43,7 +45,8 @@ dev_dependencies:
 
 # The following section is specific to Flutter.
 flutter:
-
+  assets:
+    - assets/images/
   # The following line ensures that the Material Icons font is
   # included with your application, so that you can use the icons in
   # the material Icons class.

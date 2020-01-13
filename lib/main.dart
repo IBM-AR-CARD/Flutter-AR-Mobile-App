@@ -99,13 +99,11 @@ class _MyHomePageState extends State<MyHomePage> {
 
   talk(String text) async {
     setMessage('changeAnimator', "talking");
-    bubbleMap.insert(0,BubblePair(text, BubblePair.FROM_OTHER));
+    bubbleMap.insert(0, BubblePair(text, BubblePair.FROM_OTHER));
     setState(() {});
     await flutterTts.speak("$text");
-    await bubbleScrollController.animateTo(
-        0.0,
-        duration: Duration(milliseconds: 200),
-        curve: Curves.easeIn);
+    bubbleScrollController.animateTo(0.0,
+        duration: Duration(milliseconds: 200), curve: Curves.easeIn);
     setMessage('changeAnimator', "idle");
   }
 
@@ -148,14 +146,13 @@ class _MyHomePageState extends State<MyHomePage> {
   void resultListener(SpeechRecognitionResult result) async {
     lastWords = "${result.recognizedWords}";
     if (result.finalResult) {
-      bubbleMap.insert(0,BubblePair(lastWords, BubblePair.FROM_ME));
-      setState(() {
-      });
+      bubbleMap.insert(0, BubblePair(lastWords, BubblePair.FROM_ME));
+      setState(() {});
       await speak();
       await bubbleScrollController.animateTo(0.0,
-          duration: Duration(milliseconds: 200),
-          curve: Curves.bounceIn);
-    };
+          duration: Duration(milliseconds: 200), curve: Curves.bounceIn);
+    }
+    ;
   }
 
   void statusListener(String status) {
@@ -245,12 +242,11 @@ class _MyHomePageState extends State<MyHomePage> {
         body: Container(
           child: Stack(
             children: <Widget>[
-              Opacity(
-                  opacity: _currentColor == 1 ? 1 : 0,
-                  child: UnityWidget(
-                      onUnityViewCreated: onUnityCreated,
-                      isARScene: true,
-                      onUnityMessage: onUnityMessage)),
+//              UnityWidget(
+//                      onUnityViewCreated: onUnityCreated,
+//                      isARScene: true,
+//                      onUnityMessage: onUnityMessage
+//              ),
               Padding(
                 padding: EdgeInsets.only(top: 200),
                 child: Row(
