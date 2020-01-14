@@ -9,9 +9,12 @@ class UserData{
   String _description;
   String _experience;
   String _education;
+  String _avatar;
   int _gender;
-  UserData( this._firstName,this._lastName, this._gender,{String description, String experience,
-      String education}){
+  String _userName;
+  UserData( this._firstName,this._lastName, this._avatar,this._userName,{String description, String experience,
+      String education,int gender}){
+    _gender=gender;
     _description=description;
     _experience=experience;
     _education=education;
@@ -21,6 +24,18 @@ class UserData{
 
   set gender(int value) {
     _gender = value;
+  }
+
+  String get avatar => _avatar;
+
+  String get userName => _userName;
+
+  set userName(String value) {
+    _userName = value;
+  }
+
+  set avatar(String value) {
+    _avatar = value;
   }
 
   String get education => _education;
@@ -56,6 +71,7 @@ class UserData{
     Map<String,dynamic> map = {
       'firstname':_firstName,
       'lastname':_lastName,
+      'username':_userName,
       'description':_description,
       'experience':_experience,
       'education':_education,
@@ -66,19 +82,15 @@ class UserData{
   }
   static UserData toUserData(String userJson){
     UserData user;
-    if(userJson == null || userJson==""){
-      user = UserData("", "", 0);
-    }else {
       var decoder = JsonDecoder();
       Map<String, dynamic> json;
       json = decoder.convert(userJson);
-//    Map<String,dynamic> json = decoder.convert(userJson);
       user = UserData(
-          json['firstName'] ?? "", json['lastname'] ?? "", json['gender'] ?? 0,
-          description: json['description'] ?? "",
-          experience: json['experience'] ?? "",
-          education: json['education'] ?? "");
-    }
+      json['firstname'], json['lastname'], json['avatar'],json['username'],
+      description: json['description'] ?? "",
+      experience: json['experience'] ?? "",
+      education: json['education'] ?? "",
+      gender : json['gender']??0);
     return user;
   }
 }

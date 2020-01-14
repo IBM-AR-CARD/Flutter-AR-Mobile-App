@@ -34,21 +34,30 @@ class ProfileTextEditor extends StatefulWidget {
   }
 }
 class _ProfileTextEditor extends State<ProfileTextEditor> {
+  TextEditingController _controller;
   static final PERFER_NOT_TO_SAY = 0;
   static final FEMALE = 1;
   static final MALE = 2;
   static final int DROPDOWN = 0;
   static final int TEXTBOX = 1;
+
+  @override
+  void initState(){
+    _controller = widget._controller;
+    super.initState();
+    setState(() {});
+  }
   Widget build(context) {
+
     Widget box;
     if (widget._type == TEXTBOX) {
-      if (widget._text != null && widget._text!="") widget._controller.text = widget._text;
+      if (widget._text != null && widget._text!="") _controller.text = widget._text;
       box = new Padding(
         padding: EdgeInsets.only(top: 30),
         child: new TextField(
           style: new TextStyle(color: Colors.white),
           maxLines: 4,
-          controller: widget._controller,
+          controller: _controller,
           decoration: new InputDecoration(
               filled: true,
               fillColor: Color.fromARGB(255, 61, 63, 83),

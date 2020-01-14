@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'Screens/MyCards.dart';
@@ -16,8 +18,9 @@ import 'package:flutter/foundation.dart';
 import 'package:global_configuration/global_configuration.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'Models/UserData.dart';
-void main()async {
+import 'package:http/http.dart' as http;
 
+void main() async {
   runApp(new MyApp());
 }
 
@@ -66,16 +69,14 @@ class _MyHomePageState extends State<MyHomePage> {
   static final String description = "second year university student";
   final FlutterTts flutterTts = FlutterTts();
   UserData userData;
+  Future<bool> post;
   @override
   void initState() {
+    SystemChrome.setEnabledSystemUIOverlays([]);
     super.initState();
-    initUserData();
     flutterTts.setLanguage("en-US");
     initSpeechState();
-  }
-  initUserData()async{
-    final data = await SharedPreferences.getInstance();
-    userData = UserData.toUserData(data.getString("UserData")??"");
+    post = fetchPost();
   }
 
   initLocal() async {
@@ -213,7 +214,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   Navigator.push(
                     context,
                     SlideLeftRoute(
-                        page: Settings(),
+                      page: Settings(),
                     ),
                   );
                 },
@@ -303,6 +304,20 @@ class _MyHomePageState extends State<MyHomePage> {
                   highlightColor: Colors.transparent,
                 ),
               ),
+              Center(
+                child: FutureBuilder<void>(
+                  future: post,
+                  builder: (context, snapshot) {
+                    if (snapshot.hasError) {
+                      return Text("${snapshot.error}");
+                    }if (snapshot.hasData) {
+                      return SizedBox.shrink();
+                    }else{
+                      return CircularProgressIndicator();
+                    }
+                  },
+                ),
+              ),
             ],
           ),
         ),
@@ -335,5 +350,20 @@ class _MyHomePageState extends State<MyHomePage> {
   void dispose() {
     _timer.cancel();
     super.dispose();
+  }
+
+  Future<bool> fetchPost() async {
+    final response =
+        await http.get('http://51.11.45.102:8080/profile/get');
+
+    if (response.statusCode == 200) {
+      userData = UserData.toUserData(response.body);
+      SharedPreferences storeValue = await SharedPreferences.getInstance();
+      storeValue.setString("UserData", response.body);
+      return true;
+    } else {
+      print(response.statusCode);
+      throw Exception('Failed to load post');
+    }
   }
 }

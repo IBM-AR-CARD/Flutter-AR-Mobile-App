@@ -36,6 +36,7 @@ dependencies:
   flutter_tts:
   global_configuration: ^1.4.0
   shared_preferences: ^0.5.6
+  progress_dialog: ^1.2.0
 
 dev_dependencies:
   flutter_test:
