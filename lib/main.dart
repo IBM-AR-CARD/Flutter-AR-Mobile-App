@@ -15,8 +15,6 @@ import 'Models/BubblePair.dart';
 import 'package:flutter/foundation.dart';
 
 void main() {
-  SystemChrome.setPreferredOrientations(
-      [DeviceOrientation.portraitUp, DeviceOrientation.portraitDown]);
   runApp(new MyApp());
 }
 
