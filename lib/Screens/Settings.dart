@@ -6,6 +6,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../Models/UserData.dart';
 import 'package:progress_dialog/progress_dialog.dart';
 import 'package:http/http.dart' as http;
+import 'package:cached_network_image/cached_network_image.dart';
 
 class Settings extends StatefulWidget {
   static final PERFER_NOT_TO_SAY = 0;
@@ -25,15 +26,17 @@ class Settings extends StatefulWidget {
   String _education;
   String _experience;
   UserData userData;
-  String _avatar ;
+  Future<String> _profile;
   final storeValue = SharedPreferences.getInstance();
 
   initUserData() async {
+    _profile = storeValue.then((res) {
+      return UserData.toUserData(res.getString('UserData')).profile;
+    });
     userData = UserData.toUserData((await storeValue).getString("UserData"));
     _firstName = userData.firstName;
     _lastName = userData.lastName;
     _userName = userData.userName;
-    _avatar = userData.avatar;
     _gender = userData.gender;
     _description = userData.description;
     _education = userData.education;
@@ -118,14 +121,39 @@ class _Settings extends State<Settings> {
                       padding: EdgeInsets.only(top: 30, left: 65),
                       child: Row(
                         children: <Widget>[
-                          ClipRRect(
-                            borderRadius: new BorderRadius.all(
-                                const Radius.circular(40.0)),
-                            child: Image.network(
-                              widget._avatar,
-                              width: 70,
-                              height: 70,
-                            ),
+                          FutureBuilder<String>(
+                            future: widget._profile, // a Future<String> or null
+                            builder: (BuildContext _context,
+                                AsyncSnapshot<String> snapshot) {
+                              if (snapshot.hasError ||
+                                  snapshot.connectionState !=
+                                      ConnectionState.done) {
+                                return SizedBox(
+                                  child: CircularProgressIndicator(),
+                                  height: 70.0,
+                                  width: 70.0,
+                                );
+                              } else {
+                                if(snapshot.data == null || snapshot.data==""){
+                                  return SizedBox(
+                                    child: CircularProgressIndicator(),
+                                    height: 70.0,
+                                    width: 70.0,
+                                  );
+                                }
+                                return SizedBox(
+                                  child: ClipRRect(
+                                    borderRadius: new BorderRadius.all(
+                                        const Radius.circular(40.0)),
+                                    child: Image.network(
+                                      snapshot.data,
+                                    ),
+                                  ),
+                                  height: 70.0,
+                                  width: 70.0,
+                                );
+                              }
+                            },
                           ),
                           Padding(
                             padding: EdgeInsets.only(left: 10),
@@ -387,13 +415,13 @@ class _Settings extends State<Settings> {
         onWillPop: _onLeaving);
   }
 
-  contentOnSave() {
+  contentOnSave()async {
     widget.userData.experience = _workExperiencesController.text;
     widget.userData.gender = widget._gender;
     widget.userData.education = _educationController.text;
     widget.userData.description = _descriptionController.text;
     String userJson = widget.userData.getJson();
-    storeValue(userJson);
+    await storeValue(userJson);
     return;
   }
 
@@ -403,8 +431,29 @@ class _Settings extends State<Settings> {
     http
         .post('http://51.11.45.102:8080/profile/update',
             headers: {"Content-Type": "application/json"}, body: userJson)
-        .then((http.Response response) {
-      if (response.statusCode == 200) {
+        .timeout(const Duration(seconds: 5))
+        .catchError((err) {
+      pr.hide();
+      showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            // return object of type Dialog
+            return AlertDialog(
+              title: new Text("Network Error"),
+              content: new Text("please contact admin"),
+              actions: <Widget>[
+                // usually buttons at the bottom of the dialog
+                new FlatButton(
+                  child: new Text("Close"),
+                  onPressed: () {
+                    pr.hide();
+                  },
+                ),
+              ],
+            );
+          });
+    }).then((http.Response response) {
+      if (response.statusCode != null && response.statusCode == 200) {
         pr.hide();
       } else {
         showDialog(
@@ -419,6 +468,7 @@ class _Settings extends State<Settings> {
                   new FlatButton(
                     child: new Text("Close"),
                     onPressed: () {
+                      pr.hide();
                       Navigator.of(context).pop();
                     },
                   ),
@@ -438,14 +488,8 @@ class _Settings extends State<Settings> {
           context: context,
           builder: (context) => new AlertDialog(
             title: new Text('Are you sure?'),
-            content: new Text('Do you want to save you change?'),
+            content: new Text('Do you want to keep you change?'),
             actions: <Widget>[
-              new FlatButton(
-                  child: new Text("Save"),
-                  onPressed: () {
-                    contentOnSave();
-                    Navigator.of(context).pop(true);
-                  }),
               new FlatButton(
                   child: new Text("Discard"),
                   onPressed: () {

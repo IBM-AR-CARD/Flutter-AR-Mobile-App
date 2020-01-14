@@ -9,10 +9,10 @@ class UserData{
   String _description;
   String _experience;
   String _education;
-  String _avatar;
+  String _profile;
   int _gender;
   String _userName;
-  UserData( this._firstName,this._lastName, this._avatar,this._userName,{String description, String experience,
+  UserData( this._firstName,this._lastName, this._profile,this._userName,{String description, String experience,
       String education,int gender}){
     _gender=gender;
     _description=description;
@@ -26,16 +26,17 @@ class UserData{
     _gender = value;
   }
 
-  String get avatar => _avatar;
-
   String get userName => _userName;
 
   set userName(String value) {
     _userName = value;
   }
 
-  set avatar(String value) {
-    _avatar = value;
+
+  String get profile => _profile;
+
+  set profile(String value) {
+    _profile = value;
   }
 
   String get education => _education;
@@ -75,7 +76,8 @@ class UserData{
       'description':_description,
       'experience':_experience,
       'education':_education,
-      'gender':_gender
+      'gender':_gender,
+      'profile':_profile
     };
     var json = JsonEncoder();
     return json.convert(map);
@@ -86,7 +88,7 @@ class UserData{
       Map<String, dynamic> json;
       json = decoder.convert(userJson);
       user = UserData(
-      json['firstname'], json['lastname'], json['avatar'],json['username'],
+      json['firstname'], json['lastname'], json['profile'],json['username'],
       description: json['description'] ?? "",
       experience: json['experience'] ?? "",
       education: json['education'] ?? "",

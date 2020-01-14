@@ -308,9 +308,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 child: FutureBuilder<void>(
                   future: post,
                   builder: (context, snapshot) {
-                    if (snapshot.hasError) {
-                      return Text("${snapshot.error}");
-                    }if (snapshot.hasData) {
+                    if (snapshot.hasData) {
                       return SizedBox.shrink();
                     }else{
                       return CircularProgressIndicator();
@@ -362,8 +360,7 @@ class _MyHomePageState extends State<MyHomePage> {
       storeValue.setString("UserData", response.body);
       return true;
     } else {
-      print(response.statusCode);
-      throw Exception('Failed to load post');
+       return false;
     }
   }
 }
