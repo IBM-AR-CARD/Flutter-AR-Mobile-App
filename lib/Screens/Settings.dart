@@ -2,40 +2,51 @@ import 'package:flutter/material.dart';
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import '../Models/ProfileTextEditor.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import '../Models/UserData.dart';
 class Settings extends StatefulWidget {
+  static final PERFER_NOT_TO_SAY = 0;
+  static final FEMALE = 1;
+  static final MALE = 2;
   Settings({Key key, this.title}) : super(key: key);
-
+  final _descriptionController= TextEditingController();
+  final _workExperiencesController = TextEditingController();
+  final _educationController = TextEditingController();
   final String title;
-
+  String _firstName = "Henry";
+  int _gender = PERFER_NOT_TO_SAY;
+  String _lastName = "Zhang";
+  String _id = 'henry-zhang-9802';
+  String _description;
+  String _education;
+  String _experience;
+  UserData userData;
+  String _avatar =
+      'https://media-exp2.licdn.com/dms/image/C5603AQEmBdyItPLjhQ/profile-displayphoto-shrink_200_200/0?e=1584576000&v=beta&t=W0OySxBMtrnGe5WBO9y0L93rK6N7vIUeyME9PxKG9go';
+  final storeValue = SharedPreferences.getInstance();
   @override
   _Settings createState() => _Settings();
 }
 
 class _Settings extends State<Settings> {
-  static final PERFER_NOT_TO_SAY = 0;
-  static final FEMALE = 1;
-  static final MALE = 2;
   leavePage() {
     Navigator.pop(context);
   }
-  initController(){
-    _descriptionController= TextEditingController();
-    _workExperiencesController = TextEditingController();
-    _educationController = TextEditingController();
-  }
-  TextEditingController _descriptionController;
-  TextEditingController _educationController;
   double _height;
   double _width;
-  String _firstName = "Henry";
-  TextEditingController _workExperiencesController;
-  int _sex = PERFER_NOT_TO_SAY;
-  String _lastName = "Zhang";
-  String _id = 'henry-zhang-9802';
-  String _avatar =
-      'https://media-exp2.licdn.com/dms/image/C5603AQEmBdyItPLjhQ/profile-displayphoto-shrink_200_200/0?e=1584576000&v=beta&t=W0OySxBMtrnGe5WBO9y0L93rK6N7vIUeyME9PxKG9go';
+  initUserData()async{
+    storeValue = await SharedPreferences.getInstance();
+    userData = UserData.toUserData(storeValue.getString("UserData"));
+    _firstName="Henry";
+    _lastName = "Zhang";
+    _gender = userData.gender;
+    _description = userData.experience;
+    _education = userData.education;
+    _experience = userData.experience;
+  }
   @override
   Widget build(BuildContext context) {
+    initUserData();
     _width = MediaQuery.of(context).size.width;
     _height = MediaQuery.of(context).size.height;
     double _topHeight = _height * 0.25;
@@ -187,17 +198,17 @@ class _Settings extends State<Settings> {
                             ),
                           ),
                           ProfileTextEditor.DROPDOWN,
-                          _descriptionController,
+                          widget._descriptionController,
                           hint:'Tell us more about yourself',
                         dropContent: ["Perfer not to say","Female","Male"],
-                        currentSelect: _sex==PERFER_NOT_TO_SAY? 'Perfer not to say' : _sex == FEMALE ? 'Female' : 'Male',
+                        currentSelect: _gender==ProfileTextEditor.PERFER_NOT_TO_SAY? 'Perfer not to say' : _gender == FEMALE ? 'Female' : 'Male',
                         dropOnChange: (value){
                           if(value == 'Perfer not to say'){
-                            _sex = PERFER_NOT_TO_SAY;
+                            _gender = PERFER_NOT_TO_SAY;
                           }else if(value == 'Female'){
-                            _sex = FEMALE;
+                            _gender = FEMALE;
                           }else if(value == 'Male'){
-                            _sex = MALE;
+                            _gender = MALE;
                           }
                           setState(() {
 
@@ -216,7 +227,8 @@ class _Settings extends State<Settings> {
                             ),
                           ),
                           ProfileTextEditor.TEXTBOX,
-                          _descriptionController,
+                          widget._descriptionController,
+                          text: _description,
                           hint:'Tell us more about yourself'
                       ) ,
                     ),
@@ -231,7 +243,8 @@ class _Settings extends State<Settings> {
                             ),
                           ),
                           ProfileTextEditor.TEXTBOX,
-                          _workExperiencesController,
+                          widget._workExperiencesController,
+                          text: _experience,
                           hint:'Where do you currently work? How about 3 years ago?'
                       ) ,
                     ),
@@ -246,7 +259,8 @@ class _Settings extends State<Settings> {
                             ),
                           ),
                           ProfileTextEditor.TEXTBOX,
-                          _educationController,
+                          widget._educationController,
+                          text: _education,
                           hint:'Where did you attend your uni and high school? How was your grade?'
                       ) ,
                     ),
@@ -337,7 +351,7 @@ class _Settings extends State<Settings> {
                               )
                           ),
                         ),
-                      onPressed: _showDialog,
+                      onPressed: _onLeaving,
                     ),
                     FlatButton(
                         child: Container(
@@ -356,7 +370,11 @@ class _Settings extends State<Settings> {
                                 ),
                               )
                           ),
-                        )
+                        ),
+                      onPressed: (){
+                        contentOnSave();
+                        Navigator.of(context).pop(true);
+                      },
                     )
                   ],
                 ),
@@ -364,49 +382,50 @@ class _Settings extends State<Settings> {
             ],
           ),
         ),
-        onWillPop: () async {
-          bool leave = await _showDialog();
-          return Future.value(leave);
-        });
+        onWillPop: _onLeaving);
   }
-  Future<bool> _showDialog() async{
-    bool leave = false;
-    await showDialog(
-      context: context,
-      builder: (BuildContext context){
-        return AlertDialog(
-          title: new Text("Do you want to save you change?"),
-          actions: <Widget>[
-            // usually buttons at the bottom of the dialog
-            new FlatButton(
-              child: new Text("Save"),
-              onPressed:(){
-                leave = true;
-              }
-            ),
-            new FlatButton(
-              child: new Text("Discard"),
-              onPressed: (){
-                leave = true;
-              }
-            ),
-            new FlatButton(
-              child: new Text("Cancel"),
-                onPressed: (){
-                  leave = false;
-                }
-            ),
-          ],
-        );
-      }
-    );
-    print(leave);
-    return leave;
-  }
+
   contentOnSave(){
+    userData.experience=widget._workExperiencesController.text;
+    userData.gender=_gender;
+    userData.education=widget._educationController.text;
+    userData.description=widget._descriptionController.text;
+    String userJson = userData.getJson();
+    storeValue.setString("UserData", userJson);
     return;
   }
   contentOnExit(){
     return;
+  }
+  Future<bool> _onLeaving() async {
+    return (await showDialog(
+      context: context,
+      builder: (context) => new AlertDialog(
+        title: new Text('Are you sure?'),
+        content: new Text('Do you want to save you change?'),
+        actions: <Widget>[
+          new FlatButton(
+              child: new Text("Save"),
+              onPressed:(){
+                contentOnSave();
+                Navigator.of(context).pop(true);
+              }
+          ),
+          new FlatButton(
+              child: new Text("Discard"),
+              onPressed: (){
+                contentOnExit();
+                Navigator.of(context).pop(true);
+              }
+          ),
+          new FlatButton(
+              child: new Text("Cancel"),
+              onPressed: (){
+                Navigator.of(context).pop(false);
+              }
+          ),
+        ],
+      ),
+    )) ?? false;
   }
 }

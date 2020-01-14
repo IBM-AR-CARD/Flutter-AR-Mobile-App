@@ -13,8 +13,11 @@ import 'package:speech_to_text/speech_recognition_result.dart';
 import 'package:bubble/bubble.dart';
 import 'Models/BubblePair.dart';
 import 'package:flutter/foundation.dart';
+import 'package:global_configuration/global_configuration.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'Models/UserData.dart';
+void main()async {
 
-void main() {
   runApp(new MyApp());
 }
 
@@ -62,13 +65,17 @@ class _MyHomePageState extends State<MyHomePage> {
   static final String name = "henry";
   static final String description = "second year university student";
   final FlutterTts flutterTts = FlutterTts();
-
+  UserData userData;
   @override
   void initState() {
     super.initState();
-    SystemChrome.setEnabledSystemUIOverlays([]);
+    initUserData();
     flutterTts.setLanguage("en-US");
     initSpeechState();
+  }
+  initUserData()async{
+    final data = await SharedPreferences.getInstance();
+    userData = UserData.toUserData(data.getString("UserData")??"");
   }
 
   initLocal() async {
@@ -205,7 +212,9 @@ class _MyHomePageState extends State<MyHomePage> {
                 onPressed: () {
                   Navigator.push(
                     context,
-                    SlideLeftRoute(page: Settings()),
+                    SlideLeftRoute(
+                        page: Settings(),
+                    ),
                   );
                 },
                 tooltip: 'Person',
