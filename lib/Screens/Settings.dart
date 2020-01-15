@@ -6,8 +6,6 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../Models/UserData.dart';
 import 'package:progress_dialog/progress_dialog.dart';
 import 'package:http/http.dart' as http;
-import 'package:cached_network_image/cached_network_image.dart';
-import 'package:scoped_model/scoped_model.dart';
 import '../Models/GlobalData.dart';
 
 class Settings extends StatefulWidget {
