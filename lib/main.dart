@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_app/Models/GlobalData.dart';
 import 'Screens/MyCards.dart';
 import 'Screens/scanQR.dart';
 import 'Models/SlideRoute.dart';
@@ -18,13 +19,13 @@ import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'Models/UserData.dart';
 import 'package:http/http.dart' as http;
-
 void main() async {
   runApp(new MyApp());
 }
 
 class MyApp extends StatelessWidget {
   // This widget is the root of your application.
+  const MyApp({Key key}) : super(key: key);
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -39,14 +40,15 @@ class MyApp extends StatelessWidget {
 
 class MyHomePage extends StatefulWidget {
   MyHomePage({Key key, this.title}) : super(key: key);
-
   final String title;
+  final GlobalData globalData = GlobalData();
 
   @override
   _MyHomePageState createState() => _MyHomePageState();
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+
   Timer _timer;
   int _currentColor = 1;
   String _QRText = 'QR';
@@ -62,13 +64,13 @@ class _MyHomePageState extends State<MyHomePage> {
   List<BubblePair> bubbleMap = new List();
   String lastWords = "";
   String lastStatus = "";
+  var fetchUserData;
   final SpeechToText speech = SpeechToText();
   static final int age = 21;
   static final String name = "henry";
   static final String description = "second year university student";
   final FlutterTts flutterTts = FlutterTts();
   UserData userData;
-  Future<bool> post;
   double _bubbleHeight = 200;
   @override
   void initState() {
@@ -76,14 +78,13 @@ class _MyHomePageState extends State<MyHomePage> {
     super.initState();
     flutterTts.setLanguage("en-US");
     initSpeechState();
-    post = fetchPost();
+    fetchUserData = fetchPost();
     initFlutterTTS();
   }
   initFlutterTTS()async {
     flutterTts.setCompletionHandler(() {
         setMessage('changeAnimator', "idle");
     });
-    print(await flutterTts.getVoices);
   }
   initLocal() async {
     List<LocaleName> locales = await speech.locales();
@@ -346,8 +347,8 @@ class _MyHomePageState extends State<MyHomePage> {
                 ),
               ),
               Center(
-                child: FutureBuilder<bool>(
-                  future: fetchPost(),
+                child: FutureBuilder<void>(
+                  future: fetchUserData,
                   builder: (context, snapshot) {
                     if (snapshot.connectionState == ConnectionState.done) {
                       return SizedBox.shrink();
@@ -391,14 +392,14 @@ class _MyHomePageState extends State<MyHomePage> {
     super.dispose();
   }
 
-  Future<bool> fetchPost() async {
+  Future<void> fetchPost() async {
     final response =
         await http.get('http://51.11.45.102:8080/profile/get');
-
     if (response.statusCode == 200) {
         userData = UserData.toUserData(response.body);
       SharedPreferences storeValue = await SharedPreferences.getInstance();
       storeValue.setString("UserData", response.body);
+      widget.globalData.userData = userData;
       if(userData.gender==2) {
         flutterTts.setVoice('en-gb-x-fis#male_1-local');
       }else {

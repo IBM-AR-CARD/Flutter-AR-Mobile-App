@@ -7,6 +7,8 @@ import '../Models/UserData.dart';
 import 'package:progress_dialog/progress_dialog.dart';
 import 'package:http/http.dart' as http;
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:scoped_model/scoped_model.dart';
+import '../Models/GlobalData.dart';
 
 class Settings extends StatefulWidget {
   static final PERFER_NOT_TO_SAY = 0;
@@ -15,7 +17,7 @@ class Settings extends StatefulWidget {
 
   Settings({Key key, this.title}) : super(key: key);
   final String title;
-
+  final GlobalData globalData = GlobalData();
 
   @override
   _Settings createState() {
@@ -33,29 +35,22 @@ class _Settings extends State<Settings> {
   String _lastName;
 
   String _userName;
-
-  String _description;
-  String _education;
-  String _experience;
   UserData userData;
-  Future<String> _profile;
-  final globalData = SharedPreferences.getInstance();
+  String _profile;
+  final storedData = SharedPreferences.getInstance();
 
   initUserData() async {
-    _profile = globalData.then((res) {
-      return UserData.toUserData(res.getString('UserData')).profile;
-    });
-    userData = UserData.toUserData((await globalData).getString("UserData"));
+    userData = widget.globalData.userData;
+    _profile = userData.profile;
     _firstName = userData.firstName;
     _lastName = userData.lastName;
     _userName = userData.userName;
     _gender = userData.gender;
-     _descriptionController.text = userData.description;
+    _descriptionController.text = userData.description;
     _educationController.text = userData.education;
-    _workExperiencesController.text= userData.experience;
+    _workExperiencesController.text = userData.experience;
     setState(() {});
   }
-
 
   ProgressDialog pr;
   static final PERFER_NOT_TO_SAY = 0;
@@ -67,7 +62,6 @@ class _Settings extends State<Settings> {
     initUserData();
     super.initState();
   }
-
 
   leavePage() {
     Navigator.pop(context);
@@ -118,39 +112,17 @@ class _Settings extends State<Settings> {
                       padding: EdgeInsets.only(top: 30, left: 65),
                       child: Row(
                         children: <Widget>[
-                          FutureBuilder<String>(
-                            future: _profile, // a Future<String> or null
-                            builder: (BuildContext _context,
-                                AsyncSnapshot<String> snapshot) {
-                              if (snapshot.hasError ||
-                                  snapshot.connectionState !=
-                                      ConnectionState.done) {
-                                return SizedBox(
-                                  child: CircularProgressIndicator(),
-                                  height: 70.0,
-                                  width: 70.0,
-                                );
-                              } else {
-                                if(snapshot.data == null || snapshot.data==""){
-                                  return SizedBox(
-                                    child: CircularProgressIndicator(),
-                                    height: 70.0,
-                                    width: 70.0,
-                                  );
-                                }
-                                return SizedBox(
-                                  child: ClipRRect(
-                                    borderRadius: new BorderRadius.all(
-                                        const Radius.circular(40.0)),
-                                    child: Image.network(
-                                      snapshot.data,
-                                    ),
-                                  ),
-                                  height: 70.0,
-                                  width: 70.0,
-                                );
-                              }
-                            },
+                          SizedBox(
+                            child: ClipRRect(
+                              borderRadius: new BorderRadius.all(
+                                  const Radius.circular(40.0)),
+                              child: FadeInImage(
+                                image:NetworkImage(_profile),
+                                placeholder: AssetImage('assets/images/unknown-avatar.jpg'),
+                              ),
+                            ),
+                            height: 70.0,
+                            width: 70.0,
                           ),
                           Padding(
                             padding: EdgeInsets.only(left: 10),
@@ -161,7 +133,9 @@ class _Settings extends State<Settings> {
                                 SizedBox(
                                   width: _width * 0.4,
                                   child: AutoSizeText(
-                                    _firstName.toString() + " " + _lastName.toString(),
+                                    _firstName.toString() +
+                                        " " +
+                                        _lastName.toString(),
                                     style: TextStyle(
                                         color: Colors.white,
                                         fontWeight: FontWeight.bold,
@@ -251,10 +225,10 @@ class _Settings extends State<Settings> {
                         _descriptionController,
                         hint: 'Tell us more about yourself',
                         dropContent: ["Perfer not to say", "Female", "Male"],
-                        currentSelect: _gender ==
-                                ProfileTextEditor.PERFER_NOT_TO_SAY
-                            ? 'Perfer not to say'
-                            : _gender == FEMALE ? 'Female' : 'Male',
+                        currentSelect:
+                            _gender == ProfileTextEditor.PERFER_NOT_TO_SAY
+                                ? 'Perfer not to say'
+                                : _gender == FEMALE ? 'Female' : 'Male',
                         dropOnChange: (value) {
                           if (value == 'Perfer not to say') {
                             _gender = PERFER_NOT_TO_SAY;
@@ -409,7 +383,8 @@ class _Settings extends State<Settings> {
         onWillPop: _onLeaving);
   }
 
-  contentOnSave()async {
+  contentOnSave() async {
+    widget.globalData.userData = userData;
     userData.experience = _workExperiencesController.text;
     userData.gender = _gender;
     userData.education = _educationController.text;
@@ -420,7 +395,7 @@ class _Settings extends State<Settings> {
   }
 
   storeValue(userJson) async {
-    (await globalData).setString("UserData", userJson);
+    (await storedData).setString("UserData", userJson);
     pr.show();
     http
         .post('http://51.11.45.102:8080/profile/update',
