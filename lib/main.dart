@@ -19,6 +19,8 @@ import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'Models/UserData.dart';
 import 'package:http/http.dart' as http;
+import 'package:retry/retry.dart';
+import 'dart:io';
 void main() async {
   runApp(new MyApp());
 }
@@ -48,7 +50,7 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-
+  bool _hasData = false;
   Timer _timer;
   int _currentColor = 1;
   String _QRText = 'QR';
@@ -198,6 +200,8 @@ class _MyHomePageState extends State<MyHomePage> {
             children: <Widget>[
               IconButton(
                 onPressed: () {
+                  if(!_hasData)
+                    return;
                   Navigator.push(
                     context,
                     SlideRightRoute(page: MyCards()),
@@ -220,6 +224,8 @@ class _MyHomePageState extends State<MyHomePage> {
                   )),
               IconButton(
                 onPressed: () {
+                  if(!_hasData)
+                    return;
                   Navigator.push(
                     context,
                     SlideLeftRoute(
@@ -393,21 +399,30 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   Future<void> fetchPost() async {
-    final response =
-        await http.get('http://51.11.45.102:8080/profile/get');
+    final retry = RetryOptions(maxAttempts: 16);
+    final response = await retry.retry(
+      // Make a GET request
+          () => http.get('http://51.11.45.102:8080/profile/get').timeout(Duration(seconds: 5)),
+      // Retry on SocketException or TimeoutException
+      retryIf: (e) => e is SocketException || e is TimeoutException,
+    );
+    await fetchPostedData(response);
+  }
+  fetchPostedData(response)async {
     if (response.statusCode == 200) {
-        userData = UserData.toUserData(response.body);
+      userData = UserData.toUserData(response.body);
       SharedPreferences storeValue = await SharedPreferences.getInstance();
       storeValue.setString("UserData", response.body);
       widget.globalData.userData = userData;
+      _hasData=true;
+      setState(() {
+
+      });
       if(userData.gender==2) {
         flutterTts.setVoice('en-gb-x-fis#male_1-local');
       }else {
         flutterTts.setVoice('en-gb-x-gba-network');
       }
-        return true;
-    } else {
-       return false;
     }
   }
 }

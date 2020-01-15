@@ -117,7 +117,7 @@ class _Settings extends State<Settings> {
                               borderRadius: new BorderRadius.all(
                                   const Radius.circular(40.0)),
                               child: FadeInImage(
-                                image:NetworkImage(_profile),
+                                image:NetworkImage(_profile??""),
                                 placeholder: AssetImage('assets/images/unknown-avatar.jpg'),
                               ),
                             ),
@@ -133,9 +133,9 @@ class _Settings extends State<Settings> {
                                 SizedBox(
                                   width: _width * 0.4,
                                   child: AutoSizeText(
-                                    _firstName.toString() +
+                                    _firstName??"".toString() +
                                         " " +
-                                        _lastName.toString(),
+                                        _lastName??"".toString(),
                                     style: TextStyle(
                                         color: Colors.white,
                                         fontWeight: FontWeight.bold,
@@ -158,7 +158,7 @@ class _Settings extends State<Settings> {
                                       child: SizedBox(
                                         width: _width * 0.4,
                                         child: AutoSizeText(
-                                          _userName,
+                                          _userName??"null",
                                           style: TextStyle(
                                             color: Colors.white,
                                           ),
