@@ -141,6 +141,8 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   void startListening() {
+    if(!_hasData)
+      return;
     _hasSpeech = true;
     lastWords = "";
     speech.listen(
