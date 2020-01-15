@@ -125,18 +125,20 @@ class _MyHomePageState extends State<MyHomePage> {
   speak() async {
     String text = lastWords.toLowerCase();
     print('recognized text : $text');
-    if (text.contains("name")) {
-      await talk(userData.firstName.toString() + " " + userData.lastName.toString());
-    } else if (text.contains("tell me about")) {
+    if (text.contains("name") || text.contains("who")) {
+      await talk("Hello! My name is " + userData.firstName.toString() + " " + userData.lastName.toString());
+    } else if (text.contains("tell me about") || text.contains("description")) {
       await talk(userData.description);
-    } else if (text.contains("experience")) {
+    } else if (text.contains("experience") || text.contains("work")  || text.contains("company")) {
       await talk(userData.experience);
     }else if (text == "start dancing") {
       setMessage('changeAnimator', "dancing");
     } else if (text == "random character") {
       setMessage('randomModel', '');
-    }else if (text.contains("education")){
+    }else if (text.contains("education") || text.contains("university")  || text.contains("study")){
       await talk(userData.education);
+    }else{
+      await talk("Sorry, I haven't learned that yet.");
     }
   }
 
