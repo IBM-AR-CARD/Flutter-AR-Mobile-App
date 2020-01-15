@@ -15,7 +15,6 @@ import 'package:speech_to_text/speech_recognition_result.dart';
 import 'package:bubble/bubble.dart';
 import 'Models/BubblePair.dart';
 import 'package:flutter/foundation.dart';
-import 'package:global_configuration/global_configuration.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'Models/UserData.dart';
 import 'package:http/http.dart' as http;
@@ -70,6 +69,7 @@ class _MyHomePageState extends State<MyHomePage> {
   final FlutterTts flutterTts = FlutterTts();
   UserData userData;
   Future<bool> post;
+  double _bubbleHeight = 260;
   @override
   void initState() {
     SystemChrome.setEnabledSystemUIOverlays([]);
@@ -77,8 +77,14 @@ class _MyHomePageState extends State<MyHomePage> {
     flutterTts.setLanguage("en-US");
     initSpeechState();
     post = fetchPost();
+    initFlutterTTS();
   }
-
+  initFlutterTTS()async {
+    flutterTts.setCompletionHandler(() {
+        setMessage('changeAnimator', "idle");
+    });
+    print(await flutterTts.getVoices);
+  }
   initLocal() async {
     List<LocaleName> locales = await speech.locales();
     bool hasen_US = false;
@@ -105,27 +111,29 @@ class _MyHomePageState extends State<MyHomePage> {
 
   talk(String text) async {
     setMessage('changeAnimator', "talking");
+//    bubbleMap.add(BubblePair(text, BubblePair.FROM_OTHER));
     bubbleMap.insert(0, BubblePair(text, BubblePair.FROM_OTHER));
     setState(() {});
     await flutterTts.speak("$text");
     bubbleScrollController.animateTo(0.0,
         duration: Duration(milliseconds: 200), curve: Curves.easeIn);
-    setMessage('changeAnimator', "idle");
   }
 
   speak() async {
     String text = lastWords.toLowerCase();
     print('recognized text : $text');
-    if (text.contains("age")) {
-      await talk("I am $age years old");
-    } else if (text.contains("name")) {
-      await talk("my name is $name");
-    } else if (text.contains("description")) {
-      await talk("$description");
-    } else if (text == "start dancing") {
+    if (text.contains("name")) {
+      await talk(userData.firstName.toString() + " " + userData.lastName.toString());
+    } else if (text.contains("tell me about")) {
+      await talk(userData.description);
+    } else if (text.contains("experience")) {
+      await talk(userData.experience);
+    }else if (text == "start dancing") {
       setMessage('changeAnimator', "dancing");
     } else if (text == "random character") {
       setMessage('randomModel', '');
+    }else if (text.contains("education")){
+      await talk(userData.education);
     }
   }
 
@@ -152,13 +160,13 @@ class _MyHomePageState extends State<MyHomePage> {
   void resultListener(SpeechRecognitionResult result) async {
     lastWords = "${result.recognizedWords}";
     if (result.finalResult) {
+//      bubbleMap.add(BubblePair(lastWords, BubblePair.FROM_ME));
       bubbleMap.insert(0, BubblePair(lastWords, BubblePair.FROM_ME));
       setState(() {});
       await speak();
       await bubbleScrollController.animateTo(0.0,
           duration: Duration(milliseconds: 200), curve: Curves.bounceIn);
-    }
-    ;
+    };
   }
 
   void statusListener(String status) {
@@ -227,7 +235,11 @@ class _MyHomePageState extends State<MyHomePage> {
               ),
             ]));
   }
-
+  changeBubbleHeight(){
+    setState(() {
+      _bubbleHeight = _bubbleHeight == 260 ? 600 : 260;
+    });
+  }
   @override
   Widget build(BuildContext context) {
     double pixelRatio = MediaQuery.of(context).devicePixelRatio;
@@ -235,56 +247,85 @@ class _MyHomePageState extends State<MyHomePage> {
     BubbleStyle styleSomebody = BubbleStyle(
       nip: BubbleNip.leftTop,
       color: Colors.white,
-      elevation: 1 * px,
-      margin: BubbleEdges.only(top: 8.0, right: 50.0),
+      elevation: 5 * px,
+      margin: BubbleEdges.only(top: 8.0, right: 10.0),
       alignment: Alignment.topLeft,
     );
     BubbleStyle styleMe = BubbleStyle(
+
       nip: BubbleNip.rightTop,
       color: Color.fromARGB(255, 225, 255, 199),
-      elevation: 1 * px,
-      margin: BubbleEdges.only(top: 8.0, left: 50.0),
+      elevation: 5 * px,
+      margin: BubbleEdges.only(top: 8.0, left: 10.0),
       alignment: Alignment.topRight,
     );
     return Scaffold(
         body: Container(
           child: Stack(
             children: <Widget>[
-//              UnityWidget(
-//                      onUnityViewCreated: onUnityCreated,
-//                      isARScene: true,
-//                      onUnityMessage: onUnityMessage
-//              ),
+              UnityWidget(
+                      onUnityViewCreated: onUnityCreated,
+                      isARScene: true,
+                      onUnityMessage: onUnityMessage
+              ),
               Padding(
-                padding: EdgeInsets.only(top: 200),
+                padding: EdgeInsets.only(top: 50),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: <Widget>[
-                    Opacity(
-                      opacity: 0.7,
-                      child: Container(
-                          width: MediaQuery.of(context).size.width * 0.6,
-                          height: 200,
-                          child: ListView.builder(
-                              physics: ClampingScrollPhysics(),
-                              reverse: true,
-                              controller: bubbleScrollController,
-                              itemBuilder: (BuildContext ctxt, int Index) {
-                                BubblePair bubble = bubbleMap.elementAt(Index);
-                                if (bubble.type == BubblePair.FROM_ME) {
-                                  return Bubble(
-                                    style: styleMe,
-                                    child: Text(bubble.content),
-                                  );
-                                } else {
-                                  return Bubble(
-                                    style: styleSomebody,
-                                    child: Text(bubble.content),
-                                  );
-                                }
-                              },
-                              itemCount: bubbleMap.length)),
-                    ),
+                    ShaderMask(
+                      shaderCallback: (rect) {
+                        return LinearGradient(
+                          begin: Alignment.bottomCenter,
+                          end: Alignment.topCenter,
+                          stops: [_bubbleHeight == 260? 0.6 : 0.95, 1.0],
+                          colors: [Colors.black, Colors.transparent],
+                        ).createShader(Rect.fromLTRB(0, 0, rect.width, rect.height));
+                      },
+                      blendMode: BlendMode.dstIn,
+                      child: GestureDetector(
+                        onDoubleTap: changeBubbleHeight,
+                        child: AnimatedContainer(
+                          duration: Duration(milliseconds: 300),
+                            curve: Curves.easeOut,
+                            width: MediaQuery.of(context).size.width * 0.8,
+                            height: _bubbleHeight,
+                            child:Opacity(
+                              opacity: 0.9,
+                                child: ListView.builder(
+                                  physics: ClampingScrollPhysics(),
+                                  reverse: true,
+                                  itemCount:bubbleMap.length,
+                                  controller: bubbleScrollController,
+                                  itemBuilder: (BuildContext ctxt, int Index) {
+                                    BubblePair bubble = bubbleMap.elementAt(Index);
+                                    if (bubble.type == BubblePair.FROM_ME) {
+                                      return Bubble(
+                                        style: styleMe,
+                                        child: Text(
+                                          bubble.content,
+                                          style: TextStyle(
+                                              fontSize: 60*px
+                                          ),
+                                        ),
+                                      );
+                                    } else {
+                                      return Bubble(
+                                        style: styleSomebody,
+                                        child: Text(
+                                          bubble.content,
+                                          style: TextStyle(
+                                              fontSize: 60*px
+                                          ),
+                                        ),
+                                      );
+                                    }
+                                  },)
+                            ),
+//                              itemCount: bubbleMap.length)
+                        ),
+                      ),
+                      )
                   ],
                 ),
               ),
@@ -305,10 +346,10 @@ class _MyHomePageState extends State<MyHomePage> {
                 ),
               ),
               Center(
-                child: FutureBuilder<void>(
-                  future: post,
+                child: FutureBuilder<bool>(
+                  future: fetchPost(),
                   builder: (context, snapshot) {
-                    if (snapshot.hasData) {
+                    if (snapshot.connectionState == ConnectionState.done) {
                       return SizedBox.shrink();
                     }else{
                       return CircularProgressIndicator();
@@ -355,10 +396,15 @@ class _MyHomePageState extends State<MyHomePage> {
         await http.get('http://51.11.45.102:8080/profile/get');
 
     if (response.statusCode == 200) {
-      userData = UserData.toUserData(response.body);
+        userData = UserData.toUserData(response.body);
       SharedPreferences storeValue = await SharedPreferences.getInstance();
       storeValue.setString("UserData", response.body);
-      return true;
+      if(userData.gender==2) {
+        flutterTts.setVoice('en-gb-x-fis#male_1-local');
+      }else {
+        flutterTts.setVoice('en-gb-x-gba-network');
+      }
+        return true;
     } else {
        return false;
     }

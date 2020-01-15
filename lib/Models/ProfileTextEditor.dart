@@ -13,15 +13,16 @@ class ProfileTextEditor extends StatefulWidget {
   String _text;
   Function _dropOnChange;
   String _currentSelect;
+  String title;
   ProfileTextEditor(this._title,this._type,this._controller,
       {Key key,
+        this.title,
         String text,
         String hint,
         List<String> dropContent,
         Function dropOnChange,
         String currentSelect,
-        int gender}) {
-
+        int gender}): super(key: key) {
     _hint = hint;
     _text = text;
     _dropContent = dropContent;
@@ -48,10 +49,8 @@ class _ProfileTextEditor extends State<ProfileTextEditor> {
     setState(() {});
   }
   Widget build(context) {
-
     Widget box;
     if (widget._type == TEXTBOX) {
-      if (widget._text != null && widget._text!="") _controller.text = widget._text;
       box = new Padding(
         padding: EdgeInsets.only(top: 30),
         child: new TextField(

@@ -15,6 +15,18 @@ class Settings extends StatefulWidget {
 
   Settings({Key key, this.title}) : super(key: key);
   final String title;
+
+
+  @override
+  _Settings createState() {
+    return _Settings();
+  }
+}
+
+class _Settings extends State<Settings> {
+  final _descriptionController = TextEditingController();
+  final _workExperiencesController = TextEditingController();
+  final _educationController = TextEditingController();
   String _firstName;
 
   int _gender = PERFER_NOT_TO_SAY;
@@ -27,33 +39,24 @@ class Settings extends StatefulWidget {
   String _experience;
   UserData userData;
   Future<String> _profile;
-  final storeValue = SharedPreferences.getInstance();
+  final globalData = SharedPreferences.getInstance();
 
   initUserData() async {
-    _profile = storeValue.then((res) {
+    _profile = globalData.then((res) {
       return UserData.toUserData(res.getString('UserData')).profile;
     });
-    userData = UserData.toUserData((await storeValue).getString("UserData"));
+    userData = UserData.toUserData((await globalData).getString("UserData"));
     _firstName = userData.firstName;
     _lastName = userData.lastName;
     _userName = userData.userName;
     _gender = userData.gender;
-    _description = userData.description;
-    _education = userData.education;
-    _experience = userData.experience;
+     _descriptionController.text = userData.description;
+    _educationController.text = userData.education;
+    _workExperiencesController.text= userData.experience;
+    setState(() {});
   }
 
-  @override
-  _Settings createState() {
-    initUserData();
-    return _Settings();
-  }
-}
 
-class _Settings extends State<Settings> {
-  final _descriptionController = TextEditingController();
-  final _workExperiencesController = TextEditingController();
-  final _educationController = TextEditingController();
   ProgressDialog pr;
   static final PERFER_NOT_TO_SAY = 0;
   static final FEMALE = 1;
@@ -61,14 +64,10 @@ class _Settings extends State<Settings> {
 
   @override
   void initState() {
-    super.initState();
     initUserData();
+    super.initState();
   }
 
-  initUserData() async {
-    await widget.initUserData();
-    setState(() {});
-  }
 
   leavePage() {
     Navigator.pop(context);
@@ -80,8 +79,6 @@ class _Settings extends State<Settings> {
   @override
   Widget build(BuildContext context) {
     pr = new ProgressDialog(context, isDismissible: false);
-    String displayName =
-        widget._firstName.toString() + " " + widget._lastName.toString();
     _width = MediaQuery.of(context).size.width;
     _height = MediaQuery.of(context).size.height;
     double _topHeight = _height * 0.25;
@@ -122,7 +119,7 @@ class _Settings extends State<Settings> {
                       child: Row(
                         children: <Widget>[
                           FutureBuilder<String>(
-                            future: widget._profile, // a Future<String> or null
+                            future: _profile, // a Future<String> or null
                             builder: (BuildContext _context,
                                 AsyncSnapshot<String> snapshot) {
                               if (snapshot.hasError ||
@@ -164,7 +161,7 @@ class _Settings extends State<Settings> {
                                 SizedBox(
                                   width: _width * 0.4,
                                   child: AutoSizeText(
-                                    displayName,
+                                    _firstName.toString() + " " + _lastName.toString(),
                                     style: TextStyle(
                                         color: Colors.white,
                                         fontWeight: FontWeight.bold,
@@ -187,7 +184,7 @@ class _Settings extends State<Settings> {
                                       child: SizedBox(
                                         width: _width * 0.4,
                                         child: AutoSizeText(
-                                          widget._userName.toString(),
+                                          _userName,
                                           style: TextStyle(
                                             color: Colors.white,
                                           ),
@@ -254,17 +251,17 @@ class _Settings extends State<Settings> {
                         _descriptionController,
                         hint: 'Tell us more about yourself',
                         dropContent: ["Perfer not to say", "Female", "Male"],
-                        currentSelect: widget._gender ==
+                        currentSelect: _gender ==
                                 ProfileTextEditor.PERFER_NOT_TO_SAY
                             ? 'Perfer not to say'
-                            : widget._gender == FEMALE ? 'Female' : 'Male',
+                            : _gender == FEMALE ? 'Female' : 'Male',
                         dropOnChange: (value) {
                           if (value == 'Perfer not to say') {
-                            widget._gender = PERFER_NOT_TO_SAY;
+                            _gender = PERFER_NOT_TO_SAY;
                           } else if (value == 'Female') {
-                            widget._gender = FEMALE;
+                            _gender = FEMALE;
                           } else if (value == 'Male') {
-                            widget._gender = MALE;
+                            _gender = MALE;
                           }
                           setState(() {});
                         },
@@ -279,7 +276,6 @@ class _Settings extends State<Settings> {
                           ),
                           ProfileTextEditor.TEXTBOX,
                           _descriptionController,
-                          text: widget._description,
                           hint: 'Tell us more about yourself'),
                     ),
                     Padding(
@@ -291,7 +287,6 @@ class _Settings extends State<Settings> {
                           ),
                           ProfileTextEditor.TEXTBOX,
                           _workExperiencesController,
-                          text: widget._experience,
                           hint:
                               'Where do you currently work? How about 3 years ago?'),
                     ),
@@ -304,7 +299,6 @@ class _Settings extends State<Settings> {
                           ),
                           ProfileTextEditor.TEXTBOX,
                           _educationController,
-                          text: widget._education,
                           hint:
                               'Where did you attend your uni and high school? How was your grade?'),
                     ),
@@ -416,17 +410,17 @@ class _Settings extends State<Settings> {
   }
 
   contentOnSave()async {
-    widget.userData.experience = _workExperiencesController.text;
-    widget.userData.gender = widget._gender;
-    widget.userData.education = _educationController.text;
-    widget.userData.description = _descriptionController.text;
-    String userJson = widget.userData.getJson();
+    userData.experience = _workExperiencesController.text;
+    userData.gender = _gender;
+    userData.education = _educationController.text;
+    userData.description = _descriptionController.text;
+    String userJson = userData.getJson();
     await storeValue(userJson);
     return;
   }
 
   storeValue(userJson) async {
-    (await widget.storeValue).setString("UserData", userJson);
+    (await globalData).setString("UserData", userJson);
     pr.show();
     http
         .post('http://51.11.45.102:8080/profile/update',
@@ -446,6 +440,7 @@ class _Settings extends State<Settings> {
                 new FlatButton(
                   child: new Text("Close"),
                   onPressed: () {
+                    Navigator.pop(context);
                     pr.hide();
                   },
                 ),

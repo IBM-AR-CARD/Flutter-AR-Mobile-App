@@ -12,12 +12,19 @@ class UserData{
   String _profile;
   int _gender;
   String _userName;
-  UserData( this._firstName,this._lastName, this._profile,this._userName,{String description, String experience,
+  String _id;
+  UserData( this._id,this._firstName,this._lastName, this._profile,this._userName,{String description, String experience,
       String education,int gender}){
     _gender=gender;
     _description=description;
     _experience=experience;
     _education=education;
+  }
+
+  String get id => _id;
+
+  set id(String value) {
+    _id = value;
   }
 
   int get gender => _gender;
@@ -70,6 +77,7 @@ class UserData{
   }
   String getJson(){
     Map<String,dynamic> map = {
+      '_id':_id,
       'firstname':_firstName,
       'lastname':_lastName,
       'username':_userName,
@@ -88,7 +96,7 @@ class UserData{
       Map<String, dynamic> json;
       json = decoder.convert(userJson);
       user = UserData(
-      json['firstname'], json['lastname'], json['profile'],json['username'],
+      json['_id'],json['firstname'], json['lastname'], json['profile'],json['username'],
       description: json['description'] ?? "",
       experience: json['experience'] ?? "",
       education: json['education'] ?? "",
