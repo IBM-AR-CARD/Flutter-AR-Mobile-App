@@ -69,7 +69,7 @@ class _MyHomePageState extends State<MyHomePage> {
   final FlutterTts flutterTts = FlutterTts();
   UserData userData;
   Future<bool> post;
-  double _bubbleHeight = 260;
+  double _bubbleHeight = 200;
   @override
   void initState() {
     SystemChrome.setEnabledSystemUIOverlays([]);
@@ -237,7 +237,7 @@ class _MyHomePageState extends State<MyHomePage> {
   }
   changeBubbleHeight(){
     setState(() {
-      _bubbleHeight = _bubbleHeight == 260 ? 600 : 260;
+      _bubbleHeight = _bubbleHeight == 200 ? 600 : 200;
     });
   }
   @override
@@ -278,7 +278,7 @@ class _MyHomePageState extends State<MyHomePage> {
                         return LinearGradient(
                           begin: Alignment.bottomCenter,
                           end: Alignment.topCenter,
-                          stops: [_bubbleHeight == 260? 0.6 : 0.95, 1.0],
+                          stops: [_bubbleHeight == 200? 0.6 : 0.95, 1.0],
                           colors: [Colors.black, Colors.transparent],
                         ).createShader(Rect.fromLTRB(0, 0, rect.width, rect.height));
                       },
@@ -291,7 +291,7 @@ class _MyHomePageState extends State<MyHomePage> {
                             width: MediaQuery.of(context).size.width * 0.8,
                             height: _bubbleHeight,
                             child:Opacity(
-                              opacity: 0.9,
+                              opacity: _bubbleHeight == 200? 0.3:0.9,
                                 child: ListView.builder(
                                   physics: ClampingScrollPhysics(),
                                   reverse: true,
@@ -305,7 +305,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                         child: Text(
                                           bubble.content,
                                           style: TextStyle(
-                                              fontSize: 60*px
+                                              fontSize: 15
                                           ),
                                         ),
                                       );
@@ -315,7 +315,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                         child: Text(
                                           bubble.content,
                                           style: TextStyle(
-                                              fontSize: 60*px
+                                              fontSize: 15
                                           ),
                                         ),
                                       );
