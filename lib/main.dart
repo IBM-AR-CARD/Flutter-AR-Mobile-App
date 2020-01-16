@@ -37,6 +37,7 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.blue,
       ),
       home: MyHomePage(title: 'Flutter Demo Home Page'),
+//        home:ScanQR()
     );
   }
 }
@@ -54,6 +55,7 @@ class _MyHomePageState extends State<MyHomePage> {
   bool _hasData = false;
   Timer _timer;
   int _currentColor = 1;
+  bool _hasScaned = false;
   String _QRText = 'QR';
   String currentLocal;
   final double CHAT_ORIGIN_HEIGHT = 200;
@@ -155,7 +157,7 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   void startListening() {
-    if (!_hasData) return;
+    if (!_hasData || !_hasScaned) return;
     _hasSpeech = true;
     lastWords = "";
     speech.listen(
@@ -192,20 +194,6 @@ class _MyHomePageState extends State<MyHomePage> {
     setState(() {
       lastStatus = "$status";
     });
-  }
-
-  void navigateToScan() async {
-    setMessage('changeText', "opened scan");
-    _unityWidgetController.pause();
-    final result = await Navigator.push(
-      context,
-      SlideTopRoute(page: ScanQR()),
-    );
-    setState(() {
-      _QRText = result == '' ? 'QR' : result;
-    });
-    await _unityWidgetController.resume();
-    setMessage('changeText', _QRText);
   }
 
   Widget bottomRow() {
@@ -254,7 +242,9 @@ class _MyHomePageState extends State<MyHomePage> {
                   color: Colors.white,
                 ),
               ),
-            ]));
+            ]
+        )
+    );
   }
 
   changeBubbleHeight() {
@@ -275,22 +265,6 @@ class _MyHomePageState extends State<MyHomePage> {
                   isARScene: true,
                   onUnityMessage: onUnityMessage),
               bubbleChatBoard(context),
-//              Padding(
-//                padding: EdgeInsets.only(top: 70.0, left: 20.0),
-//                child: FlatButton(
-//                  child: new Text(
-//                    _QRText,
-//                    textAlign: TextAlign.left,
-//                    style: TextStyle(
-//                      fontSize: 40.0,
-//                      color: _colors[_currentColor],
-//                    ),
-//                  ),
-//                  onPressed: navigateToScan,
-//                  splashColor: Colors.transparent,
-//                  highlightColor: Colors.transparent,
-//                ),
-//              ),
               Center(
                 child: FutureBuilder<void>(
                   future: fetchUserData,
@@ -307,7 +281,8 @@ class _MyHomePageState extends State<MyHomePage> {
           ),
         ),
         floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-        floatingActionButton: bottomRow());
+        floatingActionButton: bottomRow()
+    );
   }
 
   void setMessage(String function, String msg) {
@@ -348,6 +323,10 @@ class _MyHomePageState extends State<MyHomePage> {
       retryIf: (e) => e is SocketException || e is TimeoutException,
     );
     await fetchPostedData(response);
+    if(!_hasScaned){
+      await navigateToScan();
+    }
+
   }
 
   fetchPostedData(response) async {
@@ -357,6 +336,7 @@ class _MyHomePageState extends State<MyHomePage> {
       storeValue.setString("UserData", response.body);
       widget.globalData.userData = userData;
       _hasData = true;
+      widget.globalData.hasData = true;
       setState(() {});
       if (userData.gender == 2) {
         flutterTts.setVoice('en-gb-x-fis#male_1-local');
@@ -371,10 +351,21 @@ class _MyHomePageState extends State<MyHomePage> {
     double _height = MediaQuery.of(context).size.height;
     double pixelRatio = MediaQuery.of(context).devicePixelRatio;
     double px = 1 / pixelRatio;
-    String _firstName = 'henry';
-    String _lastName = 'zhang';
-    String _avatar = 'avatar';
-    String _description = 'description';
+    String _firstName;
+    String _lastName;
+    String _avatar;
+    String _username;
+    if(userData == null){
+      _firstName  = "";
+      _lastName = "";
+      _avatar = "";
+      _username= "";
+    }else{
+      _firstName = userData.firstName;
+      _lastName = userData.lastName;
+      _avatar = userData.profile;
+      _username = userData.userName;
+    }
     BubbleStyle styleSomebody = BubbleStyle(
       nip: BubbleNip.leftTop,
       color: Colors.white,
@@ -405,6 +396,7 @@ class _MyHomePageState extends State<MyHomePage> {
             height: _height * 0.15,
             width: _width,
             child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: <Widget>[
                 Align(
                   alignment: Alignment.centerLeft,
@@ -450,7 +442,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                 SizedBox(
                                   width: _width * 0.4,
                                   child: AutoSizeText(
-                                    _description,
+                                    _username,
                                     style: TextStyle(
                                         color: Colors.white,
                                         fontWeight: FontWeight.bold,
@@ -461,10 +453,48 @@ class _MyHomePageState extends State<MyHomePage> {
                                     overflow: TextOverflow.ellipsis,
                                   ),
                                 ),
-                              ]),
+                              ]
+                          ),
                         )
                       ],
                     ),
+                  ),
+                ),
+                Padding(
+                  padding: EdgeInsets.only(right:10),
+                  child: Row(
+                    mainAxisAlignment:MainAxisAlignment.end,
+//                      crossAxisAlignment:CrossAxisAlignment.end,
+                    children: <Widget>[
+                      IconButton(
+                        splashColor: Colors.transparent,
+                        highlightColor: Colors.transparent,
+                        icon: IconShadowWidget(
+                          Icon(
+                            Icons.question_answer,
+                            size: 30,
+                            color: _hasExtend ? Color.fromRGBO(15, 232, 149, 1):Colors.white ,
+                          ),
+                          shadowColor: Colors.greenAccent.shade200,
+                          showShadow: _hasExtend,
+                        ),
+                        onPressed: (){
+                          setState(() {
+                            _hasExtend = !_hasExtend;
+                          });
+                        },
+                      ),
+                      IconButton(
+                          splashColor: Colors.transparent,
+                          highlightColor: Colors.transparent,
+                          icon: Icon(
+                            Icons.exit_to_app,
+                            size: 30,
+                            color: Colors.white,
+                          ),
+                        onPressed: navigateToScan
+                      )
+                    ],
                   ),
                 ),
               ],
@@ -528,5 +558,14 @@ class _MyHomePageState extends State<MyHomePage> {
         ],
       ),
     );
+  }
+  navigateToScan()async{
+    _hasScaned = false;
+    await _unityWidgetController.pause();
+    final result = await Navigator.push(context, FadeRoute(page:ScanQR()));
+    print(result);
+    _hasScaned=true;
+    _unityWidgetController.resume();
+    setState(() {});
   }
 }

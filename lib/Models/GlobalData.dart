@@ -1,6 +1,13 @@
 import 'package:flutter_app/Models/UserData.dart';
 class GlobalData {
   static final GlobalData globalData = GlobalData._internal();
+  bool _hasData = false;
+
+  bool get hasData => _hasData;
+
+  set hasData(bool value) {
+    _hasData = value;
+  }
 
   UserData _userData;
   factory GlobalData() {
