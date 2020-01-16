@@ -67,22 +67,23 @@ class _MyCards extends State<MyCards> with TickerProviderStateMixin {
     super.initState();
     _futureBuilderHistory = _getHistory();
     _futureBuilderFavourite = _getFavourite();
-    controller1 = AnimationController(vsync: this, duration: Duration(milliseconds: 400));
-    controller2 = AnimationController(vsync: this, duration: Duration(milliseconds: 400));
-    offset1 = Tween<Offset>(begin: Offset(1.0, 0.0), end: Offset(0.0, 0.0)).animate(new CurvedAnimation(
-        parent: controller1,
-        curve: Curves.easeInOut
-    ));
-    offset2 = Tween<Offset>(begin: Offset(-1.0, 0.0), end: Offset(0.0, 0.0)).animate(new CurvedAnimation(
-        parent: controller2,
-        curve: Curves.easeInOut
-    ));
+    controller1 =
+        AnimationController(vsync: this, duration: Duration(milliseconds: 400));
+    controller2 =
+        AnimationController(vsync: this, duration: Duration(milliseconds: 400));
+    offset1 = Tween<Offset>(begin: Offset(1.0, 0.0), end: Offset(0.0, 0.0))
+        .animate(
+            new CurvedAnimation(parent: controller1, curve: Curves.easeInOut));
+    offset2 = Tween<Offset>(begin: Offset(-1.0, 0.0), end: Offset(0.0, 0.0))
+        .animate(
+            new CurvedAnimation(parent: controller2, curve: Curves.easeInOut));
     Future.delayed(const Duration(milliseconds: 100), () {
       setState(() {
         leave = false;
       });
     });
-    controller2.animateTo(1, duration: Duration(milliseconds:50), curve: Curves.easeInOut);
+    controller2.animateTo(1,
+        duration: Duration(milliseconds: 50), curve: Curves.easeInOut);
   }
 
   @override
@@ -92,133 +93,135 @@ class _MyCards extends State<MyCards> with TickerProviderStateMixin {
     containerHeight = height - 206;
     return new WillPopScope(
       child: Scaffold(
-      backgroundColor: Color.fromARGB(255, 31, 34, 52),
-      body: Column(
-        children: <Widget>[
-          Container(
-            child: Container(
-              child: Column(children: <Widget>[
-                Row(children: <Widget>[
-                  Container(
-                    child: Padding(
-                      child: Text(
-                        "MyCards\n" + _stringList[_status ^ 1],
-                        style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 36,
-                            fontFamily: "IBM Plex Sans"),
+        backgroundColor: Color.fromARGB(255, 31, 34, 52),
+        body: Column(
+          children: <Widget>[
+            Container(
+              child: Container(
+                child: Column(children: <Widget>[
+                  Row(children: <Widget>[
+                    Container(
+                      child: Padding(
+                        child: Text(
+                          "MyCards\n" + _stringList[_status ^ 1],
+                          style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 36,
+                              fontFamily: "IBM Plex Sans"),
+                        ),
+                        padding: EdgeInsets.only(top: 20.0, left: 20.0),
                       ),
-                      padding: EdgeInsets.only(top: 20.0, left: 20.0),
+                      width: 200.0,
                     ),
-                    width: 200.0,
-                  ),
-                  Column(
+                    Column(
+                      children: <Widget>[
+                        Padding(
+                          child: IconButton(
+                            icon: Icon(Icons.arrow_forward_ios),
+                            color: Colors.white,
+                            iconSize: 36.0,
+                            onPressed: () {
+                              setState(() {
+                                leave = true;
+                              });
+                              Navigator.pop(context);
+                            },
+                          ),
+                          padding: EdgeInsets.only(
+                              left: width - 200 - 36 - 30, top: 30),
+                        ),
+                        Padding(
+                          child: IconButton(
+                            icon: Icon(Icons.search),
+                            color: Colors.white,
+                            iconSize: 36.0,
+                            onPressed: () {},
+                          ),
+                          padding: EdgeInsets.only(
+                              left: width - 200 - 36 - 30, top: 10.0),
+                        )
+                      ],
+                    ),
+                  ]),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
                     children: <Widget>[
-                      Padding(
+                      Align(
                         child: IconButton(
-                          icon: Icon(Icons.arrow_forward_ios),
-                          color: Colors.white,
+                          icon: Icon(
+                            Icons.history,
+                          ),
+                          color: _colors[_status ^ 1],
                           iconSize: 36.0,
-                          onPressed: () {
-                            setState(() {
-                              leave = true;
-                            });
-                            Navigator.pop(context);
-                          },
+                          onPressed: _changeToFavourite,
                         ),
-                        padding: EdgeInsets.only(
-                            left: width - 200 - 36 - 30, top: 30),
                       ),
-                      Padding(
+                      Align(
                         child: IconButton(
-                          icon: Icon(Icons.search),
-                          color: Colors.white,
+                          icon: Icon(
+                            Icons.star,
+                            color: _colors[_status],
+                          ),
+//                        color: _colors[_status],
                           iconSize: 36.0,
-                          onPressed: () {},
+                          onPressed: _changeToHistory,
                         ),
-                        padding: EdgeInsets.only(
-                            left: width - 200 - 36 - 30, top: 10.0),
                       )
                     ],
                   ),
                 ]),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  children: <Widget>[
-                    Align(
-                      child: IconButton(
-                        icon: Icon(
-                          Icons.history,
-                        ),
-                        color: _colors[_status ^ 1],
-                        iconSize: 36.0,
-                        onPressed: _changeToFavourite,
-                      ),
+              ),
+              color: Color.fromARGB(255, 41, 43, 66),
+              height: 200.0,
+              width: width,
+            ),
+            Container(
+              child: Row(
+                children: <Widget>[
+                  AnimatedPadding(
+                    child: Container(
+                      height: 6.0,
+                      color: Colors.blue,
+                      width: width * 0.5,
                     ),
-                    Align(
-                      child: IconButton(
-                        icon: Icon(
-                          Icons.star,
-                          color: _colors[_status],
-                        ),
-//                        color: _colors[_status],
-                        iconSize: 36.0,
-                        onPressed: _changeToHistory,
+                    padding: _status == 1
+                        ? EdgeInsets.only(left: width * 0.5)
+                        : EdgeInsets.only(left: 0),
+                    duration: Duration(milliseconds: 500),
+                    curve: Curves.fastOutSlowIn,
+                  ),
+                ],
+              ),
+              color: Color.fromARGB(255, 41, 43, 66),
+            ),
+            SwipeDetector(
+              onSwipeLeft: _changeToHistory,
+              onSwipeRight: _changeToFavourite,
+              child: leave
+                  ? Container()
+                  : Stack(children: [
+                      SlideTransition(
+                        position: offset1,
+                        child: _getAnimatedWidgetList(1),
                       ),
-                    )
-                  ],
-                ),
-              ]),
+                      SlideTransition(
+                        position: offset2,
+                        child: _getAnimatedWidgetList(0),
+                      ),
+                    ]),
             ),
-            color: Color.fromARGB(255, 41, 43, 66),
-            height: 200.0,
-            width: width,
-          ),
-          Container(
-            child: Row(
-              children: <Widget>[
-                AnimatedPadding(
-                  child: Container(
-                    height: 6.0,
-                    color: Colors.blue,
-                    width: width * 0.5,
-                  ),
-                  padding: _status == 1
-                      ? EdgeInsets.only(left: width * 0.5)
-                      : EdgeInsets.only(left: 0),
-                  duration: Duration(milliseconds: 500),
-                  curve: Curves.fastOutSlowIn,
-                ),
-              ],
-            ),
-            color: Color.fromARGB(255, 41, 43, 66),
-          ),
-          SwipeDetector(
-            onSwipeLeft:_changeToHistory,
-            onSwipeRight:_changeToFavourite,
-            child: leave ? Container() : Stack(
-                children:[
-                  SlideTransition(
-                    position:offset1,
-                    child: _getAnimatedWidgetList(1),
-                  ),
-                  SlideTransition(
-                    position:offset2,
-                    child: _getAnimatedWidgetList(0),
-                  ),
-                ]
-            ),
-          ),
-        ],
+          ],
+        ),
       ),
-    ),onWillPop: () async {
-      setState(() {
-        leave = true;
-      });
-      return true;
+      onWillPop: () async {
+        setState(() {
+          leave = true;
+        });
+        return true;
       },
     );
   }
+
   _getAnimatedWidgetList(index) {
     List<Widget> _getAnimatedWidget = [
       new SizedBox(
@@ -230,8 +233,8 @@ class _MyCards extends State<MyCards> with TickerProviderStateMixin {
               builder: _buildFuture,
               future: _futureBuilderHistory,
             ),
-          )
-      ),SizedBox(
+          )),
+      SizedBox(
           width: width,
           height: containerHeight,
           child: RefreshIndicator(
@@ -278,7 +281,8 @@ class _MyCards extends State<MyCards> with TickerProviderStateMixin {
         return Text('request not yet started');
     }
   }
-  Widget errorPopup(AsyncSnapshot snapshot ){
+
+  Widget errorPopup(AsyncSnapshot snapshot) {
     return RefreshIndicator(
       child: Stack(
         children: <Widget>[
@@ -291,6 +295,7 @@ class _MyCards extends State<MyCards> with TickerProviderStateMixin {
       onRefresh: _handleAllRefresh,
     );
   }
+
   Widget _createListView(BuildContext context, AsyncSnapshot snapshot) {
     var list = snapshot.data["List"];
     return ListView.separated(
@@ -308,7 +313,7 @@ class _MyCards extends State<MyCards> with TickerProviderStateMixin {
         height: 5,
       );
     }
-    index = index -1;
+    index = index - 1;
     if (index == list.length) {
       return Divider(
         height: 5,
@@ -326,13 +331,16 @@ class _MyCards extends State<MyCards> with TickerProviderStateMixin {
         children: <Widget>[
           Padding(
             padding: EdgeInsets.only(left: 10),
-            child: ClipRRect(
-              borderRadius: new BorderRadius.all(const Radius.circular(50.0)),
-              child: Image.network(
-                list[index]["avatar"],
-                width: 70,
-                height: 70,
+            child: SizedBox(
+              child: ClipRRect(
+                borderRadius: new BorderRadius.all(const Radius.circular(40.0)),
+                child: FadeInImage(
+                  image: NetworkImage(list[index]["avatar"]),
+                  placeholder: AssetImage('assets/images/unknown-avatar.jpg'),
+                ),
               ),
+              height: 70.0,
+              width: 70.0,
             ),
           ),
           Divider(
@@ -395,6 +403,7 @@ class _MyCards extends State<MyCards> with TickerProviderStateMixin {
     _handleHistoryRefresh();
     _handleFavouriteRefresh();
   }
+
   @override
   void dispose() {
     super.dispose();
