@@ -221,14 +221,16 @@ class _MyHomePageState extends State<MyHomePage> {
                     size: 60,
                   )),
               IconButton(
-                onPressed: () {
+                onPressed: () async{
                   if (!_hasData) return;
-                  Navigator.push(
+                  await Navigator.push(
                     context,
                     SlideLeftRoute(
                       page: Settings(),
                     ),
                   );
+                  print("gender " + userData.gender.toString());
+                  updateGender();
                 },
                 tooltip: 'Person',
                 iconSize: 40.0,
@@ -254,14 +256,17 @@ class _MyHomePageState extends State<MyHomePage> {
     return Scaffold(
         body: Container(
           child:SwipeDetector(
-            onSwipeLeft: () {
+            onSwipeLeft: () async{
+              print(widget.globalData.userData.gender);
               if (!_hasData) return;
-              Navigator.push(
+              await Navigator.push(
                 context,
                 SlideLeftRoute(
                   page: Settings(),
                 ),
               );
+              print("gender " + userData.gender.toString());
+              updateGender();
             },
             onSwipeRight: () {
               if (!_hasData) return;
@@ -351,14 +356,16 @@ class _MyHomePageState extends State<MyHomePage> {
       _hasData = true;
       widget.globalData.hasData = true;
       setState(() {});
-      if (userData.gender == 2) {
-        flutterTts.setVoice('en-gb-x-fis#male_1-local');
-      } else {
-        flutterTts.setVoice('en-gb-x-gba-network');
-      }
+      updateGender();
     }
   }
-
+  updateGender(){
+    if (userData.gender == 2) {
+      flutterTts.setVoice('en-gb-x-fis#male_1-local');
+    } else {
+      flutterTts.setVoice('en-gb-x-gba-network');
+    }
+  }
   Widget bubbleChatBoard(context) {
     double _width = MediaQuery.of(context).size.width;
     double _height = MediaQuery.of(context).size.height;
