@@ -467,66 +467,63 @@ class _MyHomePageState extends State<MyHomePage> {
                     ),
                   ),
                 ),
-                Align(
-                  alignment: Alignment.centerRight,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: <Widget>[
-                      ShaderMask(
-                        shaderCallback: (rect) {
-                          return LinearGradient(
-                            begin: Alignment.bottomCenter,
-                            end: Alignment.topCenter,
-                            stops: [_hasExtend ? 0.95 : 0.6, 1.0],
-                            colors: [Colors.black, Colors.transparent],
-                          ).createShader(Rect.fromLTRB(0, 0, rect.width, rect.height));
-                        },
-                        blendMode: BlendMode.dstIn,
-                        child: GestureDetector(
-                          onDoubleTap: changeBubbleHeight,
-                          child: AnimatedContainer(
-                            duration: Duration(milliseconds: 300),
-                            curve: Curves.easeOut,
-                            width: MediaQuery.of(context).size.width * 0.8,
-                            height:
-                            _hasExtend ? CHAT_EXTEND_HEIGHT : CHAT_ORIGIN_HEIGHT,
-                            child: Opacity(
-                                opacity: _hasExtend ? 0.9 : 0.3,
-                                child: ListView.builder(
-                                  physics: ClampingScrollPhysics(),
-                                  reverse: true,
-                                  itemCount: bubbleMap.length,
-                                  controller: bubbleScrollController,
-                                  itemBuilder: (BuildContext ctxt, int Index) {
-                                    BubblePair bubble;
-                                    bubble = bubbleMap.elementAt(Index);
-                                    if (bubble.type == BubblePair.FROM_ME) {
-                                      return Bubble(
-                                        style: styleMe,
-                                        child: Text(
-                                          bubble.content,
-                                          style: TextStyle(fontSize: 15),
-                                        ),
-                                      );
-                                    } else {
-                                      return Bubble(
-                                        style: styleSomebody,
-                                        child: Text(
-                                          bubble.content,
-                                          style: TextStyle(fontSize: 15),
-                                        ),
-                                      );
-                                    }
-                                  },
-                                )),
-                          ),
-                        ),
-                      )
-                    ],
-                  ),
-                )
               ],
             ),
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              ShaderMask(
+                shaderCallback: (rect) {
+                  return LinearGradient(
+                    begin: Alignment.bottomCenter,
+                    end: Alignment.topCenter,
+                    stops: [_hasExtend ? 0.95 : 0.6, 1.0],
+                    colors: [Colors.black, Colors.transparent],
+                  ).createShader(Rect.fromLTRB(0, 0, rect.width, rect.height));
+                },
+                blendMode: BlendMode.dstIn,
+                child: GestureDetector(
+                  onDoubleTap: changeBubbleHeight,
+                  child: AnimatedContainer(
+                    duration: Duration(milliseconds: 300),
+                    curve: Curves.easeOut,
+                    width: MediaQuery.of(context).size.width * 0.8,
+                    height:
+                        _hasExtend ? CHAT_EXTEND_HEIGHT : CHAT_ORIGIN_HEIGHT,
+                    child: Opacity(
+                        opacity: _hasExtend ? 0.9 : 0.3,
+                        child: ListView.builder(
+                          physics: ClampingScrollPhysics(),
+                          reverse: true,
+                          itemCount: bubbleMap.length,
+                          controller: bubbleScrollController,
+                          itemBuilder: (BuildContext ctxt, int Index) {
+                            BubblePair bubble;
+                            bubble = bubbleMap.elementAt(Index);
+                            if (bubble.type == BubblePair.FROM_ME) {
+                              return Bubble(
+                                style: styleMe,
+                                child: Text(
+                                  bubble.content,
+                                  style: TextStyle(fontSize: 15),
+                                ),
+                              );
+                            } else {
+                              return Bubble(
+                                style: styleSomebody,
+                                child: Text(
+                                  bubble.content,
+                                  style: TextStyle(fontSize: 15),
+                                ),
+                              );
+                            }
+                          },
+                        )),
+                  ),
+                ),
+              )
+            ],
           ),
         ],
       ),
