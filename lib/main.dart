@@ -21,6 +21,7 @@ import 'package:http/http.dart' as http;
 import 'package:retry/retry.dart';
 import 'dart:io';
 import 'package:auto_size_text/auto_size_text.dart';
+
 void main() async {
   runApp(new MyApp());
 }
@@ -85,11 +86,13 @@ class _MyHomePageState extends State<MyHomePage> {
     fetchUserData = fetchPost();
     initFlutterTTS();
   }
-  initFlutterTTS()async {
+
+  initFlutterTTS() async {
     flutterTts.setCompletionHandler(() {
-        setMessage('changeAnimator', "idle");
+      setMessage('changeAnimator', "idle");
     });
   }
+
   initLocal() async {
     List<LocaleName> locales = await speech.locales();
     bool hasen_US = false;
@@ -128,25 +131,31 @@ class _MyHomePageState extends State<MyHomePage> {
     String text = lastWords.toLowerCase();
     print('recognized text : $text');
     if (text.contains("name") || text.contains("who")) {
-      await talk("Hello! My name is " + userData.firstName.toString() + " " + userData.lastName.toString());
+      await talk("Hello! My name is " +
+          userData.firstName.toString() +
+          " " +
+          userData.lastName.toString());
     } else if (text.contains("tell me about") || text.contains("description")) {
       await talk(userData.description);
-    } else if (text.contains("experience") || text.contains("work")  || text.contains("company")) {
+    } else if (text.contains("experience") ||
+        text.contains("work") ||
+        text.contains("company")) {
       await talk(userData.experience);
-    }else if (text == "start dancing") {
+    } else if (text == "start dancing") {
       setMessage('changeAnimator', "dancing");
     } else if (text == "random character") {
       setMessage('randomModel', '');
-    }else if (text.contains("education") || text.contains("university")  || text.contains("study")){
+    } else if (text.contains("education") ||
+        text.contains("university") ||
+        text.contains("study")) {
       await talk(userData.education);
-    }else{
+    } else {
       await talk("Sorry, I haven't learned that yet.");
     }
   }
 
   void startListening() {
-    if(!_hasData)
-      return;
+    if (!_hasData) return;
     _hasSpeech = true;
     lastWords = "";
     speech.listen(
@@ -175,7 +184,8 @@ class _MyHomePageState extends State<MyHomePage> {
       await speak();
       await bubbleScrollController.animateTo(0.0,
           duration: Duration(milliseconds: 200), curve: Curves.bounceIn);
-    };
+    }
+    ;
   }
 
   void statusListener(String status) {
@@ -206,8 +216,7 @@ class _MyHomePageState extends State<MyHomePage> {
             children: <Widget>[
               IconButton(
                 onPressed: () {
-                  if(!_hasData)
-                    return;
+                  if (!_hasData) return;
                   Navigator.push(
                     context,
                     SlideRightRoute(page: MyCards()),
@@ -230,8 +239,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   )),
               IconButton(
                 onPressed: () {
-                  if(!_hasData)
-                    return;
+                  if (!_hasData) return;
                   Navigator.push(
                     context,
                     SlideLeftRoute(
@@ -248,11 +256,13 @@ class _MyHomePageState extends State<MyHomePage> {
               ),
             ]));
   }
-  changeBubbleHeight(){
+
+  changeBubbleHeight() {
     setState(() {
       _hasExtend = !_hasExtend;
     });
   }
+
   @override
   Widget build(BuildContext context) {
     SystemChrome.setEnabledSystemUIOverlays([]);
@@ -261,10 +271,9 @@ class _MyHomePageState extends State<MyHomePage> {
           child: Stack(
             children: <Widget>[
               UnityWidget(
-                      onUnityViewCreated: onUnityCreated,
-                      isARScene: true,
-                      onUnityMessage: onUnityMessage
-              ),
+                  onUnityViewCreated: onUnityCreated,
+                  isARScene: true,
+                  onUnityMessage: onUnityMessage),
               bubbleChatBoard(context),
 //              Padding(
 //                padding: EdgeInsets.only(top: 70.0, left: 20.0),
@@ -288,7 +297,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   builder: (context, snapshot) {
                     if (snapshot.connectionState == ConnectionState.done) {
                       return SizedBox.shrink();
-                    }else{
+                    } else {
                       return CircularProgressIndicator();
                     }
                   },
@@ -332,30 +341,32 @@ class _MyHomePageState extends State<MyHomePage> {
     final retry = RetryOptions(maxAttempts: 16);
     final response = await retry.retry(
       // Make a GET request
-          () => http.get('http://51.11.45.102:8080/profile/get').timeout(Duration(seconds: 5)),
+      () => http
+          .get('http://51.11.45.102:8080/profile/get')
+          .timeout(Duration(seconds: 5)),
       // Retry on SocketException or TimeoutException
       retryIf: (e) => e is SocketException || e is TimeoutException,
     );
     await fetchPostedData(response);
   }
-  fetchPostedData(response)async {
+
+  fetchPostedData(response) async {
     if (response.statusCode == 200) {
       userData = UserData.toUserData(response.body);
       SharedPreferences storeValue = await SharedPreferences.getInstance();
       storeValue.setString("UserData", response.body);
       widget.globalData.userData = userData;
-      _hasData=true;
-      setState(() {
-
-      });
-      if(userData.gender==2) {
+      _hasData = true;
+      setState(() {});
+      if (userData.gender == 2) {
         flutterTts.setVoice('en-gb-x-fis#male_1-local');
-      }else {
+      } else {
         flutterTts.setVoice('en-gb-x-gba-network');
       }
     }
   }
-  Widget bubbleChatBoard(context){
+
+  Widget bubbleChatBoard(context) {
     double _width = MediaQuery.of(context).size.width;
     double _height = MediaQuery.of(context).size.height;
     double pixelRatio = MediaQuery.of(context).devicePixelRatio;
@@ -372,7 +383,6 @@ class _MyHomePageState extends State<MyHomePage> {
       alignment: Alignment.topLeft,
     );
     BubbleStyle styleMe = BubbleStyle(
-
       nip: BubbleNip.rightTop,
       color: Color.fromARGB(255, 225, 255, 199),
       elevation: 5 * px,
@@ -392,166 +402,133 @@ class _MyHomePageState extends State<MyHomePage> {
                 colors: [Colors.transparent, Color.fromARGB(230, 10, 10, 10)],
               ),
             ),
-            height: _height*0.15,
+            height: _height * 0.15,
             width: _width,
-            child:Align(
-              alignment: Alignment.centerLeft,
-              child:Padding(
-                padding: EdgeInsets.only(left:30),
-                child: Row(
-                  children: <Widget>[
-                    SizedBox(
-                      child: ClipRRect(
-                        borderRadius: new BorderRadius.all(
-                            const Radius.circular(40.0)),
-                        child: FadeInImage(
-                          image:NetworkImage(_avatar),
-                          placeholder: AssetImage('assets/images/unknown-avatar.jpg'),
+            child: Row(
+              children: <Widget>[
+                Align(
+                  alignment: Alignment.centerLeft,
+                  child: Padding(
+                    padding: EdgeInsets.only(left: 30),
+                    child: Row(
+                      children: <Widget>[
+                        SizedBox(
+                          child: ClipRRect(
+                            borderRadius: new BorderRadius.all(
+                                const Radius.circular(40.0)),
+                            child: FadeInImage(
+                              image: NetworkImage(_avatar),
+                              placeholder: AssetImage(
+                                  'assets/images/unknown-avatar.jpg'),
+                            ),
+                          ),
+                          height: 60.0,
+                          width: 60.0,
                         ),
-                      ),
-                      height: 60.0,
-                      width: 60.0,
-                    ),
-                    Padding(
-                      padding: EdgeInsets.only(left:10),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: <Widget>[
-                          SizedBox(
-                            width: _width * 0.4,
-                            child: AutoSizeText(
-                              _firstName.toString() +
-                                  " " +
-                                  _lastName.toString(),
-                              style: TextStyle(
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 40),
-                              minFontSize: 20,
-                              maxFontSize: 25,
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                          ),
-                          SizedBox(
-                            width: _width * 0.4,
-                            child: AutoSizeText(
-                              _description,
-                              style: TextStyle(
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 40),
-                              minFontSize: 10,
-                              maxFontSize: 15,
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    Padding(
-                      padding:EdgeInsets.only(left:40),
-                      child: Row(
-                        mainAxisAlignment:MainAxisAlignment.end,
-//                      crossAxisAlignment:CrossAxisAlignment.end,
-                        children: <Widget>[
-                          IconButton(
-                            splashColor: Colors.transparent,
-                            highlightColor: Colors.transparent,
-                              icon: IconShadowWidget(
-                                Icon(
-                                  Icons.chat_bubble_outline,
-                                  size: 30,
-                                  color: !_hasExtend ? Colors.white : Color.fromRGBO(15, 232, 149, 1),
-                                ),
-                                shadowColor: Colors.greenAccent.shade400,
-                                  showShadow: !_hasExtend,
-                              ),
-                            onPressed: (){
-                                setState(() {
-                                  _hasExtend = !_hasExtend;
-                                });
-                            },
-                          ),
-                          IconButton(
-                              splashColor: Colors.transparent,
-                              highlightColor: Colors.transparent,
-                              icon: Icon(
-                                Icons.exit_to_app,
-                                size: 30,
-                                color: Colors.white,
-                              )
-                          )
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-              )
-            )
-          ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              ShaderMask(
-                shaderCallback: (rect) {
-                  return LinearGradient(
-                    begin: Alignment.bottomCenter,
-                    end: Alignment.topCenter,
-                    stops: [!_hasExtend? 0.6 : 0.95, 1.0],
-                    colors: [Colors.black, Colors.transparent],
-                  ).createShader(Rect.fromLTRB(0, 0, rect.width, rect.height));
-                },
-                blendMode: BlendMode.dstIn,
-                child: GestureDetector(
-                  onDoubleTap: changeBubbleHeight,
-                  child: AnimatedContainer(
-                    duration: Duration(milliseconds: 300),
-                    curve: Curves.easeOut,
-                    width: MediaQuery.of(context).size.width * 0.8,
-                    height: _hasExtend ? CHAT_ORIGIN_HEIGHT : CHAT_EXTEND_HEIGHT,
-                    child:Opacity(
-                        opacity: _hasExtend? 0.3:0.9,
-                        child: ListView.builder(
-                          physics: ClampingScrollPhysics(),
-                          reverse: true,
-                          itemCount: bubbleMap.length ,
-                          controller: bubbleScrollController,
-                          itemBuilder: (BuildContext ctxt, int Index) {
-                            BubblePair bubble;
-                            bubble = bubbleMap.elementAt(Index);
-                            if (bubble.type == BubblePair.FROM_ME) {
-                              return Bubble(
-                                style: styleMe,
-                                child: Text(
-                                  bubble.content,
-                                  style: TextStyle(
-                                      fontSize: 15
+                        Padding(
+                          padding: EdgeInsets.only(left: 10),
+                          child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: <Widget>[
+                                SizedBox(
+                                  width: _width * 0.4,
+                                  child: AutoSizeText(
+                                    _firstName.toString() +
+                                        " " +
+                                        _lastName.toString(),
+                                    style: TextStyle(
+                                        color: Colors.white,
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 40),
+                                    minFontSize: 20,
+                                    maxFontSize: 25,
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
                                   ),
                                 ),
-                              );
-                            } else {
-                              return Bubble(
-                                style: styleSomebody,
-                                child: Text(
-                                  bubble.content,
-                                  style: TextStyle(
-                                      fontSize: 15
+                                SizedBox(
+                                  width: _width * 0.4,
+                                  child: AutoSizeText(
+                                    _description,
+                                    style: TextStyle(
+                                        color: Colors.white,
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 40),
+                                    minFontSize: 10,
+                                    maxFontSize: 15,
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
                                   ),
                                 ),
-                              );
-                            }
-                          },)
+                              ]),
+                        )
+                      ],
                     ),
                   ),
                 ),
-              )
-            ],
+                Align(
+                  alignment: Alignment.centerRight,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: <Widget>[
+                      ShaderMask(
+                        shaderCallback: (rect) {
+                          return LinearGradient(
+                            begin: Alignment.bottomCenter,
+                            end: Alignment.topCenter,
+                            stops: [_hasExtend ? 0.95 : 0.6, 1.0],
+                            colors: [Colors.black, Colors.transparent],
+                          ).createShader(Rect.fromLTRB(0, 0, rect.width, rect.height));
+                        },
+                        blendMode: BlendMode.dstIn,
+                        child: GestureDetector(
+                          onDoubleTap: changeBubbleHeight,
+                          child: AnimatedContainer(
+                            duration: Duration(milliseconds: 300),
+                            curve: Curves.easeOut,
+                            width: MediaQuery.of(context).size.width * 0.8,
+                            height:
+                            _hasExtend ? CHAT_EXTEND_HEIGHT : CHAT_ORIGIN_HEIGHT,
+                            child: Opacity(
+                                opacity: _hasExtend ? 0.9 : 0.3,
+                                child: ListView.builder(
+                                  physics: ClampingScrollPhysics(),
+                                  reverse: true,
+                                  itemCount: bubbleMap.length,
+                                  controller: bubbleScrollController,
+                                  itemBuilder: (BuildContext ctxt, int Index) {
+                                    BubblePair bubble;
+                                    bubble = bubbleMap.elementAt(Index);
+                                    if (bubble.type == BubblePair.FROM_ME) {
+                                      return Bubble(
+                                        style: styleMe,
+                                        child: Text(
+                                          bubble.content,
+                                          style: TextStyle(fontSize: 15),
+                                        ),
+                                      );
+                                    } else {
+                                      return Bubble(
+                                        style: styleSomebody,
+                                        child: Text(
+                                          bubble.content,
+                                          style: TextStyle(fontSize: 15),
+                                        ),
+                                      );
+                                    }
+                                  },
+                                )),
+                          ),
+                        ),
+                      )
+                    ],
+                  ),
+                )
+              ],
+            ),
           ),
         ],
-
       ),
     );
   }

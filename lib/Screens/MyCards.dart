@@ -60,7 +60,6 @@ class _MyCards extends State<MyCards> with TickerProviderStateMixin {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     _futureBuilderHistory = _getHistory();
     _futureBuilderFavourite = _getFavourite();
@@ -87,7 +86,6 @@ class _MyCards extends State<MyCards> with TickerProviderStateMixin {
     width = MediaQuery.of(context).size.width;
     height = MediaQuery.of(context).size.height;
     containerHeight = height - 206;
-    // TODO: implement build
     return new WillPopScope(child: Scaffold(
       backgroundColor: Color.fromARGB(255, 31, 34, 52),
       body: Column(
