@@ -38,6 +38,7 @@ dependencies:
   shared_preferences: ^0.5.6
   progress_dialog: ^1.2.0
   cached_network_image: ^2.0.0
+  icon_shadow:
   retry:
 
 dev_dependencies:
