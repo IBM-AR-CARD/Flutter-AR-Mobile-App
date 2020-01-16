@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:swipedetector/swipedetector.dart';
 import '../Models/ProfileTextEditor.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../Models/UserData.dart';
@@ -36,7 +37,12 @@ class _Settings extends State<Settings> {
   UserData userData;
   String _profile;
   final storedData = SharedPreferences.getInstance();
-
+  bool hasChangedContent(){
+    if(_gender == userData.gender && _descriptionController.text == userData.description && _educationController.text == userData.education && _workExperiencesController.text == userData.experience){
+      return false;
+    }
+    return true;
+  }
   initUserData() async {
     userData = widget.globalData.userData;
     _profile = userData.profile;
@@ -61,9 +67,6 @@ class _Settings extends State<Settings> {
     super.initState();
   }
 
-  leavePage() {
-    Navigator.pop(context);
-  }
 
   double _height;
   double _width;
@@ -80,7 +83,8 @@ class _Settings extends State<Settings> {
         child: Scaffold(
           resizeToAvoidBottomPadding: false,
           backgroundColor: Color.fromARGB(255, 31, 34, 52),
-          body: Column(
+          body: SwipeDetector(
+            child: Column(
             children: <Widget>[
               Container(
                 child: Column(
@@ -93,7 +97,11 @@ class _Settings extends State<Settings> {
                             icon: Icon(Icons.arrow_back_ios),
                             color: Colors.white,
                             iconSize: 30,
-                            onPressed: leavePage,
+                            onPressed: ()async{
+                              if(await _onLeaving()){
+                                Navigator.pop(context);
+                              }
+                            }
                           ),
                           Text(
                             'Your Profile',
@@ -350,7 +358,11 @@ class _Settings extends State<Settings> {
                           style: TextStyle(color: Colors.white, fontSize: 15),
                         )),
                       ),
-                      onPressed: _onLeaving,
+                      onPressed: ()async{
+                        if(await _onLeaving()){
+                        Navigator.of(context).pop(true);
+                        }
+                      },
                     ),
                     FlatButton(
                       child: Container(
@@ -377,11 +389,21 @@ class _Settings extends State<Settings> {
               ),
             ],
           ),
+            onSwipeRight: ()async{
+              if(await _onLeaving()){
+                Navigator.of(context).pop(true);
+              }
+            },
         ),
-        onWillPop: _onLeaving);
+        ),
+        onWillPop: _onLeaving
+    );
   }
 
   contentOnSave() async {
+    if(!hasChangedContent()){
+      return;
+    }
     widget.globalData.userData = userData;
     userData.experience = _workExperiencesController.text;
     userData.gender = _gender;
@@ -452,6 +474,9 @@ class _Settings extends State<Settings> {
   }
 
   Future<bool> _onLeaving() async {
+    if(!hasChangedContent()){
+      return true;
+    }
     return (await showDialog(
           context: context,
           builder: (context) => new AlertDialog(

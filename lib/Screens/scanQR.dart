@@ -165,8 +165,12 @@ class _ScanQR extends State<ScanQR> {
   void _onQRViewCreated(QRViewController controller) {
     this.controller = controller;
     controller.scannedDataStream.listen((scanData) async {
-      if (!_find &&
-          scanData.startsWith("http://51.11.45.102:8080/profile/getUser/")) {
+//      if (!_find &&
+//          scanData.startsWith("http://51.11.45.102:8080/profile/getUser/")) {
+//        Navigator.pop(context, 'find');
+//        _find = true;
+//      }
+      if (!_find) {
         Navigator.pop(context, 'find');
         _find = true;
       }

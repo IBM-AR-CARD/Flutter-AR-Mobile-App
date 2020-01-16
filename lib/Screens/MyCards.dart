@@ -49,6 +49,10 @@ class _MyCards extends State<MyCards> with TickerProviderStateMixin {
 
   void _changeToHistory() {
     if (_status == 1) {
+      setState(() {
+        leave = true;
+      });
+      Navigator.pop(context);
       return;
     }
     controller1.forward();
@@ -86,7 +90,8 @@ class _MyCards extends State<MyCards> with TickerProviderStateMixin {
     width = MediaQuery.of(context).size.width;
     height = MediaQuery.of(context).size.height;
     containerHeight = height - 206;
-    return new WillPopScope(child: Scaffold(
+    return new WillPopScope(
+      child: Scaffold(
       backgroundColor: Color.fromARGB(255, 31, 34, 52),
       body: Column(
         children: <Widget>[

@@ -37,6 +37,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
+        debugShowCheckedModeBanner: false,
       home: MyHomePage(title: 'Flutter Demo Home Page'),
 //        home:ScanQR()
     );
