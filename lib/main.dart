@@ -21,6 +21,7 @@ import 'package:http/http.dart' as http;
 import 'package:retry/retry.dart';
 import 'dart:io';
 import 'package:auto_size_text/auto_size_text.dart';
+import 'package:swipedetector/swipedetector.dart';
 
 void main() async {
   runApp(new MyApp());
@@ -54,19 +55,12 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   bool _hasData = false;
   Timer _timer;
-  int _currentColor = 1;
   bool _hasScaned = false;
-  String _QRText = 'QR';
   String currentLocal;
-  final double CHAT_ORIGIN_HEIGHT = 200;
+  final double CHAT_ORIGIN_HEIGHT = 150;
   final double CHAT_EXTEND_HEIGHT = 600;
   UnityWidgetController _unityWidgetController;
   final ScrollController bubbleScrollController = ScrollController();
-  List<Color> _colors = [
-    //Get list of colors
-    Color.fromARGB(255, 112, 112, 112),
-    Color.fromARGB(255, 15, 232, 149),
-  ];
   bool _hasSpeech = false;
   List<BubblePair> bubbleMap = new List();
   String lastWords = "";
@@ -258,27 +252,46 @@ class _MyHomePageState extends State<MyHomePage> {
     SystemChrome.setEnabledSystemUIOverlays([]);
     return Scaffold(
         body: Container(
-          child: Stack(
-            children: <Widget>[
-              UnityWidget(
-                  onUnityViewCreated: onUnityCreated,
-                  isARScene: true,
-                  onUnityMessage: onUnityMessage),
-              bubbleChatBoard(context),
-              Center(
-                child: FutureBuilder<void>(
-                  future: fetchUserData,
-                  builder: (context, snapshot) {
-                    if (snapshot.connectionState == ConnectionState.done) {
-                      return SizedBox.shrink();
-                    } else {
-                      return CircularProgressIndicator();
-                    }
-                  },
+          child:SwipeDetector(
+            onSwipeLeft: () {
+              if (!_hasData) return;
+              Navigator.push(
+                context,
+                SlideLeftRoute(
+                  page: Settings(),
                 ),
-              ),
-            ],
-          ),
+              );
+            },
+            onSwipeRight: () {
+              if (!_hasData) return;
+              Navigator.push(
+                context,
+                SlideRightRoute(page: MyCards()),
+              );
+            },
+            child: Stack(
+              children: <Widget>[
+                UnityWidget(
+                    onUnityViewCreated: onUnityCreated,
+                    isARScene: true,
+                    onUnityMessage: onUnityMessage
+                ),
+                bubbleChatBoard(context),
+                Center(
+                  child: FutureBuilder<void>(
+                    future: fetchUserData,
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.done) {
+                        return SizedBox.shrink();
+                      } else {
+                        return CircularProgressIndicator();
+                      }
+                    },
+                  ),
+                ),
+              ],
+            ),
+          )
         ),
         floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
         floatingActionButton: bottomRow()
@@ -297,7 +310,6 @@ class _MyHomePageState extends State<MyHomePage> {
   void onUnityMessage(controller, message) {
     print('Received message from unity: ${message.toString()}');
     setState(() {
-      _QRText = message.toString();
     });
   }
 

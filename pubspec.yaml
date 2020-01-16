@@ -20,7 +20,7 @@ dependencies:
   dio:
   flutter:
     sdk: flutter
-  swipedetector: ^1.2.0
+  swipedetector:
   pull_to_refresh: ^1.4.5
   flutter_unity_widget: ^0.1.6+5
   qr_code_scanner: ^0.0.12
