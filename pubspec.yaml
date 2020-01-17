@@ -40,6 +40,7 @@ dependencies:
   cached_network_image: ^2.0.0
   icon_shadow:
   retry:
+  animator:
 
 dev_dependencies:
   flutter_test:

@@ -446,6 +446,7 @@ class _Settings extends State<Settings> {
       if (response.statusCode != null && response.statusCode == 200) {
         pr.hide();
       } else {
+        pr.hide();
         showDialog(
             context: context,
             builder: (BuildContext context) {
@@ -477,7 +478,8 @@ class _Settings extends State<Settings> {
     if(!hasChangedContent()){
       return true;
     }
-    return (await showDialog(
+    return (
+        await showDialog(
           context: context,
           builder: (context) => new AlertDialog(
             title: new Text('Are you sure?'),

@@ -56,6 +56,7 @@ class _ProfileTextEditor extends State<ProfileTextEditor> {
         child: new TextField(
           style: new TextStyle(color: Colors.white),
           maxLines: 4,
+//          expands: true,
           controller: _controller,
           decoration: new InputDecoration(
               filled: true,

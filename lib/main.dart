@@ -229,7 +229,6 @@ class _MyHomePageState extends State<MyHomePage> {
                       page: Settings(),
                     ),
                   );
-                  print("gender " + userData.gender.toString());
                   updateGender();
                 },
                 tooltip: 'Person',
@@ -559,6 +558,13 @@ class _MyHomePageState extends State<MyHomePage> {
                                   style: TextStyle(fontSize: 15),
                                 ),
                               );
+//                              return Bubble(
+//                                style: styleMe,
+//                                child: Text(
+//                                  bubble.content,
+//                                  style: TextStyle(fontSize: 15),
+//                                ),
+//                              );
                             } else {
                               return Bubble(
                                 style: styleSomebody,
