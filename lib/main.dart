@@ -364,6 +364,9 @@ class _MyHomePageState extends State<MyHomePage> {
     } else {
       flutterTts.setVoice('en-gb-x-gba-network');
     }
+    setState(() {
+      
+    });
   }
   Widget bubbleChatBoard(context) {
     double _width = MediaQuery.of(context).size.width;

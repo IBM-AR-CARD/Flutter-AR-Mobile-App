@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -379,8 +381,8 @@ class _Settings extends State<Settings> {
                           style: TextStyle(color: Colors.white, fontSize: 15),
                         )),
                       ),
-                      onPressed: () {
-                        contentOnSave();
+                      onPressed: () async{
+                        await contentOnSave();
                         Navigator.of(context).pop(true);
                       },
                     )
@@ -417,13 +419,12 @@ class _Settings extends State<Settings> {
   storeValue(userJson) async {
     (await storedData).setString("UserData", userJson);
     pr.show();
-    http
-        .post('http://51.11.45.102:8080/profile/update',
-            headers: {"Content-Type": "application/json"}, body: userJson)
-        .timeout(const Duration(seconds: 5))
-        .catchError((err) {
-      pr.hide();
-      showDialog(
+    try{
+      print('request');
+      await http.post('http://51.11.45.102:8080/profile/update', headers: {"Content-Type": "application/json"}, body: userJson).timeout(Duration(seconds: 5));
+    }catch(err){
+      print(err);
+      await showDialog(
           context: context,
           builder: (BuildContext context) {
             // return object of type Dialog
@@ -435,39 +436,17 @@ class _Settings extends State<Settings> {
                 new FlatButton(
                   child: new Text("Close"),
                   onPressed: () {
-                    Navigator.pop(context);
                     pr.hide();
+                    Navigator.pop(context);
                   },
                 ),
               ],
             );
           });
-    }).then((http.Response response) {
-      if (response.statusCode != null && response.statusCode == 200) {
-        pr.hide();
-      } else {
-        pr.hide();
-        showDialog(
-            context: context,
-            builder: (BuildContext context) {
-              // return object of type Dialog
-              return AlertDialog(
-                title: new Text("Network Error"),
-                content: new Text("please contact admin"),
-                actions: <Widget>[
-                  // usually buttons at the bottom of the dialog
-                  new FlatButton(
-                    child: new Text("Close"),
-                    onPressed: () {
-                      pr.hide();
-                      Navigator.of(context).pop();
-                    },
-                  ),
-                ],
-              );
-            });
-      }
-    });
+    }finally{
+      print('final');
+      pr.hide();
+    }
   }
 
   contentOnExit() {
