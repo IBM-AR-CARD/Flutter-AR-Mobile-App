@@ -121,8 +121,7 @@ class _ScanQR extends State<ScanQR> {
                                           }finally{
                                             pr.hide();
                                           }
-                                            _find = true;
-                                            Navigator.pop(context);
+                                            Navigator.of(context).pop();
                                           }
                                       ),
                                       TextSpan(
@@ -197,14 +196,12 @@ class _ScanQR extends State<ScanQR> {
     this.controller = controller;
     controller.scannedDataStream.listen((scanData) async {
       if (!_find) {
+        _find = true;
         if(scanData.startsWith("url")){
-          Navigator.pop(context, 'find');
-          _find = true;
         }else{
           await setDemoUserData(scanData);
         }
         Navigator.pop(context, 'find');
-        _find = true;
       }
     });
   }
