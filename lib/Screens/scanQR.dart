@@ -1,3 +1,6 @@
+import 'dart:ui';
+
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:qr_code_scanner/qr_code_scanner.dart';
 import 'package:flutter/material.dart';
@@ -6,7 +9,8 @@ import '../Screens/MyCards.dart';
 import '../Screens/Settings.dart';
 import '../Models/GlobalData.dart';
 import 'package:swipedetector/swipedetector.dart';
-
+import '../Models/UserData.dart';
+import 'package:progress_dialog/progress_dialog.dart';
 class ScanQR extends StatefulWidget {
   ScanQR({Key key, this.title}) : super(key: key);
 
@@ -96,11 +100,38 @@ class _ScanQR extends State<ScanQR> {
                                   style: TextStyle(
                                       color: Colors.white, fontSize: 25),
                                 ),
-                                Text(
-                                  'Doesn’t have a card? Try a demo here.',
-                                  style: TextStyle(
-                                      color: Colors.white, fontSize: 15),
-                                )
+                                Text.rich(
+                                  TextSpan(
+                                    text:'Doesn’t have a card? Try a ',
+                                    style: TextStyle(
+                                        color: Colors.white, fontSize: 15),
+                                    children: <TextSpan>[
+                                      TextSpan(
+                                        text: 'demo',
+                                        style: TextStyle(
+                                          decoration:  TextDecoration.underline
+                                        ),
+                                        recognizer: TapGestureRecognizer()
+                                          ..onTap = ()async{
+                                          ProgressDialog pr;
+                                          try {
+                                            pr = new ProgressDialog(context, isDismissible: false);
+                                            pr.show();
+                                            await setDemoUserData("demo");
+                                          }finally{
+                                            pr.hide();
+                                          }
+                                            _find = true;
+                                            Navigator.pop(context);
+                                          }
+                                      ),
+                                      TextSpan(
+                                          text: ' here.',
+                                      ),
+                                    ]
+                                  )
+//                                  'Doesn’t have a card? Try a demo here.',
+                                ),
                               ],
                             ),
                             padding: EdgeInsets.only(left: 10),
@@ -165,18 +196,27 @@ class _ScanQR extends State<ScanQR> {
   void _onQRViewCreated(QRViewController controller) {
     this.controller = controller;
     controller.scannedDataStream.listen((scanData) async {
-//      if (!_find &&
-//          scanData.startsWith("http://51.11.45.102:8080/profile/getUser/")) {
-//        Navigator.pop(context, 'find');
-//        _find = true;
-//      }
       if (!_find) {
+        if(scanData.startsWith("url")){
+          Navigator.pop(context, 'find');
+          _find = true;
+        }else{
+          await setDemoUserData(scanData);
+        }
         Navigator.pop(context, 'find');
         _find = true;
       }
     });
   }
-
+  setDemoUserData(scanData)async{
+    UserData userData = await Future.delayed(Duration(seconds: 2),(){
+      print(scanData);
+      return UserData("thisisID","Jiayi","Chen","profile","CJY1531639504",education: "University College London",gender: 1);
+    }
+    );
+    GlobalData globalData = GlobalData();
+    globalData.scanData = userData;
+  }
   Widget bottomRow() {
     return new Padding(
         padding: const EdgeInsets.all(50.0),

@@ -125,6 +125,7 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   speak() async {
+    UserData userData = GlobalData().scanData;
     String text = lastWords.toLowerCase();
     print('recognized text : $text');
     if (text.contains("name") || text.contains("who")) {
@@ -256,7 +257,6 @@ class _MyHomePageState extends State<MyHomePage> {
         body: Container(
           child:SwipeDetector(
             onSwipeLeft: () async{
-              print(widget.globalData.userData.gender);
               if (!_hasData) return;
               await Navigator.push(
                 context,
@@ -264,7 +264,6 @@ class _MyHomePageState extends State<MyHomePage> {
                   page: Settings(),
                 ),
               );
-              print("gender " + userData.gender.toString());
               updateGender();
             },
             onSwipeRight: () {
@@ -355,11 +354,11 @@ class _MyHomePageState extends State<MyHomePage> {
       _hasData = true;
       widget.globalData.hasData = true;
       setState(() {});
-      updateGender();
+
     }
   }
   updateGender(){
-    if (userData.gender == 2) {
+    if (widget.globalData.scanData.gender == 2) {
       flutterTts.setVoice('en-gb-x-fis#male_1-local');
     } else {
       flutterTts.setVoice('en-gb-x-gba-network');
@@ -369,6 +368,7 @@ class _MyHomePageState extends State<MyHomePage> {
     });
   }
   Widget bubbleChatBoard(context) {
+    UserData userData = widget.globalData.scanData;
     double _width = MediaQuery.of(context).size.width;
     double _height = MediaQuery.of(context).size.height;
     double pixelRatio = MediaQuery.of(context).devicePixelRatio;
@@ -592,6 +592,7 @@ class _MyHomePageState extends State<MyHomePage> {
     _hasScaned = false;
     await _unityWidgetController.pause();
     final result = await Navigator.push(context, FadeRoute(page:ScanQR()));
+    updateGender();
     print(result);
     _hasScaned=true;
     _unityWidgetController.resume();
