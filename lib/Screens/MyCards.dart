@@ -304,6 +304,7 @@ class _MyCards extends State<MyCards> with TickerProviderStateMixin {
     return ListView.separated(
       itemBuilder: (context, index) => _itemBuilder(context, index, list),
       itemCount: list.length + 2,
+
       separatorBuilder: (context, index) => Divider(
         height: 25,
       ),

@@ -59,7 +59,7 @@ class _MyHomePageState extends State<MyHomePage> {
   bool _hasScaned = false;
   String currentLocal;
   final double CHAT_ORIGIN_HEIGHT = 150;
-  final double CHAT_EXTEND_HEIGHT = 600;
+  final double CHAT_EXTEND_HEIGHT = 550;
   UnityWidgetController _unityWidgetController;
   final ScrollController bubbleScrollController = ScrollController();
   bool _hasSpeech = false;
@@ -596,7 +596,7 @@ class _MyHomePageState extends State<MyHomePage> {
     print(result);
     _hasScaned=true;
     await _unityWidgetController.resume();
-    await talk("Nice to meet you, I am " + widget.globalData.scanData.firstName + ', please flip you card around to interact with me.');
+//    await talk("Nice to meet you, I am " + widget.globalData.scanData.firstName + ', please flip you card around to interact with me.');
 //    await flutterTts.speak("Nice to meet you, I am " + widget.globalData.userData.firstName + ', please flip you card around to interact with me.');
     setState(() {});
   }
