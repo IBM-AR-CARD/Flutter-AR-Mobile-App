@@ -10,20 +10,16 @@ import '../Models/UserData.dart';
 import 'package:progress_dialog/progress_dialog.dart';
 import 'package:http/http.dart' as http;
 import '../Models/GlobalData.dart';
-
 class Settings extends StatefulWidget {
   static final PERFER_NOT_TO_SAY = 0;
   static final FEMALE = 1;
   static final MALE = 2;
-
   Settings({Key key, this.title}) : super(key: key);
   final String title;
   final GlobalData globalData = GlobalData();
 
   @override
-  _Settings createState() {
-    return _Settings();
-  }
+  _Settings createState() => _Settings();
 }
 
 class _Settings extends State<Settings> {

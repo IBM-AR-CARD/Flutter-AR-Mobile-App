@@ -3,7 +3,7 @@ import 'package:flutter_app/Request/request.dart';
 import 'dart:async';
 import 'package:swipedetector/swipedetector.dart';
 //import 'package:pull_to_refresh/pull_to_refresh.dart';
-
+import '../Models/GlobalData.dart';
 class MyCards extends StatefulWidget {
   MyCards({Key key, this.title}) : super(key: key);
 
@@ -25,6 +25,7 @@ class _MyCards extends State<MyCards> with TickerProviderStateMixin {
   AnimationController controller2;
   Animation<Offset> offset1;
   Animation<Offset> offset2;
+  final GlobalData globalData = GlobalData();
   Future<List> post;
   int _status = 0;
   List<String> _stringList = [
@@ -250,13 +251,13 @@ class _MyCards extends State<MyCards> with TickerProviderStateMixin {
 
   Future _getHistory() async {
     var response = HttpUtils.get(
-        'https://ar-business-card.eu-gb.cf.appdomain.cloud/HistoryList');
+        'http://henryz.co:8080/history/get?_id=${globalData.userData.id}');
     return response;
   }
 
   Future _getFavourite() async {
     var response = HttpUtils.get(
-        'https://ar-business-card.eu-gb.cf.appdomain.cloud/FavouriteList');
+        'http://henryz.co:8080/favorite/get?_id=${globalData.userData.id}');
     return response;
   }
 
@@ -287,7 +288,9 @@ class _MyCards extends State<MyCards> with TickerProviderStateMixin {
       child: Stack(
         children: <Widget>[
           Center(
-            child: Text('Error: ${snapshot.error}'),
+            child: Text('NetWork Error'
+
+            ),
           ),
           ListView()
         ],
@@ -297,7 +300,7 @@ class _MyCards extends State<MyCards> with TickerProviderStateMixin {
   }
 
   Widget _createListView(BuildContext context, AsyncSnapshot snapshot) {
-    var list = snapshot.data["List"];
+    var list = snapshot.data["list"];
     return ListView.separated(
       itemBuilder: (context, index) => _itemBuilder(context, index, list),
       itemCount: list.length + 2,
