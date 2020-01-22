@@ -121,6 +121,7 @@ class _ScanQR extends State<ScanQR> {
                                           }finally{
                                             pr.hide();
                                           }
+                                            _find = true;
                                             Navigator.of(context).pop();
                                           }
                                       ),
@@ -198,16 +199,17 @@ class _ScanQR extends State<ScanQR> {
       if (!_find) {
         _find = true;
         if(scanData.startsWith("url")){
+          GlobalData().scanData = GlobalData().userData;
+//          Navigator.pop(context);
         }else{
           await setDemoUserData(scanData);
         }
-        Navigator.pop(context, 'find');
+        Navigator.of(context).pop();
       }
     });
   }
   setDemoUserData(scanData)async{
     UserData userData = await Future.delayed(Duration(seconds: 2),(){
-      print(scanData);
       return UserData("thisisID","Jiayi","Chen","profile","CJY1531639504",education: "University College London",gender: 1);
     }
     );
