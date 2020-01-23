@@ -596,7 +596,7 @@ class _MyHomePageState extends State<MyHomePage> {
     print(result);
     _hasScaned=true;
     await _unityWidgetController.resume();
-//    await talk("Nice to meet you, I am " + widget.globalData.scanData.firstName + ', please flip you card around to interact with me.');
+    await talk("Nice to meet you, I am " + widget.globalData.scanData.firstName + ', please flip you card around to interact with me.');
 //    await flutterTts.speak("Nice to meet you, I am " + widget.globalData.userData.firstName + ', please flip you card around to interact with me.');
     setState(() {});
   }
