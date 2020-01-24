@@ -21,27 +21,27 @@ dependencies:
   flutter:
     sdk: flutter
   swipedetector:
-  pull_to_refresh: ^1.4.5
-  flutter_unity_widget: ^0.1.6+5
-  qr_code_scanner: ^0.0.12
-  speech_recognition: ^0.3.0+1
-  speech_to_text: ^0.7.2
+  pull_to_refresh:
+  flutter_unity_widget:
+  qr_code_scanner:
+  speech_recognition:
+  speech_to_text:
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
-  cupertino_icons: ^0.1.2
-  bubble: ^1.1.9+1
-  flutter_widgets: ^0.1.8
-  auto_size_text: ^2.1.0
-  flutter_svg: ^0.15.0
+  cupertino_icons:
+  bubble:
+  flutter_widgets:
+  auto_size_text:
+  flutter_svg:
   flutter_tts:
-  global_configuration: ^1.4.0
-  shared_preferences: ^0.5.6
-  progress_dialog: ^1.2.0
-  cached_network_image: ^2.0.0
+  global_configuration:
+  shared_preferences:
+  progress_dialog:
+  cached_network_image:
   icon_shadow:
   retry:
   animator:
-  flutter_launcher_icons: ^0.7.4
+  flutter_launcher_icons:
 
 dev_dependencies:
   flutter_test:
