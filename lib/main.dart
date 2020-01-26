@@ -22,8 +22,9 @@ import 'package:retry/retry.dart';
 import 'dart:io';
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:swipedetector/swipedetector.dart';
-
+import 'package:permission_handler/permission_handler.dart';
 void main() async {
+
   runApp(new MyApp());
 }
 
@@ -32,6 +33,7 @@ class MyApp extends StatelessWidget {
   const MyApp({Key key}) : super(key: key);
   @override
   Widget build(BuildContext context) {
+
     return MaterialApp(
       title: 'Flutter Demo',
       theme: ThemeData(
@@ -77,6 +79,7 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   void initState() {
     SystemChrome.setEnabledSystemUIOverlays([]);
+    PermissionHandler().requestPermissions([PermissionGroup.camera,PermissionGroup.microphone,PermissionGroup.storage]);
     super.initState();
     flutterTts.setLanguage("en-US");
     initSpeechState();
@@ -183,7 +186,6 @@ class _MyHomePageState extends State<MyHomePage> {
       await bubbleScrollController.animateTo(0.0,
           duration: Duration(milliseconds: 200), curve: Curves.bounceIn);
     }
-    ;
   }
 
   void statusListener(String status) {
@@ -333,7 +335,7 @@ class _MyHomePageState extends State<MyHomePage> {
     final response = await retry.retry(
       // Make a GET request
       () => http
-          .get('http://51.11.45.102:8080/profile/get')
+          .post('http://51.11.45.102:8080/profile/get')
           .timeout(Duration(seconds: 5)),
       // Retry on SocketException or TimeoutException
       retryIf: (e) => e is SocketException || e is TimeoutException,

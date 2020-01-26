@@ -2,7 +2,9 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:auto_size_text/auto_size_text.dart';
+import 'package:flutter_app/Models/SaveQR.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:qr_code_scanner/qr_code_scanner.dart';
 import 'package:swipedetector/swipedetector.dart';
 import '../Models/ProfileTextEditor.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -130,68 +132,74 @@ class _Settings extends State<Settings> {
                           ),
                           Padding(
                             padding: EdgeInsets.only(left: 10),
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: <Widget>[
-                                SizedBox(
-                                  width: _width * 0.4,
-                                  child: AutoSizeText(
-                                    _firstName.toString() +
-                                        " " +
-                                        _lastName.toString(),
-                                    style: TextStyle(
-                                        color: Colors.white,
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 40),
-                                    minFontSize: 20,
-                                    maxFontSize: 30,
-                                    maxLines: 1,
-                                    overflow: TextOverflow.ellipsis,
-                                  ),
-                                ),
-                                Row(
-                                  children: <Widget>[
-                                    SvgPicture.asset(
-                                      'assets/images/small_linkdin_logo.svg',
-                                      width: 20,
-                                      height: 20,
+                            child:SizedBox(
+                              width: _width * 0.4,
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: <Widget>[
+                                  SizedBox(
+                                    width: _width * 0.4,
+                                    child: AutoSizeText(
+                                      _firstName.toString() +
+                                          " " +
+                                          _lastName.toString(),
+                                      style: TextStyle(
+                                          color: Colors.white,
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 40),
+                                      minFontSize: 20,
+                                      maxFontSize: 30,
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
                                     ),
-                                    Padding(
-                                      padding: EdgeInsets.only(left: 5),
-                                      child: SizedBox(
-                                        width: _width * 0.4,
-                                        child: AutoSizeText(
-                                          _userName??"null",
-                                          style: TextStyle(
-                                            color: Colors.white,
-                                          ),
-                                          minFontSize: 15,
-                                          maxFontSize: 20,
-                                          maxLines: 1,
-                                          overflow: TextOverflow.ellipsis,
-                                        ),
+                                  ),
+                                  Row(
+                                    children: <Widget>[
+                                      SvgPicture.asset(
+                                        'assets/images/small_linkdin_logo.svg',
+                                        width: 20,
+                                        height: 20,
                                       ),
-                                    )
-                                  ],
-                                ),
-                              ],
-                            ),
-                          ),
-                          Column(
-                            children: <Widget>[
-                              Icon(
-                                Icons.file_download,
-                                color: Colors.white,
-                                size: 40,
+                                      Padding(
+                                        padding: EdgeInsets.only(left: 5),
+                                        child: SizedBox(
+                                          width: _width * 0.3,
+                                          child: AutoSizeText(
+                                            _userName??"null",
+                                            style: TextStyle(
+                                              color: Colors.white,
+                                            ),
+                                            minFontSize: 15,
+                                            maxFontSize: 20,
+                                            maxLines: 1,
+                                            overflow: TextOverflow.ellipsis,
+                                          ),
+                                        ),
+                                      )
+                                    ],
+                                  ),
+                                ],
                               ),
-                              Text(
-                                'QR',
-                                style: TextStyle(
-                                    fontSize: 20, color: Colors.white),
-                              )
-                            ],
-                          )
+                            )
+                          ),
+                          FlatButton(
+                              child: Column(
+                                children: <Widget>[
+                                  Icon(
+                                    Icons.file_download,
+                                    color: Colors.white,
+                                    size: 40,
+                                  ),
+                                  Text(
+                                    'QR',
+                                    style: TextStyle(
+                                        fontSize: 20, color: Colors.white),
+                                  )
+                                ],
+                              ),
+                              onPressed: _showQR,
+                            ),
                         ],
                       ),
                     ),
@@ -475,5 +483,74 @@ class _Settings extends State<Settings> {
           ),
         )) ??
         false;
+  }
+  _showQR(){
+    SaveQR qr = SaveQR(widget.globalData.userData.id);
+    showDialog(
+        context: context,
+        barrierDismissible: true,
+        builder: (BuildContext context){
+          return Dialog(
+            backgroundColor: Colors.transparent,
+            shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(20.0),
+            ),
+            child: Container(
+              width: 250,
+              height: 350,
+              child:Column(
+              children: <Widget>[
+                qr,
+                Divider(),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: <Widget>[
+                    FlatButton(
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: Color.fromARGB(255, 61, 63, 83),
+                          borderRadius:
+                          BorderRadius.all(const Radius.circular(30.0)),
+                        ),
+                        width: 100,
+                        height: 40,
+                        child: Center(
+                            child: Text(
+                              'Cancel',
+                              style: TextStyle(color: Colors.white, fontSize: 15),
+                            )),
+                      ),
+                      onPressed: ()async{
+                        Navigator.of(context).pop(true);
+                      },
+                    ),
+                    FlatButton(
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: Color.fromARGB(255, 61, 63, 83),
+                          borderRadius:
+                          BorderRadius.all(const Radius.circular(30.0)),
+                        ),
+                        width: 100,
+                        height: 40,
+                        child: Center(
+                            child: Text(
+                              'Save',
+                              style: TextStyle(color: Colors.white, fontSize: 15),
+                            )),
+                      ),
+                      onPressed: () async{
+                        await qr.savePng();
+                        Navigator.of(context).pop(true);
+                      },
+                    )
+                  ],
+                )
+              ],
+            ),
+            )
+          );
+        }
+    );
   }
 }

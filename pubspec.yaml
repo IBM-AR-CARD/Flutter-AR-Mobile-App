@@ -42,7 +42,10 @@ dependencies:
   retry:
   animator:
   flutter_launcher_icons:
-
+  qr_flutter:
+  path_provider:
+  fluttertoast:
+  permission_handler:
 dev_dependencies:
   flutter_test:
     sdk: flutter
