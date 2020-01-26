@@ -68,12 +68,14 @@ class _MyHomePageState extends State<MyHomePage> {
   List<BubblePair> bubbleMap = new List();
   String lastWords = "";
   String lastStatus = "";
+  bool _isTalking = false;
   var fetchUserData;
   final SpeechToText speech = SpeechToText();
   static final int age = 21;
   static final String name = "henry";
   static final String description = "second year university student";
   final FlutterTts flutterTts = FlutterTts();
+  bool _tracked = false;
   UserData userData;
   bool _hasExtend = false;
   @override
@@ -89,7 +91,25 @@ class _MyHomePageState extends State<MyHomePage> {
 
   initFlutterTTS() async {
     flutterTts.setCompletionHandler(() {
+      _isTalking = false;
+      setState(() {
+
+      });
       setMessage('changeAnimator', "idle");
+    });
+    flutterTts.setStartHandler((){
+      _isTalking = true;
+      setState(() {
+
+      });
+    });
+  }
+
+  stopSpeaking()async{
+    _isTalking = false;
+    await flutterTts.stop();
+    setState(() {
+
     });
   }
 
@@ -167,6 +187,7 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   void stopListening() {
+
     speech.stop();
     setState(() {});
   }
@@ -215,11 +236,12 @@ class _MyHomePageState extends State<MyHomePage> {
                   color: Colors.white,
                 ),
               ),
+
               GestureDetector(
-                  onTap: speech.isListening ? stopListening : startListening,
+                  onTap: speech.isListening ? stopListening : (_isTalking ? stopSpeaking : startListening),
                   onPanEnd: cancelListening,
                   child: Icon(
-                    speech.isListening ? Icons.stop : Icons.mic,
+                    speech.isListening ? Icons.cancel : (_isTalking ? Icons.stop:Icons.mic),
                     color: Colors.white,
                     size: 60,
                   )),
@@ -295,6 +317,7 @@ class _MyHomePageState extends State<MyHomePage> {
                     },
                   ),
                 ),
+                _tracked ?  SizedBox.shrink() : flipHint()
               ],
             ),
           )
@@ -315,6 +338,10 @@ class _MyHomePageState extends State<MyHomePage> {
 
   void onUnityMessage(controller, message) {
     print('Received message from unity: ${message.toString()}');
+    if(message == '#tracked#' && !_tracked ) {
+      _tracked = true;
+      talk("Nice to meet you, I am " + widget.globalData.scanData.firstName + ', please click the mic icon to ask any questions.');
+    }
     setState(() {
     });
   }
@@ -591,15 +618,54 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
   navigateToScan()async{
+    _tracked = false;
     _hasScaned = false;
     await _unityWidgetController.pause();
     final result = await Navigator.push(context, FadeRoute(page:ScanQR()));
     updateGender();
-    print(result);
     _hasScaned=true;
     await _unityWidgetController.resume();
-    await talk("Nice to meet you, I am " + widget.globalData.scanData.firstName + ', please flip you card around to interact with me.');
-//    await flutterTts.speak("Nice to meet you, I am " + widget.globalData.userData.firstName + ', please flip you card around to interact with me.');
     setState(() {});
+  }
+  flipHint(){
+    return Align(
+        alignment: Alignment(0, 0.5),
+        child: Opacity(
+          opacity: 0.8,
+          child: Container(
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius:
+              BorderRadius.all(const Radius.circular(50.0)),
+            ),
+            width: 280,
+            height: 80,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                Icon(
+                  Icons.rotate_90_degrees_ccw,
+                  size: 35,
+                  color: Colors.black,
+                ),
+                Padding(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[
+                      Text(
+                        'Flip you card and scan the\nimage to view the avatar',
+                        style: TextStyle(
+                            color: Colors.black, fontSize: 15),
+                      ),
+                    ],
+                  ),
+                  padding: EdgeInsets.only(left: 10),
+                )
+              ],
+            ),
+          ),
+        )
+    );
   }
 }
