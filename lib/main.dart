@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_app/Models/GlobalData.dart';
@@ -108,6 +110,7 @@ class _MyHomePageState extends State<MyHomePage> {
   stopSpeaking()async{
     _isTalking = false;
     await flutterTts.stop();
+    setMessage('changeAnimator', "idle");
     setState(() {
 
     });
@@ -276,6 +279,8 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
+    final _width = MediaQuery.of(context).size.width;
+    final _height = MediaQuery.of(context).size.height;
     SystemChrome.setEnabledSystemUIOverlays([]);
     return Scaffold(
         body: Container(
@@ -299,11 +304,32 @@ class _MyHomePageState extends State<MyHomePage> {
             },
             child: Stack(
               children: <Widget>[
+                BackdropFilter(
+                  filter: ImageFilter.blur(
+                    sigmaX: _hasExtend ? 0 : 5,
+                    sigmaY: _hasExtend ? 0 :5
+                  ),
+                ),
                 UnityWidget(
                     onUnityViewCreated: onUnityCreated,
                     isARScene: true,
                     onUnityMessage: onUnityMessage
                 ),
+                Positioned.fill(
+                    child:AnimatedOpacity(
+                      opacity: _hasExtend?1:0, duration: Duration(milliseconds: 500),
+                      child:BackdropFilter(
+                        filter: ImageFilter.blur(
+                            sigmaY: 20,
+                            sigmaX: 20
+                        ),
+                        child: Container(
+                          color: Colors.black.withOpacity(0),
+                        ),
+                      )
+                ),
+                ),
+
                 bubbleChatBoard(context),
                 Center(
                   child: FutureBuilder<void>(
@@ -317,7 +343,11 @@ class _MyHomePageState extends State<MyHomePage> {
                     },
                   ),
                 ),
-                _tracked ?  SizedBox.shrink() : flipHint()
+                AnimatedSwitcher(
+                  duration: Duration(milliseconds: 500),
+//                  opacity:_tracked || _hasExtend ? 0 : 1 ,
+                  child: _tracked || _hasExtend ?  SizedBox.shrink() : flipHint(),
+                )
               ],
             ),
           )
