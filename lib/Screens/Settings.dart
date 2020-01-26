@@ -485,7 +485,7 @@ class _Settings extends State<Settings> {
         false;
   }
   _showQR(){
-    SaveQR qr = SaveQR(widget.globalData.userData.id);
+    SaveQR qr = SaveQR('http://51.11.45.102:8080/profile/get?username=${widget.globalData.userData.userName}');
     showDialog(
         context: context,
         barrierDismissible: true,

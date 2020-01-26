@@ -22,12 +22,8 @@ class SaveQR extends StatelessWidget{
       color:Colors.white,
       child:  QrImage(
         data: _data,
-//        embeddedImage: AssetImage('assets/images/launch_icon.png'),
-//        embeddedImageStyle:QrEmbeddedImageStyle(
-//          size: Size(100,100)
-//        ),
         size: 250,
-        gapless: false,
+        gapless: true,
       ),
     )
     );

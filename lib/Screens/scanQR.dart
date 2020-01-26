@@ -1,5 +1,6 @@
 import 'dart:ui';
 
+import 'package:dio/dio.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:qr_code_scanner/qr_code_scanner.dart';
@@ -11,6 +12,7 @@ import '../Models/GlobalData.dart';
 import 'package:swipedetector/swipedetector.dart';
 import '../Models/UserData.dart';
 import 'package:progress_dialog/progress_dialog.dart';
+import 'package:http/http.dart' as http;
 class ScanQR extends StatefulWidget {
   ScanQR({Key key, this.title}) : super(key: key);
 
@@ -198,9 +200,8 @@ class _ScanQR extends State<ScanQR> {
     controller.scannedDataStream.listen((scanData) async {
       if (!_find) {
         _find = true;
-        if(scanData.startsWith("url")){
-          GlobalData().scanData = GlobalData().userData;
-//          Navigator.pop(context);
+        if(scanData.startsWith("http://51.11.45.102:8080/profile/get")){
+          await setScannedUserData(scanData);
         }else{
           await setDemoUserData(scanData);
         }
@@ -221,6 +222,44 @@ class _ScanQR extends State<ScanQR> {
     }
     );
     globalData.scanData = userData;
+  }
+  setScannedUserData(scanData)async{
+    ProgressDialog pr = new ProgressDialog(context, isDismissible: false);
+    pr.show();
+    try{
+      print('request');
+      final response = await http.post(scanData, headers: {"Content-Type": "application/json"}).timeout(Duration(seconds: 5));
+      if(response.statusCode == 200){
+        UserData userData = UserData.toUserData(response.body);
+        GlobalData().scanData = userData;
+      }else{
+        throw new Exception();
+      }
+    }catch(err){
+      print(err);
+      await showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            // return object of type Dialog
+            return AlertDialog(
+              title: new Text("Can not find that person"),
+              content: new Text("please contact admin"),
+              actions: <Widget>[
+                // usually buttons at the bottom of the dialog
+                new FlatButton(
+                  child: new Text("Close"),
+                  onPressed: () {
+                    pr.hide();
+                  },
+                ),
+              ],
+            );
+          });
+      _find = false;
+    }finally{
+      print('final');
+      pr.hide();
+    }
   }
   Widget bottomRow() {
     return new Padding(
