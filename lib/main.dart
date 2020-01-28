@@ -656,6 +656,7 @@ class _MyHomePageState extends State<MyHomePage> {
     _hasScaned=true;
     await _unityWidgetController.resume();
     setState(() {});
+    setMessage("changeCharacter", widget.globalData.scanData.model);
   }
   flipHint(){
     return Align(
