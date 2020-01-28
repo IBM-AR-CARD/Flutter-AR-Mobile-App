@@ -35,10 +35,11 @@ class _Settings extends State<Settings> {
 
   String _userName;
   UserData userData;
+  String _model;
   String _profile;
   final storedData = SharedPreferences.getInstance();
   bool hasChangedContent(){
-    if(_gender == userData.gender && _descriptionController.text == userData.description && _educationController.text == userData.education && _workExperiencesController.text == userData.experience){
+    if(_gender == userData.gender && _descriptionController.text == userData.description && _educationController.text == userData.education && _workExperiencesController.text == userData.experience && userData.model == _model){
       return false;
     }
     return true;
@@ -50,6 +51,8 @@ class _Settings extends State<Settings> {
     _lastName = userData.lastName;
     _userName = userData.userName;
     _gender = userData.gender;
+    _model = userData.model;
+
     _descriptionController.text = userData.description;
     _educationController.text = userData.education;
     _workExperiencesController.text = userData.experience;
@@ -230,12 +233,28 @@ class _Settings extends State<Settings> {
                       padding: EdgeInsets.only(top: 40),
                       child: ProfileTextEditor(
                         Text(
+                          'Model',
+                          style: TextStyle(fontSize: 30, color: Colors.white),
+                        ),
+                        ProfileTextEditor.DROPDOWN,
+                        _descriptionController,
+                        dropContent: [ "TestMale", "Luffy", "FitFemale", "Jiraiya", "YodaRigged", "BusinessMale", "BusinessFemale", "SmartMale", "SmartFemale" ],
+                        currentSelect:_model,
+                        dropOnChange: (value) {
+                          _model=value;
+                          setState(() {});
+                        },
+                      ),
+                    ),
+                    Padding(
+                      padding: EdgeInsets.only(top: 40),
+                      child: ProfileTextEditor(
+                        Text(
                           'Gender',
                           style: TextStyle(fontSize: 30, color: Colors.white),
                         ),
                         ProfileTextEditor.DROPDOWN,
                         _descriptionController,
-                        hint: 'Tell us more about yourself',
                         dropContent: ["Perfer not to say", "Female", "Male"],
                         currentSelect:
                             _gender == ProfileTextEditor.PERFER_NOT_TO_SAY
@@ -415,6 +434,7 @@ class _Settings extends State<Settings> {
     userData.gender = _gender;
     userData.education = _educationController.text;
     userData.description = _descriptionController.text;
+    userData.model = _model;
     String userJson = userData.getJson();
     await storeValue(userJson);
     return;

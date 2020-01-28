@@ -422,6 +422,7 @@ class _MyHomePageState extends State<MyHomePage> {
     } else {
       flutterTts.setVoice('en-gb-x-gba-network');
     }
+    setMessage("changeCharacter", widget.globalData.scanData.model);
     setState(() {
       
     });
