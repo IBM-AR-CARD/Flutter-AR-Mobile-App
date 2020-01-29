@@ -25,6 +25,8 @@ class _MyCards extends State<MyCards> with TickerProviderStateMixin {
   AnimationController controller2;
   Animation<Offset> offset1;
   Animation<Offset> offset2;
+  TextEditingController _searchController = new TextEditingController();
+  bool onSearch = false;
   final GlobalData globalData = GlobalData();
   Future<List> post;
   int _status = 0;
@@ -136,7 +138,12 @@ class _MyCards extends State<MyCards> with TickerProviderStateMixin {
                             icon: Icon(Icons.search),
                             color: Colors.white,
                             iconSize: 36.0,
-                            onPressed: () {},
+                            onPressed: () {
+                              onSearch = !onSearch;
+                              setState(() {
+
+                              });
+                            },
                           ),
                           padding: EdgeInsets.only(
                               left: width - 200 - 36 - 30, top: 10.0),
@@ -144,32 +151,63 @@ class _MyCards extends State<MyCards> with TickerProviderStateMixin {
                       ],
                     ),
                   ]),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
-                    children: <Widget>[
-                      Align(
-                        child: IconButton(
-                          icon: Icon(
-                            Icons.history,
+                  AnimatedSwitcher(
+                    duration: Duration(milliseconds: 300),
+                    switchInCurve: Curves.easeIn,
+                    switchOutCurve: Curves.easeOut,
+                    child: onSearch ?
+                        Container(
+                          height: 50,
+                          width: width*0.9,
+                          child: TextField(
+                            style: TextStyle(
+                              color:Colors.white,
+                              fontSize: 30
+                            ),
+                            maxLines: 1,
+                            controller: _searchController,
+                            autofocus: true,
+                            onSubmitted: (content){
+                              _searchController.text = content;
+                              setState(() {
+
+                              });
+                              onSearch = !onSearch;
+                            },
+                            onChanged: (content){
+                              setState(() {
+
+                              });
+                            },
                           ),
-                          color: _colors[_status ^ 1],
-                          iconSize: 36.0,
-                          onPressed: _changeToFavourite,
+                        )
+                        : Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      children: <Widget>[
+                        Align(
+                          child: IconButton(
+                            icon: Icon(
+                              Icons.history,
+                            ),
+                            color: _colors[_status ^ 1],
+                            iconSize: 36.0,
+                            onPressed: _changeToFavourite,
+                          ),
                         ),
-                      ),
-                      Align(
-                        child: IconButton(
-                          icon: Icon(
-                            Icons.star,
-                            color: _colors[_status],
-                          ),
+                        Align(
+                          child: IconButton(
+                            icon: Icon(
+                              Icons.star,
+                              color: _colors[_status],
+                            ),
 //                        color: _colors[_status],
-                          iconSize: 36.0,
-                          onPressed: _changeToHistory,
-                        ),
-                      )
-                    ],
-                  ),
+                            iconSize: 36.0,
+                            onPressed: _changeToHistory,
+                          ),
+                        )
+                      ],
+                    ),
+                  )
                 ]),
               ),
               color: Color.fromARGB(255, 41, 43, 66),
@@ -179,18 +217,23 @@ class _MyCards extends State<MyCards> with TickerProviderStateMixin {
             Container(
               child: Row(
                 children: <Widget>[
-                  AnimatedPadding(
-                    child: Container(
-                      height: 6.0,
-                      color: Colors.blue,
-                      width: width * 0.5,
+                  AnimatedSwitcher(
+                    duration: Duration(milliseconds: 300),
+                    switchInCurve: Curves.easeIn,
+                    switchOutCurve: Curves.easeOut,
+                    child:onSearch? SizedBox.shrink(): AnimatedPadding(
+                      child: Container(
+                        height: 6.0,
+                        color: Colors.blue,
+                        width: width * 0.5,
+                      ),
+                      padding: _status == 1
+                          ? EdgeInsets.only(left: width * 0.5)
+                          : EdgeInsets.only(left: 0),
+                      duration: Duration(milliseconds: 500),
+                      curve: Curves.fastOutSlowIn,
                     ),
-                    padding: _status == 1
-                        ? EdgeInsets.only(left: width * 0.5)
-                        : EdgeInsets.only(left: 0),
-                    duration: Duration(milliseconds: 500),
-                    curve: Curves.fastOutSlowIn,
-                  ),
+                  )
                 ],
               ),
               color: Color.fromARGB(255, 41, 43, 66),
@@ -235,17 +278,17 @@ class _MyCards extends State<MyCards> with TickerProviderStateMixin {
               future: _futureBuilderHistory,
             ),
           )),
-      SizedBox(
-          width: width,
-          height: containerHeight,
-          child: RefreshIndicator(
-            onRefresh: _handleFavouriteRefresh,
-            child: FutureBuilder(
-              builder: _buildFuture,
-              future: _futureBuilderFavourite,
-            ),
-          ))
-    ];
+          SizedBox(
+              width: width,
+              height: containerHeight,
+              child: RefreshIndicator(
+                onRefresh: _handleFavouriteRefresh,
+                child: FutureBuilder(
+                  builder: _buildFuture,
+                  future: _futureBuilderFavourite,
+                ),
+              )),
+        ];
     return _getAnimatedWidget[index];
   }
 
@@ -303,7 +346,7 @@ class _MyCards extends State<MyCards> with TickerProviderStateMixin {
     var list = snapshot.data["list"];
     return ListView.separated(
       itemBuilder: (context, index) => _itemBuilder(context, index, list),
-      itemCount: list.length + 2,
+      itemCount: list.length+2,
 
       separatorBuilder: (context, index) => Divider(
         height: 25,
@@ -312,18 +355,23 @@ class _MyCards extends State<MyCards> with TickerProviderStateMixin {
   }
 
   Widget _itemBuilder(BuildContext context, int index, list) {
-    if (index == 0) {
+    if(index==0){
       return Divider(
         height: 5,
       );
     }
-    index = index - 1;
-    if (index == list.length) {
+    if(index == list.length+1 ){
       return Divider(
         height: 5,
       );
     }
-    return Center(
+
+    index--;
+    if(_searchController.text != "" &&  !list[index]['name'].toLowerCase().contains(_searchController.text.trim().toLowerCase())){
+      return SizedBox.shrink();
+    }
+    return Column(
+          children:[Center(
         child: Container(
       width: width * 0.9,
       height: 100,
@@ -388,7 +436,13 @@ class _MyCards extends State<MyCards> with TickerProviderStateMixin {
           )
         ],
       ),
-    ));
+    )
+          ),
+            Divider(
+              height: 5,
+            )
+          ]
+    );
   }
 
   Future<Null> _handleHistoryRefresh() async {
