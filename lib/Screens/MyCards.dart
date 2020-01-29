@@ -418,7 +418,7 @@ class _MyCards extends State<MyCards> with TickerProviderStateMixin {
                     ),
                   )),
               Padding(
-                  padding: EdgeInsets.only(top: 15, left: 20),
+                  padding: EdgeInsets.only(top: 15, left : 20),
                   child: SizedBox(
                     width: width - width * 0.1 - 100,
                     child: Text(
