@@ -324,7 +324,7 @@ class _MyHomePageState extends State<MyHomePage> {
                             sigmaX: 20
                         ),
                         child: Container(
-                          color: Colors.black.withOpacity(0),
+                          color: Colors.black.withOpacity(0.3),
                         ),
                       )
                 ),
@@ -392,8 +392,7 @@ class _MyHomePageState extends State<MyHomePage> {
     final response = await retry.retry(
       // Make a GET request
       () => http
-          .post('http://51.11.45.102:8080/profile/get')
-          .timeout(Duration(seconds: 5)),
+          .post('http://51.11.45.102:8080/profile/get'),
       // Retry on SocketException or TimeoutException
       retryIf: (e) => e is SocketException || e is TimeoutException,
     );
