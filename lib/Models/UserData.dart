@@ -13,12 +13,20 @@ class UserData{
   int _gender;
   String _userName;
   String _id;
+  String _model;
   UserData( this._id,this._firstName,this._lastName, this._profile,this._userName,{String description, String experience,
-      String education,int gender}){
+      String education,int gender,String model}){
     _gender=gender;
     _description=description;
     _experience=experience;
     _education=education;
+    _model = model;
+  }
+
+  String get model => _model;
+
+  set model(String value) {
+    _model = value;
   }
 
   String get id => _id;
@@ -85,7 +93,8 @@ class UserData{
       'experience':_experience,
       'education':_education,
       'gender':_gender,
-      'profile':_profile
+      'profile':_profile,
+      'model':_model
     };
     var json = JsonEncoder();
     return json.convert(map);
@@ -96,11 +105,13 @@ class UserData{
       Map<String, dynamic> json;
       json = decoder.convert(userJson);
       user = UserData(
-      json['_id'],json['firstname'], json['lastname'], json['profile'],json['username'],
-      description: json['description'] ?? "",
-      experience: json['experience'] ?? "",
-      education: json['education'] ?? "",
-      gender : json['gender']??0);
+          json['_id'],json['firstname'], json['lastname'], json['profile'],json['username'],
+          description: json['description'] ?? "",
+          experience: json['experience'] ?? "",
+          education: json['education'] ?? "",
+          gender : json['gender']??0,
+          model: json['model']??""
+      );
     return user;
   }
 }

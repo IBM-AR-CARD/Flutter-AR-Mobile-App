@@ -421,6 +421,7 @@ class _MyHomePageState extends State<MyHomePage> {
     } else {
       flutterTts.setVoice('en-gb-x-gba-network');
     }
+    setMessage("changeCharacter", widget.globalData.scanData.model);
     setState(() {
       
     });
@@ -655,6 +656,7 @@ class _MyHomePageState extends State<MyHomePage> {
     _hasScaned=true;
     await _unityWidgetController.resume();
     setState(() {});
+    setMessage("changeCharacter", widget.globalData.scanData.model);
   }
   flipHint(){
     return Align(
