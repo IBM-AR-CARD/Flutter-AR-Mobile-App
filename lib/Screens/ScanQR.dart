@@ -141,6 +141,7 @@ class _ScanQR extends State<ScanQR> {
                                         ),
                                         recognizer: TapGestureRecognizer()
                                           ..onTap = ()async{
+                                          if(!globalData.hasData)return;
                                           ProgressDialog pr;
                                           try {
                                             pr = new ProgressDialog(context, isDismissible: false);
