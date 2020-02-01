@@ -14,6 +14,13 @@ class GlobalData {
     return globalData;
   }
   UserData _scanData;
+  bool _hasLogin = false;
+
+  bool get hasLogin => _hasLogin;
+
+  set hasLogin(bool value) {
+    _hasLogin = value;
+  }
 
   UserData get scanData => _scanData;
 

@@ -1,10 +1,12 @@
 import 'dart:ui';
-
-import 'package:dio/dio.dart';
+import 'package:flutter_app/Screens/UnityPage.dart';
+import 'package:http/http.dart' as http;
+import 'package:retry/retry.dart';
+import 'dart:io';
+import 'dart:async';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:qr_code_scanner/qr_code_scanner.dart';
-import 'package:flutter/material.dart';
 import '../Models/SlideRoute.dart';
 import '../Screens/MyCards.dart';
 import '../Screens/Settings.dart';
@@ -12,7 +14,7 @@ import '../Models/GlobalData.dart';
 import 'package:swipedetector/swipedetector.dart';
 import '../Models/UserData.dart';
 import 'package:progress_dialog/progress_dialog.dart';
-import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 class ScanQR extends StatefulWidget {
   ScanQR({Key key, this.title}) : super(key: key);
 
@@ -26,14 +28,38 @@ class _ScanQR extends State<ScanQR> {
   final GlobalKey qrKey = GlobalKey(debugLabel: 'QR');
   var qrText = "";
   QRViewController controller;
-  bool _hasData = false;
   bool _find = false;
+  GlobalData globalData;
+  var fetchUserData;
+  UserData userData;
   @override
   void initState() {
     super.initState();
-    _hasData = GlobalData().hasData;
+    fetchUserData = fetchPost();
+    globalData = GlobalData();
   }
 
+  fetchPostedData(response) async {
+    if (response.statusCode == 200) {
+      userData = UserData.toUserData(response.body);
+      SharedPreferences storeValue = await SharedPreferences.getInstance();
+      storeValue.setString("UserData", response.body);
+      globalData.userData = userData;
+      globalData.hasData = true;
+      setState(() {});
+    }
+  }
+  Future<void> fetchPost() async {
+    final retry = RetryOptions(maxAttempts: 16);
+    final response = await retry.retry(
+      // Make a GET request
+          () => http.post('http://51.11.45.102:8080/profile/get'),
+      // Retry on SocketException or TimeoutException
+      retryIf: (e) => e is SocketException || e is TimeoutException,
+    );
+    await fetchPostedData(response);
+    return;
+  }
   @override
   Widget build(BuildContext context) {
     double _width = MediaQuery.of(context).size.width;
@@ -42,7 +68,7 @@ class _ScanQR extends State<ScanQR> {
       child: Scaffold(
         body: SwipeDetector(
           onSwipeLeft: () {
-            if (!_hasData) return;
+            if (!globalData.hasData) return;
             Navigator.push(
               context,
               SlideLeftRoute(
@@ -51,7 +77,7 @@ class _ScanQR extends State<ScanQR> {
             );
           },
           onSwipeRight: () {
-            if (!_hasData) return;
+            if (!globalData.hasData) return;
             Navigator.push(
               context,
               SlideRightRoute(page: MyCards()),
@@ -124,7 +150,10 @@ class _ScanQR extends State<ScanQR> {
                                             pr.hide();
                                           }
                                             _find = true;
-                                            Navigator.of(context).pop();
+                                            Navigator.push(
+                                            context,
+                                            SlideRightRoute(page: UnityPage()),
+                                          );
                                           }
                                       ),
                                       TextSpan(
@@ -181,7 +210,19 @@ class _ScanQR extends State<ScanQR> {
                         ),
                       ),
                     )
-                )
+                ),
+                Center(
+                  child: FutureBuilder<void>(
+                    future: fetchUserData,
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.done) {
+                        return SizedBox.shrink();
+                      } else {
+                        return CircularProgressIndicator();
+                      }
+                    },
+                  ),
+                ),
               ],
             ),
 
@@ -203,10 +244,9 @@ class _ScanQR extends State<ScanQR> {
         _find = true;
         if(scanData.startsWith("http://51.11.45.102:8080/profile/get")){
           await setScannedUserData(scanData);
-        }else{
+        }else {
           await setDemoUserData(scanData);
         }
-        Navigator.of(context).pop();
       }
     });
   }
@@ -265,7 +305,7 @@ class _ScanQR extends State<ScanQR> {
             children: <Widget>[
               IconButton(
                 onPressed: () {
-                  if (!_hasData) return;
+                  if (!globalData.hasData) return;
                   Navigator.push(
                     context,
                     SlideRightRoute(page: MyCards()),
@@ -280,7 +320,7 @@ class _ScanQR extends State<ScanQR> {
               ),
               IconButton(
                 onPressed: () {
-                  if (!_hasData) return;
+                  if (!globalData.hasData) return;
                   Navigator.push(
                     context,
                     SlideLeftRoute(
