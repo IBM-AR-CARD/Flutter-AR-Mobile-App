@@ -3,12 +3,11 @@ import 'dart:ui';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_app/Models/GlobalData.dart';
-import 'package:flutter_app/Screens/LoginPopUp.dart';
+import 'package:flutter_app/Screens/Login.dart';
 import 'Screens/MyCards.dart';
 import 'Screens/ScanQR.dart';
 import 'Models/SlideRoute.dart';
 import 'Screens/Settings.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_unity_widget/flutter_unity_widget.dart';
 import 'dart:async';
 import 'package:flutter_tts/flutter_tts.dart';
@@ -41,7 +40,7 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.blue,
       ),
       debugShowCheckedModeBanner: false,
-      home: ScanQR(),
+      home: Login(),
 //        home:ScanQR()
     );
   }

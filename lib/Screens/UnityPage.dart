@@ -54,12 +54,6 @@ class _UnityPage extends State<UnityPage> {
   bool _hasExtend = false;
   @override
   void initState() {
-    SystemChrome.setEnabledSystemUIOverlays([]);
-    PermissionHandler().requestPermissions([
-      PermissionGroup.camera,
-      PermissionGroup.microphone,
-      PermissionGroup.storage
-    ]);
     super.initState();
     flutterTts.setLanguage("en-US");
     initSpeechState();
