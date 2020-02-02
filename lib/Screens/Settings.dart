@@ -3,6 +3,8 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter_app/Models/SaveQR.dart';
+import 'package:flutter_app/Models/SlideRoute.dart';
+import 'package:flutter_app/Screens/Login.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:qr_code_scanner/qr_code_scanner.dart';
 import 'package:swipedetector/swipedetector.dart';
@@ -353,6 +355,7 @@ class _Settings extends State<Settings> {
                     Padding(
                       padding: EdgeInsets.only(top: 6, bottom: 80),
                       child: FlatButton(
+                        onPressed: onLogOut,
                         child: Text(
                           'Logout LinkedIn',
                           style: TextStyle(color: Colors.white, fontSize: 12),
@@ -475,6 +478,35 @@ class _Settings extends State<Settings> {
 
   contentOnExit() {
     return;
+  }
+  onLogOut()async{
+    if(hasChangedContent()){
+      return true;
+    }
+    if(await showDialog(
+      context: context,
+      builder: (context) => new AlertDialog(
+        title: new Text('Are you sure?'),
+        content: new Text('Do you want log out?'),
+        actions: <Widget>[
+          new FlatButton(
+              child: new Text("Log out"),
+              onPressed: () {
+                contentOnExit();
+                Navigator.of(context).pop(true);
+              }),
+          new FlatButton(
+              child: new Text("Cancel"),
+              onPressed: () {
+                Navigator.of(context).pop(false);
+              }),
+        ],
+      ),
+    ) ??
+        false){
+      GlobalData().clearData();
+      Navigator.push(context, FadeRoute(page: Login()));
+    }
   }
 
   Future<bool> _onLeaving() async {

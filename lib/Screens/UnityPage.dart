@@ -217,13 +217,16 @@ class _UnityPage extends State<UnityPage> {
               IconButton(
                 onPressed: () async {
                   if (!globalData.hasData) return;
+                  _unityWidgetController.pause();
                   await Navigator.push(
                     context,
                     SlideLeftRoute(
                       page: Settings(),
                     ),
                   );
+                  _unityWidgetController.resume();
                   updateGender();
+
                 },
                 tooltip: 'Person',
                 iconSize: 40.0,
@@ -323,6 +326,7 @@ class _UnityPage extends State<UnityPage> {
 // Callback that connects the created controller to the unity controller
   void onUnityCreated(controller) {
     this._unityWidgetController = controller;
+    globalData.unityWidgetController = controller;
   }
 
   @override

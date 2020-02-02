@@ -25,10 +25,19 @@ class _Login extends State<Login> with TickerProviderStateMixin {
   AnimationController controller1;
   AnimationController controller2;
   List<Widget> inputFields = List();
+  FocusNode loginUserNameFocus = FocusNode();
+  FocusNode loginPasswordFocus = FocusNode();
+  FocusNode registerUserNameFocus = FocusNode();
+  FocusNode registerPasswordFocus = FocusNode();
+  FocusNode registerPasswordConfirmFocus = FocusNode();
+  FocusNode registerEmailFocus = FocusNode();
+
   initTextField() {
     inputFields.add(getTextField('USERNAME'));
+
   }
-  initAnimation(){
+
+  initAnimation() {
     controller1 =
         AnimationController(vsync: this, duration: Duration(milliseconds: 400));
     controller2 =
@@ -42,6 +51,7 @@ class _Login extends State<Login> with TickerProviderStateMixin {
     controller2.animateTo(1,
         duration: Duration(milliseconds: 50), curve: Curves.easeInOut);
   }
+
   Widget getTextField(String name) {
     return Padding(
         padding: EdgeInsets.only(top: 20),
@@ -52,6 +62,9 @@ class _Login extends State<Login> with TickerProviderStateMixin {
               borderRadius: BorderRadius.all(Radius.circular(5)),
             ),
             child: TextFormField(
+              textInputAction: getTextInputAction(name),
+              focusNode: getFocusNode(name),
+              onFieldSubmitted: getOnSubmit(name),
               controller: getController(name),
               decoration: InputDecoration(
                 border: InputBorder.none,
@@ -64,6 +77,41 @@ class _Login extends State<Login> with TickerProviderStateMixin {
                 prefixIcon: getPrefixIcon(name),
               ),
             )));
+  }
+  getOnSubmit(String name){
+    switch (name) {
+      case 'registerUSERNAME':
+        return (value){
+          FocusScope.of(context).requestFocus(registerEmailFocus);
+        };
+      case 'registerPASSWORD':
+        return (value){
+          FocusScope.of(context).requestFocus(registerPasswordConfirmFocus);
+        };
+      case 'registerE-MAIL':
+        return (value){
+          FocusScope.of(context).requestFocus(registerPasswordFocus);
+        };
+      case 'registerCONFIRM PASSWORD':
+        return (value){
+        };
+      case 'loginUSERNAME':
+        return (value){
+          FocusScope.of(context).requestFocus(loginPasswordFocus);
+        };
+      case 'loginPASSWORD':
+        return (value){};
+    }
+    return (value){};
+  }
+  TextInputAction getTextInputAction(String name){
+    switch (name) {
+      case 'registerCONFIRM PASSWORD':
+        return TextInputAction.done;
+      case 'loginPASSWORD':
+        return TextInputAction.done;
+    }
+    return TextInputAction.next;
   }
   String gethintText(String name) {
     switch (name) {
@@ -81,7 +129,24 @@ class _Login extends State<Login> with TickerProviderStateMixin {
         return 'PASSWORD';
     }
   }
-  TextEditingController getController(String name) {
+
+  FocusNode getFocusNode(String name) {
+    switch (name) {
+      case 'registerUSERNAME':
+        return registerUserNameFocus;
+      case 'registerPASSWORD':
+        return registerPasswordFocus;
+      case 'registerE-MAIL':
+        return registerEmailFocus;
+      case 'registerCONFIRM PASSWORD':
+        return registerPasswordConfirmFocus;
+      case 'loginUSERNAME':
+        return loginUserNameFocus;
+      case 'loginPASSWORD':
+        return loginPasswordFocus;
+    }
+  }
+    TextEditingController getController(String name) {
       switch (name) {
         case 'registerUSERNAME':
           return registerUserName;
@@ -95,10 +160,10 @@ class _Login extends State<Login> with TickerProviderStateMixin {
           return loginUserName;
         case 'loginPASSWORD':
           return loginPassword;
+      }
     }
-  }
 
-  Icon getPrefixIcon(String name) {
+    Icon getPrefixIcon(String name) {
       switch (name) {
         case 'loginUSERNAME':
           return Icon(
@@ -137,296 +202,317 @@ class _Login extends State<Login> with TickerProviderStateMixin {
             color: Color.fromARGB(180, 41, 43, 66),
           );
       }
-  }
+    }
 
-  Widget _buildTextField(
-      BuildContext context, int index, Animation<double> animation) {
-    if (isLogin) {
-      if (index == 0) {
-        return getTextField('USERNAME');
-      } else if (index == 1) {
-        return getTextField('PASSWORD');
-      }
-    } else {
-      if (index == 0) {
-        return getTextField('USERNAME');
-      } else if (index == 1) {
-        return getTextField('E-MAIL');
-      } else if (index == 2) {
-        return getTextField('PASSWORD');
-      } else if (index == 3) {
-        return getTextField('CONFIRM PASSWORD');
+    Widget _buildTextField(BuildContext context, int index,
+        Animation<double> animation) {
+      if (isLogin) {
+        if (index == 0) {
+          return getTextField('USERNAME');
+        } else if (index == 1) {
+          return getTextField('PASSWORD');
+        }
+      } else {
+        if (index == 0) {
+          return getTextField('USERNAME');
+        } else if (index == 1) {
+          return getTextField('E-MAIL');
+        } else if (index == 2) {
+          return getTextField('PASSWORD');
+        } else if (index == 3) {
+          return getTextField('CONFIRM PASSWORD');
+        }
       }
     }
-  }
 
-  @override
-  Widget build(BuildContext context) {
-    _width = MediaQuery.of(context).size.width;
-    _height = MediaQuery.of(context).size.height;
-    return Material(
-        child: Container(
-      color: Colors.white,
-      width: _width,
-      height: _height,
-      child: Column(
-        children: <Widget>[
-          Container(
-            height: _height * 0.2,
-            decoration: BoxDecoration(
-                gradient: LinearGradient(
-                    begin: Alignment.topCenter,
-                    end: Alignment.bottomCenter,
-                    stops: [
-                  0.3,
-                  1
-                ],
-                    colors: [
-                  Color.fromARGB(255, 69, 67, 89),
-                  Color.fromARGB(255, 55, 51, 75)
-                ])),
-            child: Center(
-              child: Image.asset(
-                'assets/images/launch_icon.png',
-                width: 120,
-                height: 120,
-              ),
+    @override
+    Widget build(BuildContext context) {
+      _width = MediaQuery
+          .of(context)
+          .size
+          .width;
+      _height = MediaQuery
+          .of(context)
+          .size
+          .height;
+      return Scaffold(
+        resizeToAvoidBottomInset: true,
+        body: SingleChildScrollView(
+          child: SwipeDetector(
+          onSwipeLeft: changeToRegister,
+          onSwipeRight: changeToLogin,
+          child:Container(
+                  color: Colors.white,
+                  width: _width,
+                  height: _height,
+                  child: Column(
+                    children: <Widget>[
+                      Container(
+                        height: _height * 0.2,
+                        decoration: BoxDecoration(
+                            gradient: LinearGradient(
+                                begin: Alignment.topCenter,
+                                end: Alignment.bottomCenter,
+                                stops: [
+                                  0.3,
+                                  1
+                                ],
+                                colors: [
+                                  Color.fromARGB(255, 69, 67, 89),
+                                  Color.fromARGB(255, 55, 51, 75)
+                                ])),
+                        child: Center(
+                          child: Image.asset(
+                            'assets/images/launch_icon.png',
+                            width: 120,
+                            height: 120,
+                          ),
+                        ),
+                      ),
+                      Container(
+                        height: _height * 0.1,
+                        child: Row(
+                          children: <Widget>[
+                            AnimatedContainer(
+                              width: _width * 0.5,
+                              height: _height * 0.1,
+                              duration: Duration(milliseconds: 500),
+                              color: isLogin
+                                  ? Colors.white
+                                  : Color.fromARGB(255, 219, 220, 230),
+                              child: FlatButton(
+                                onPressed: changeToLogin,
+                                child: Text(
+                                  'LOGIN',
+                                  style: TextStyle(
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.bold,
+                                      color: Color.fromARGB(255, 69, 67, 89)),
+                                ),
+                              ),
+                            ),
+                            AnimatedContainer(
+                              width: _width * 0.5,
+                              height: _height * 0.1,
+                              duration: Duration(milliseconds: 500),
+                              color: !isLogin
+                                  ? Colors.white
+                                  : Color.fromARGB(255, 219, 220, 230),
+                              child: FlatButton(
+                                onPressed: changeToRegister,
+                                child: Text(
+                                  'REGISTER',
+                                  style: TextStyle(
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.bold,
+                                      color: Color.fromARGB(255, 69, 67, 89)),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      Stack(children: [
+                        SlideTransition(
+                          position: offset1,
+                          child: getRegisterPage(),
+                        ),
+                        SlideTransition(
+                          position: offset2,
+                          child: getLoginPage(),
+                        ),
+                      ]),
+                    ],
+                  ),
+                )
+            )
+        )
+      );
+    }
+
+    Widget getLoginPage() {
+      return Column(children: <Widget>[
+        Container(
+          width: _width * 0.95,
+          height: _height * 0.1,
+          child: Center(
+            child: Text(
+              'Welcome back to IBM AR Card',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  color: Color.fromARGB(130, 31, 34, 52),
+                  fontSize: 18),
             ),
           ),
-          Container(
-            height: _height * 0.1,
-            child: Row(
+        ),
+        Container(
+          height: _height * 0.45,
+          width: _width * 0.8,
+          child: Column(
+            children: <Widget>[
+              getTextField('loginUSERNAME'),
+              Divider(
+                color: Colors.transparent,
+                height: 15,
+              ),
+              getTextField('loginPASSWORD'),
+            ],
+          ),
+        ),
+        Container(
+            height: _height * 0.15,
+            width: _width,
+            color: Colors.white,
+            child: Column(
               children: <Widget>[
-                AnimatedContainer(
-                  width: _width * 0.5,
-                  height: _height * 0.1,
-                  duration: Duration(milliseconds: 500),
-                  color: isLogin
-                      ? Colors.white
-                      : Color.fromARGB(255, 219, 220, 230),
+                Container(
+                  color: Color.fromARGB(255, 104, 111, 139),
+                  width: _width * 0.8,
+                  height: _height * 0.07,
                   child: FlatButton(
-                    onPressed: changeToLogin,
+                    onPressed: onLogin,
                     child: Text(
-                      'LOGIN',
+                      'LOG IN',
                       style: TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
-                          color: Color.fromARGB(255, 69, 67, 89)),
+                          fontSize: 25,
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold),
                     ),
                   ),
                 ),
-                AnimatedContainer(
-                  width: _width * 0.5,
-                  height: _height * 0.1,
-                  duration: Duration(milliseconds: 500),
-                  color: !isLogin
-                      ? Colors.white
-                      : Color.fromARGB(255, 219, 220, 230),
-                  child: FlatButton(
-                    onPressed: changeToRegister,
-                    child: Text(
-                      'REGISTER',
-                      style: TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
-                          color: Color.fromARGB(255, 69, 67, 89)),
+                FlatButton(
+                  child: Text(
+                    'Forgot your user name or password?',
+                    style: TextStyle(
+                      decoration: TextDecoration.underline,
+                      color: Color.fromARGB(180, 104, 111, 139),
                     ),
                   ),
-                ),
+                )
               ],
-            ),
-          ),
-          SwipeDetector(
-            onSwipeLeft: changeToRegister,
-            onSwipeRight: changeToLogin,
-            child: Stack(children: [
-              SlideTransition(
-                position: offset1,
-                child: getRegisterPage(),
-              ),
-              SlideTransition(
-                position: offset2,
-                child: getLoginPage(),
-              ),
-            ]),
-          ),
-        ],
-      ),
-    ));
-  }
+            ))
+      ]);
+    }
 
-  Widget getLoginPage() {
-    return Column(children: <Widget>[
-      Container(
-        width: _width * 0.95,
-        height: _height * 0.1,
-        child: Center(
-          child: Text(
-            'Welcome back to IBM AR Card',
-            textAlign: TextAlign.center,
-            style: TextStyle(
-                fontWeight: FontWeight.bold,
-                color: Color.fromARGB(130, 31, 34, 52),
-                fontSize: 18),
+    Widget getRegisterPage() {
+      return Column(children: <Widget>[
+        Container(
+          width: _width * 0.95,
+          height: _height * 0.1,
+          child: Center(
+            child: Text(
+              'Register now to sync your scan history and\nfavourites, also creating your own AR card!',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  color: Color.fromARGB(130, 31, 34, 52),
+                  fontSize: 18),
+            ),
           ),
         ),
-      ),
-      Container(
-        height: _height * 0.45,
-        width: _width * 0.8,
-        child: Column(
-          children: <Widget>[
-            getTextField('loginUSERNAME'),
-            Divider(
-              color: Colors.transparent,
-              height: 15,
-            ),
-            getTextField('loginPASSWORD'),
-          ],
+        Container(
+          height: _height * 0.45,
+          width: _width * 0.8,
+          child: Column(
+            children: <Widget>[
+              getTextField('registerUSERNAME'),
+              Divider(
+                color: Colors.transparent,
+                height: 15,
+              ),
+              getTextField('registerE-MAIL'),
+              Divider(
+                color: Colors.transparent,
+                height: 15,
+              ),
+              getTextField('registerPASSWORD'),
+              Divider(
+                color: Colors.transparent,
+                height: 15,
+              ),
+              getTextField('registerCONFIRM PASSWORD'),
+            ],
+          ),
         ),
-      ),
-      Container(
+        Container(
           height: _height * 0.15,
           width: _width,
           color: Colors.white,
-          child: Column(
-            children: <Widget>[
-              Container(
-                color: Color.fromARGB(255, 104, 111, 139),
-                width: _width * 0.8,
-                height: _height * 0.07,
-                child: FlatButton(
-                  onPressed: onLogin,
-                  child: Text(
-                    'LOG IN',
-                    style: TextStyle(
-                        fontSize: 25,
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold),
-                  ),
-                ),
-              ),
-              FlatButton(
+          child: Column(children: <Widget>[
+            Container(
+              color: Color.fromARGB(255, 104, 111, 139),
+              width: _width * 0.8,
+              height: _height * 0.07,
+              child: FlatButton(
                 child: Text(
-                  'Forgot your user name or password?',
+                  'REGISTER',
                   style: TextStyle(
-                    decoration: TextDecoration.underline,
-                    color: Color.fromARGB(180, 104, 111, 139),
-                  ),
+                      fontSize: 25,
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold),
                 ),
-              )
-            ],
-          ))
-    ]);
-  }
-
-  Widget getRegisterPage() {
-    return Column(children: <Widget>[
-      Container(
-        width: _width * 0.95,
-        height: _height * 0.1,
-        child: Center(
-          child: Text(
-            'Register now to sync your scan history and\nfavourites, also creating your own AR card!',
-            textAlign: TextAlign.center,
-            style: TextStyle(
-                fontWeight: FontWeight.bold,
-                color: Color.fromARGB(130, 31, 34, 52),
-                fontSize: 18),
-          ),
-        ),
-      ),
-      Container(
-        height: _height * 0.45,
-        width: _width * 0.8,
-        child: Column(
-          children: <Widget>[
-            getTextField('registerUSERNAME'),
-            Divider(
-              color: Colors.transparent,
-              height: 15,
-            ),
-            getTextField('registerE-MAIL'),
-            Divider(
-              color: Colors.transparent,
-              height: 15,
-            ),
-            getTextField('registerPASSWORD'),
-            Divider(
-              color: Colors.transparent,
-              height: 15,
-            ),
-            getTextField('registerCONFIRM PASSWORD'),
-          ],
-        ),
-      ),
-      Container(
-        height: _height * 0.15,
-        width: _width,
-        color: Colors.white,
-        child: Column(children: <Widget>[
-          Container(
-            color: Color.fromARGB(255, 104, 111, 139),
-            width: _width * 0.8,
-            height: _height * 0.07,
-            child: FlatButton(
-              child: Text(
-                'REGISTER',
-                style: TextStyle(
-                    fontSize: 25,
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold),
               ),
             ),
-          ),
-        ]),
-      )
-    ]);
-  }
+          ]),
+        )
+      ]);
+    }
 
-  @override
-  void initState() {
-    super.initState();
-    initTextField();
-    initAnimation();
-    SystemChrome.setEnabledSystemUIOverlays([]);
-    PermissionHandler().requestPermissions([
-      PermissionGroup.camera,
-      PermissionGroup.microphone,
-      PermissionGroup.storage
-    ]);
-  }
+    @override
+    void initState() {
+      super.initState();
+      initTextField();
+      initAnimation();
+      SystemChrome.setEnabledSystemUIOverlays([]);
+      PermissionHandler().requestPermissions([
+        PermissionGroup.camera,
+        PermissionGroup.microphone,
+        PermissionGroup.storage
+      ]);
+    }
 
-  changeToLogin() {
-    if (isLogin) return;
-    isLogin = true;
-    registerPasswordConfirm.text = '';
-    registerPassword.text = '';
-    registerEmail.text = '';
-    registerUserName.text = '';
-    controller2.forward();
-    controller1.reverse();
-    setState(() {});
-  }
+    changeToLogin() {
+      if (isLogin) return;
+      isLogin = true;
+      registerPasswordConfirm.text = '';
+      registerPassword.text = '';
+      registerEmail.text = '';
+      registerUserName.text = '';
+      controller2.forward();
+      controller1.reverse();
+      setState(() {});
+    }
 
-  changeToRegister() {
-    if (!isLogin) return;
-    isLogin = false;
-    loginPassword.text = '';
-    loginUserName.text = '';
-    controller1.forward();
-    controller2.reverse();
-    setState(() {});
-  }
+    changeToRegister() {
+      if (!isLogin) return;
+      isLogin = false;
+      loginPassword.text = '';
+      loginUserName.text = '';
+      controller1.forward();
+      controller2.reverse();
+      setState(() {});
+    }
 
-  @override
-  void dispose() {
-    super.dispose();
-    controller1.dispose();
-    controller2.dispose();
-  }
-  onLogin(){
-    Navigator.push(context, FadeRoute(page: ScanQR()));
-  }
-
+    @override
+    void dispose() {
+      super.dispose();
+      controller1.dispose();
+      controller2.dispose();
+      loginUserNameFocus.dispose();
+      loginPasswordFocus.dispose();
+      registerUserNameFocus.dispose();
+      registerPasswordFocus.dispose();
+      registerPasswordConfirmFocus.dispose();
+      registerEmailFocus.dispose();
+      loginUserName.dispose();
+      loginPassword.dispose();
+      registerUserName.dispose();
+      registerPassword.dispose();
+      registerPasswordConfirm.dispose();
+      registerEmail.dispose();
+    }
+    onLogin() {
+      Navigator.push(context, FadeRoute(page: ScanQR()));
+    }
 }

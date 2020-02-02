@@ -1,4 +1,5 @@
 import 'package:flutter_app/Models/UserData.dart';
+import 'package:flutter_unity_widget/flutter_unity_widget.dart';
 class GlobalData {
   static final GlobalData globalData = GlobalData._internal();
   bool _hasData = false;
@@ -13,6 +14,17 @@ class GlobalData {
   factory GlobalData() {
     return globalData;
   }
+  UnityWidgetController _unityWidgetController;
+
+  UnityWidgetController get unityWidgetController => _unityWidgetController;
+  resumeController(){
+    if(_unityWidgetController != null){
+      _unityWidgetController.resume();
+    }
+  }
+  set unityWidgetController(UnityWidgetController value) {
+    _unityWidgetController = value;
+  }
   UserData _scanData;
   bool _hasLogin = false;
 
@@ -21,7 +33,12 @@ class GlobalData {
   set hasLogin(bool value) {
     _hasLogin = value;
   }
-
+  clearData(){
+    _hasData = false;
+    _hasLogin = false;
+    userData = null;
+    scanData = null;
+  }
   UserData get scanData => _scanData;
 
   set scanData(UserData value) {

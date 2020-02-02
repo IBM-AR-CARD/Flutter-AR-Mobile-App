@@ -67,22 +67,26 @@ class _ScanQR extends State<ScanQR> {
     return WillPopScope(
       child: Scaffold(
         body: SwipeDetector(
-          onSwipeLeft: () {
+          onSwipeLeft: () async{
             if (!globalData.hasData) return;
-            Navigator.push(
+            controller.pauseCamera();
+            await Navigator.push(
               context,
               SlideLeftRoute(
                 page: Settings(),
               ),
             );
+            controller.resumeCamera();
           },
-          onSwipeRight: () {
-            if (!globalData.hasData) return;
-            Navigator.push(
-              context,
-              SlideRightRoute(page: MyCards()),
-            );
-          },
+          onSwipeRight: ()async {
+          if (!globalData.hasData) return;
+          controller.pauseCamera();
+          await Navigator.push(
+            context,
+            SlideRightRoute(page: MyCards()),
+          );
+          controller.resumeCamera();
+        },
             child: Stack(
               children: <Widget>[
                 Container(
@@ -151,10 +155,13 @@ class _ScanQR extends State<ScanQR> {
                                             pr.hide();
                                           }
                                             _find = true;
-                                            Navigator.push(
+                                          controller.pauseCamera();
+                                            await Navigator.push(
                                             context,
                                             SlideRightRoute(page: UnityPage()),
                                           );
+                                            globalData.resumeController();
+                                            controller.resumeCamera();
                                           }
                                       ),
                                       TextSpan(
@@ -305,12 +312,14 @@ class _ScanQR extends State<ScanQR> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: <Widget>[
               IconButton(
-                onPressed: () {
+                onPressed: ()async {
                   if (!globalData.hasData) return;
-                  Navigator.push(
+                  controller.pauseCamera();
+                  await Navigator.push(
                     context,
                     SlideRightRoute(page: MyCards()),
                   );
+                  controller.resumeCamera();
                 },
                 tooltip: 'List',
                 iconSize: 40.0,
@@ -320,14 +329,16 @@ class _ScanQR extends State<ScanQR> {
                 ),
               ),
               IconButton(
-                onPressed: () {
+                onPressed: ()async {
                   if (!globalData.hasData) return;
-                  Navigator.push(
+                  controller.pauseCamera();
+                  await Navigator.push(
                     context,
                     SlideLeftRoute(
                       page: Settings(),
                     ),
                   );
+                  controller.resumeCamera();
                 },
                 tooltip: 'Person',
                 iconSize: 40.0,
