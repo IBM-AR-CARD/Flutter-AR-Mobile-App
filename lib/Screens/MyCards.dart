@@ -97,6 +97,7 @@ class _MyCards extends State<MyCards> with TickerProviderStateMixin {
     containerHeight = height - 206;
     return new WillPopScope(
       child: Scaffold(
+        resizeToAvoidBottomPadding: false,
         backgroundColor: Color.fromARGB(255, 31, 34, 52),
         body: Column(
           children: <Widget>[
