@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:ui';
 import 'package:flutter_app/Screens/UnityPage.dart';
 import 'package:http/http.dart' as http;
@@ -51,10 +52,14 @@ class _ScanQR extends State<ScanQR> {
     }
   }
   Future<void> fetchPost() async {
+    Map<String,dynamic> map = {
+      "_id": globalData.userData.id,
+    };
+    String value = JsonEncoder().convert(map);
     final retry = RetryOptions(maxAttempts: 16);
     final response = await retry.retry(
       // Make a GET request
-          () => http.post('${Config.baseURl}/profile/get'),
+          () => http.post('${Config.baseURl}/profile/get',headers: {"Content-Type": "application/json"}, body: value),
       // Retry on SocketException or TimeoutException
       retryIf: (e) => e is SocketException || e is TimeoutException,
     );

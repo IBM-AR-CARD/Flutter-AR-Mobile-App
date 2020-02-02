@@ -1,11 +1,17 @@
+import 'dart:convert';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_app/Models/GlobalData.dart';
 import 'package:flutter_app/Models/SlideRoute.dart';
+import 'package:flutter_app/Models/UserData.dart';
 import 'package:flutter_app/Screens/ScanQR.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:progress_dialog/progress_dialog.dart';
 import 'package:swipedetector/swipedetector.dart';
 import '../Models/Config.dart';
+import 'package:http/http.dart' as http;
 class Login extends StatefulWidget {
   @override
   State createState() => _Login();
@@ -15,7 +21,9 @@ class _Login extends State<Login> with TickerProviderStateMixin {
   double _width;
   double _height;
   bool isLogin = true;
-  TextEditingController loginUserName = TextEditingController();
+  final jsonEncoder = JsonEncoder();
+  final jsonDecoder = JsonDecoder();
+  TextEditingController loginEMAIL = TextEditingController();
   TextEditingController loginPassword = TextEditingController();
   TextEditingController registerUserName = TextEditingController();
   TextEditingController registerPassword = TextEditingController();
@@ -26,7 +34,7 @@ class _Login extends State<Login> with TickerProviderStateMixin {
   AnimationController controller1;
   AnimationController controller2;
   List<Widget> inputFields = List();
-  FocusNode loginUserNameFocus = FocusNode();
+  FocusNode loginEMAILFocus = FocusNode();
   FocusNode loginPasswordFocus = FocusNode();
   FocusNode registerUserNameFocus = FocusNode();
   FocusNode registerPasswordFocus = FocusNode();
@@ -34,14 +42,13 @@ class _Login extends State<Login> with TickerProviderStateMixin {
   FocusNode registerEmailFocus = FocusNode();
   String loginText =  'Welcome back to IBM AR Card';
   String registerText = 'Register now to sync your scan history and\nfavourites, also creating your own AR card!';
+  restoreRegisterText(){
+    registerText = 'Register now to sync your scan history and\nfavourites, also creating your own AR card!';
+  }
   final ERROR_COLOR =  Colors.pink;
   final NORMAL_COLOR = Color.fromARGB(130, 31, 34, 52);
   bool loginValid = true;
   bool registerValid = true;
-  initTextField() {
-    inputFields.add(getTextField('USERNAME'));
-
-  }
 
   initAnimation() {
     controller1 =
@@ -101,7 +108,7 @@ class _Login extends State<Login> with TickerProviderStateMixin {
       case 'registerCONFIRM PASSWORD':
         return (value){
         };
-      case 'loginUSERNAME':
+      case 'loginEMAIL':
         return (value){
           FocusScope.of(context).requestFocus(loginPasswordFocus);
         };
@@ -129,8 +136,8 @@ class _Login extends State<Login> with TickerProviderStateMixin {
         return 'E-MAIL';
       case 'registerCONFIRM PASSWORD':
         return 'CONFIRM PASSWORD';
-      case 'loginUSERNAME':
-        return 'USERNAME';
+      case 'loginEMAIL':
+        return 'E-MAIL';
       case 'loginPASSWORD':
         return 'PASSWORD';
     }
@@ -146,8 +153,8 @@ class _Login extends State<Login> with TickerProviderStateMixin {
         return registerEmailFocus;
       case 'registerCONFIRM PASSWORD':
         return registerPasswordConfirmFocus;
-      case 'loginUSERNAME':
-        return loginUserNameFocus;
+      case 'loginEMAIL':
+        return loginEMAILFocus;
       case 'loginPASSWORD':
         return loginPasswordFocus;
     }
@@ -162,8 +169,8 @@ class _Login extends State<Login> with TickerProviderStateMixin {
           return registerEmail;
         case 'registerCONFIRM PASSWORD':
           return registerPasswordConfirm;
-        case 'loginUSERNAME':
-          return loginUserName;
+        case 'loginEMAIL':
+          return loginEMAIL;
         case 'loginPASSWORD':
           return loginPassword;
       }
@@ -171,9 +178,9 @@ class _Login extends State<Login> with TickerProviderStateMixin {
 
     Icon getPrefixIcon(String name) {
       switch (name) {
-        case 'loginUSERNAME':
+        case 'loginEMAIL':
           return Icon(
-            Icons.person,
+            Icons.email,
             size: 30,
             color: Color.fromARGB(180, 41, 43, 66),
           );
@@ -207,27 +214,6 @@ class _Login extends State<Login> with TickerProviderStateMixin {
             size: 30,
             color: Color.fromARGB(180, 41, 43, 66),
           );
-      }
-    }
-
-    Widget _buildTextField(BuildContext context, int index,
-        Animation<double> animation) {
-      if (isLogin) {
-        if (index == 0) {
-          return getTextField('USERNAME');
-        } else if (index == 1) {
-          return getTextField('PASSWORD');
-        }
-      } else {
-        if (index == 0) {
-          return getTextField('USERNAME');
-        } else if (index == 1) {
-          return getTextField('E-MAIL');
-        } else if (index == 2) {
-          return getTextField('PASSWORD');
-        } else if (index == 3) {
-          return getTextField('CONFIRM PASSWORD');
-        }
       }
     }
 
@@ -357,7 +343,7 @@ class _Login extends State<Login> with TickerProviderStateMixin {
           width: _width * 0.8,
           child: Column(
             children: <Widget>[
-              getTextField('loginUSERNAME'),
+              getTextField('loginEMAIL'),
               Divider(
                 color: Colors.transparent,
                 height: 15,
@@ -469,7 +455,6 @@ class _Login extends State<Login> with TickerProviderStateMixin {
     @override
     void initState() {
       super.initState();
-      initTextField();
       initAnimation();
       loginText =  'Welcome back to IBM AR Card';
       registerText = 'Register now to sync your scan history and\nfavourites, also creating your own AR card!';
@@ -484,10 +469,10 @@ class _Login extends State<Login> with TickerProviderStateMixin {
     changeToLogin() {
       if (isLogin) return;
       isLogin = true;
-      registerPasswordConfirm.text = '';
-      registerPassword.text = '';
-      registerEmail.text = '';
-      registerUserName.text = '';
+//      registerPasswordConfirm.text = '';
+//      registerPassword.text = '';
+//      registerEmail.text = '';
+//      registerUserName.text = '';
       controller2.forward();
       controller1.reverse();
       setState(() {});
@@ -496,8 +481,8 @@ class _Login extends State<Login> with TickerProviderStateMixin {
     changeToRegister() {
       if (!isLogin) return;
       isLogin = false;
-      loginPassword.text = '';
-      loginUserName.text = '';
+//      loginPassword.text = '';
+//      loginEMAIL.text = '';
       controller1.forward();
       controller2.reverse();
       setState(() {});
@@ -508,46 +493,165 @@ class _Login extends State<Login> with TickerProviderStateMixin {
       super.dispose();
       controller1.dispose();
       controller2.dispose();
-      loginUserNameFocus.dispose();
+      loginEMAILFocus.dispose();
       loginPasswordFocus.dispose();
       registerUserNameFocus.dispose();
       registerPasswordFocus.dispose();
       registerPasswordConfirmFocus.dispose();
       registerEmailFocus.dispose();
-      loginUserName.dispose();
+      loginEMAIL.dispose();
       loginPassword.dispose();
       registerUserName.dispose();
       registerPassword.dispose();
       registerPasswordConfirm.dispose();
       registerEmail.dispose();
     }
-    onLogin() {
-      Navigator.push(context, FadeRoute(page: ScanQR()));
-    }
-    bool validInput() {
-      if (isLogin) {
+    onLogin() async{
 
-      } else {
-        if (registerPassword.text == "" || registerPasswordConfirm.text == "" || registerUserName.text == "" || registerEmail.text == "") {
-          registerText = 'input must not be empty';
-          registerValid = false;
-          setState(() {
-
-          });
-          return false;
-        } else if (registerPassword.text != registerPasswordConfirm.text){
-          registerText = 'Password does not match to Confirm password';
-          registerValid = false;
-          setState(() {
-
-          });
-          return false;
+      ProgressDialog pr = new ProgressDialog(context, isDismissible: false);
+      Map<String,dynamic> map = {
+        "email": loginEMAIL.text,
+        "password": loginPassword.text,
+      };
+      String value = jsonEncoder.convert(map);
+      pr.show();
+      try{
+        print('request');
+        final data = await http.post('${Config.baseURl}/user/login', headers: {"Content-Type": "application/json"}, body: value).timeout(Duration(seconds: 5));
+        if(data.statusCode != 200){
+          var errorMsg = jsonDecoder.convert(data.body);
+          throw Exception(errorMsg['error']);
+        }else {
+          var Msg = jsonDecoder.convert(data.body);
+          GlobalData globalData = GlobalData();
+          globalData.token = Msg['token'];
+          globalData.userData.id = Msg['_id'];
+          globalData.hasLogin = true;
+          globalData.hasData = true;
+          pr.hide();
+          Navigator.push(context, FadeRoute(page: ScanQR()));
         }
+      }catch(err){
+        print(err);
+        await showDialog(
+            context: context,
+            builder: (BuildContext context) {
+          // return object of type Dialog
+          return AlertDialog(
+            title: new Text('login fail please try again'),
+            content: new Text(err.toString()),
+            actions: <Widget>[
+              // usually buttons at the bottom of the dialog
+              new FlatButton(
+                child: new Text("Close"),
+                onPressed: () {
+                  pr.hide();
+                  Navigator.pop(context);
+                },
+              ),
+            ],
+          );
+        });
+      }finally{
+      print('final');
+      pr.hide();
       }
-      return true;
     }
-    onRegister(){
-      validInput();
 
+    onRegister()async{
+      ProgressDialog pr = new ProgressDialog(context, isDismissible: false);
+      Map<String,dynamic> map = {
+        "username":registerUserName.text,
+        "email": registerEmail.text,
+        "password": registerPassword.text,
+      };
+      String value = jsonEncoder.convert(map);
+      pr.show();
+      try{
+        print('request');
+        final data = await http.post('${Config.baseURl}/user/register', headers: {"Content-Type": "application/json"}, body: value).timeout(Duration(seconds: 5));
+        if(data.statusCode != 200){
+          var errorMsg = jsonDecoder.convert(data.body);
+          throw Exception(errorMsg['error']);
+        }else {
+          var Msg = jsonDecoder.convert(data.body);
+          pr.hide();
+          await onLoginNoCheck();
+        }
+      }catch(err){
+        print(err);
+        await showDialog(
+            context: context,
+            builder: (BuildContext context) {
+          // return object of type Dialog
+          return AlertDialog(
+            title: new Text('register fail please try again'),
+            content: new Text(err.toString()),
+            actions: <Widget>[
+              // usually buttons at the bottom of the dialog
+              new FlatButton(
+                child: new Text("Close"),
+                onPressed: () {
+                  pr.hide();
+                  Navigator.pop(context);
+                },
+              ),
+            ],
+          );
+        });
+      }finally{
+      print('final');
+      pr.hide();
+      }
+    }
+    onLoginNoCheck() async{
+      ProgressDialog pr = new ProgressDialog(context, isDismissible: false);
+      Map<String,dynamic> map = {
+        "email": registerEmail.text,
+        "password": registerPassword.text,
+      };
+      String value = jsonEncoder.convert(map);
+      pr.show();
+      try{
+        print('request');
+        final data = await http.post('${Config.baseURl}/user/login', headers: {"Content-Type": "application/json"}, body: value).timeout(Duration(seconds: 5));
+        if(data.statusCode != 200){
+          var errorMsg = jsonDecoder.convert(data.body);
+          throw Exception(errorMsg['error']);
+        }else {
+          var Msg = jsonDecoder.convert(data.body);
+          GlobalData globalData = GlobalData();
+          globalData.token = Msg['token'];
+          globalData.userData.id = Msg['_id'];
+          globalData.hasLogin = true;
+          globalData.hasData = true;
+          pr.hide();
+          Navigator.push(context, FadeRoute(page: ScanQR()));
+        }
+      }catch(err){
+        print(err);
+        await showDialog(
+            context: context,
+            builder: (BuildContext context) {
+              // return object of type Dialog
+              return AlertDialog(
+                title: new Text('login fail please try again'),
+                content: new Text(err.toString()),
+                actions: <Widget>[
+                  // usually buttons at the bottom of the dialog
+                  new FlatButton(
+                    child: new Text("Close"),
+                    onPressed: () {
+                      pr.hide();
+                      Navigator.pop(context);
+                    },
+                  ),
+                ],
+              );
+            });
+      }finally{
+        print('final');
+        pr.hide();
+      }
     }
 }

@@ -9,6 +9,13 @@ class GlobalData {
   set hasData(bool value) {
     _hasData = value;
   }
+  String _token;
+
+  String get token => _token;
+
+  set token(String value) {
+    _token = value;
+  }
 
   UserData _userData;
   factory GlobalData() {
