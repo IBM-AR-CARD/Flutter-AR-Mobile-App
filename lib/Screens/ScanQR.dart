@@ -15,6 +15,7 @@ import 'package:swipedetector/swipedetector.dart';
 import '../Models/UserData.dart';
 import 'package:progress_dialog/progress_dialog.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import '../Models/Config.dart';
 class ScanQR extends StatefulWidget {
   ScanQR({Key key, this.title}) : super(key: key);
 
@@ -53,7 +54,7 @@ class _ScanQR extends State<ScanQR> {
     final retry = RetryOptions(maxAttempts: 16);
     final response = await retry.retry(
       // Make a GET request
-          () => http.post('http://51.11.45.102:8080/profile/get'),
+          () => http.post('${Config.baseURl}/profile/get'),
       // Retry on SocketException or TimeoutException
       retryIf: (e) => e is SocketException || e is TimeoutException,
     );
@@ -250,7 +251,7 @@ class _ScanQR extends State<ScanQR> {
     controller.scannedDataStream.listen((scanData) async {
       if (!_find) {
         _find = true;
-        if(scanData.startsWith("http://51.11.45.102:8080/profile/get")){
+        if(scanData.startsWith("${Config.baseURl}/profile/get")){
           await setScannedUserData(scanData);
         }else {
           await setDemoUserData(scanData);

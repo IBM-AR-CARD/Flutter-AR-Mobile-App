@@ -5,6 +5,7 @@ import 'package:flutter_app/Models/SlideRoute.dart';
 import 'package:flutter_app/Screens/ScanQR.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:swipedetector/swipedetector.dart';
+import '../Models/Config.dart';
 class Login extends StatefulWidget {
   @override
   State createState() => _Login();
@@ -31,7 +32,12 @@ class _Login extends State<Login> with TickerProviderStateMixin {
   FocusNode registerPasswordFocus = FocusNode();
   FocusNode registerPasswordConfirmFocus = FocusNode();
   FocusNode registerEmailFocus = FocusNode();
-
+  String loginText =  'Welcome back to IBM AR Card';
+  String registerText = 'Register now to sync your scan history and\nfavourites, also creating your own AR card!';
+  final ERROR_COLOR =  Colors.pink;
+  final NORMAL_COLOR = Color.fromARGB(130, 31, 34, 52);
+  bool loginValid = true;
+  bool registerValid = true;
   initTextField() {
     inputFields.add(getTextField('USERNAME'));
 
@@ -337,11 +343,11 @@ class _Login extends State<Login> with TickerProviderStateMixin {
           height: _height * 0.1,
           child: Center(
             child: Text(
-              'Welcome back to IBM AR Card',
+              loginText,
               textAlign: TextAlign.center,
               style: TextStyle(
                   fontWeight: FontWeight.bold,
-                  color: Color.fromARGB(130, 31, 34, 52),
+                  color: loginValid ? NORMAL_COLOR : ERROR_COLOR,
                   fontSize: 18),
             ),
           ),
@@ -402,11 +408,11 @@ class _Login extends State<Login> with TickerProviderStateMixin {
           height: _height * 0.1,
           child: Center(
             child: Text(
-              'Register now to sync your scan history and\nfavourites, also creating your own AR card!',
+              registerText,
               textAlign: TextAlign.center,
               style: TextStyle(
                   fontWeight: FontWeight.bold,
-                  color: Color.fromARGB(130, 31, 34, 52),
+                  color: registerValid ? NORMAL_COLOR : ERROR_COLOR,
                   fontSize: 18),
             ),
           ),
@@ -445,6 +451,7 @@ class _Login extends State<Login> with TickerProviderStateMixin {
               width: _width * 0.8,
               height: _height * 0.07,
               child: FlatButton(
+                onPressed: onRegister,
                 child: Text(
                   'REGISTER',
                   style: TextStyle(
@@ -464,6 +471,8 @@ class _Login extends State<Login> with TickerProviderStateMixin {
       super.initState();
       initTextField();
       initAnimation();
+      loginText =  'Welcome back to IBM AR Card';
+      registerText = 'Register now to sync your scan history and\nfavourites, also creating your own AR card!';
       SystemChrome.setEnabledSystemUIOverlays([]);
       PermissionHandler().requestPermissions([
         PermissionGroup.camera,
@@ -514,5 +523,31 @@ class _Login extends State<Login> with TickerProviderStateMixin {
     }
     onLogin() {
       Navigator.push(context, FadeRoute(page: ScanQR()));
+    }
+    bool validInput() {
+      if (isLogin) {
+
+      } else {
+        if (registerPassword.text == "" || registerPasswordConfirm.text == "" || registerUserName.text == "" || registerEmail.text == "") {
+          registerText = 'input must not be empty';
+          registerValid = false;
+          setState(() {
+
+          });
+          return false;
+        } else if (registerPassword.text != registerPasswordConfirm.text){
+          registerText = 'Password does not match to Confirm password';
+          registerValid = false;
+          setState(() {
+
+          });
+          return false;
+        }
+      }
+      return true;
+    }
+    onRegister(){
+      validInput();
+
     }
 }

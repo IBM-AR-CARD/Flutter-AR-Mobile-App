@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:auto_size_text/auto_size_text.dart';
+import 'package:flutter_app/Models/Config.dart';
 import 'package:flutter_app/Models/SaveQR.dart';
 import 'package:flutter_app/Models/SlideRoute.dart';
 import 'package:flutter_app/Screens/Login.dart';
@@ -30,6 +31,8 @@ class _Settings extends State<Settings> {
   final _descriptionController = TextEditingController();
   final _workExperiencesController = TextEditingController();
   final _educationController = TextEditingController();
+  final _firstNameController = TextEditingController();
+  final _lastNameController = TextEditingController();
   String _firstName;
 
   int _gender = PERFER_NOT_TO_SAY;
@@ -41,7 +44,7 @@ class _Settings extends State<Settings> {
   String _profile;
   final storedData = SharedPreferences.getInstance();
   bool hasChangedContent(){
-    if(_gender == userData.gender && _descriptionController.text == userData.description && _educationController.text == userData.education && _workExperiencesController.text == userData.experience && userData.model == _model){
+    if(_firstName == _firstNameController.text && _lastName == _lastNameController.text && _gender == userData.gender && _descriptionController.text == userData.description && _educationController.text == userData.education && _workExperiencesController.text == userData.experience && userData.model == _model){
       return false;
     }
     return true;
@@ -55,10 +58,23 @@ class _Settings extends State<Settings> {
     _gender = userData.gender;
     _model = userData.model;
 
+
     _descriptionController.text = userData.description;
     _educationController.text = userData.education;
     _workExperiencesController.text = userData.experience;
+    _firstNameController.text = userData.firstName;
+    _lastNameController.text = userData.lastName;
     setState(() {});
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    _descriptionController.dispose();
+    _workExperiencesController.dispose();
+    _educationController.dispose();
+    _firstNameController.dispose();
+    _lastNameController.dispose();
   }
 
   ProgressDialog pr;
@@ -230,6 +246,28 @@ class _Settings extends State<Settings> {
                           ),
                         ),
                       ),
+                    ),
+                    Padding(
+                      padding: EdgeInsets.only(top: 40),
+                      child: ProfileTextEditor(
+                          Text(
+                            'First Name',
+                            style: TextStyle(fontSize: 24, color: Colors.white),
+                          ),
+                          ProfileTextEditor.TEXTBOX,
+                          _firstNameController,
+                          hint: 'your first name'),
+                    ),
+                    Padding(
+                      padding: EdgeInsets.only(top: 40),
+                      child: ProfileTextEditor(
+                          Text(
+                            'Last Name',
+                            style: TextStyle(fontSize: 24, color: Colors.white),
+                          ),
+                          ProfileTextEditor.TEXTBOX,
+                          _lastNameController,
+                          hint: 'your Last name'),
                     ),
                     Padding(
                       padding: EdgeInsets.only(top: 40),
@@ -438,6 +476,8 @@ class _Settings extends State<Settings> {
     userData.education = _educationController.text;
     userData.description = _descriptionController.text;
     userData.model = _model;
+    userData.firstName = _firstNameController.text;
+    userData.lastName=_lastNameController.text;
     String userJson = userData.getJson();
     await storeValue(userJson);
     return;
@@ -448,7 +488,7 @@ class _Settings extends State<Settings> {
     pr.show();
     try{
       print('request');
-      await http.post('http://51.11.45.102:8080/profile/update', headers: {"Content-Type": "application/json"}, body: userJson).timeout(Duration(seconds: 5));
+      await http.post('${Config.baseURl}/profile/update', headers: {"Content-Type": "application/json"}, body: userJson).timeout(Duration(seconds: 5));
     }catch(err){
       print(err);
       await showDialog(
@@ -537,7 +577,7 @@ class _Settings extends State<Settings> {
         false;
   }
   _showQR(){
-    SaveQR qr = SaveQR('http://51.11.45.102:8080/profile/get?username=${widget.globalData.userData.userName}');
+    SaveQR qr = SaveQR('${Config.baseURl}/profile/get?username=${widget.globalData.userData.userName}');
     showDialog(
         context: context,
         barrierDismissible: true,

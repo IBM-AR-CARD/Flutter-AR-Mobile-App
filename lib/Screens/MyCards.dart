@@ -3,6 +3,7 @@ import 'package:flutter_app/Request/request.dart';
 import 'dart:async';
 import 'package:swipedetector/swipedetector.dart';
 //import 'package:pull_to_refresh/pull_to_refresh.dart';
+import '../Models/Config.dart';
 import '../Models/GlobalData.dart';
 class MyCards extends StatefulWidget {
   MyCards({Key key, this.title}) : super(key: key);
@@ -294,13 +295,13 @@ class _MyCards extends State<MyCards> with TickerProviderStateMixin {
 
   Future _getHistory() async {
     var response = HttpUtils.get(
-        'http://henryz.co:8080/history/get?_id=${globalData.userData.id}');
+        '${Config.baseURl}/history/get?_id=${globalData.userData.id}');
     return response;
   }
 
   Future _getFavourite() async {
     var response = HttpUtils.get(
-        'http://henryz.co:8080/favorite/get?_id=${globalData.userData.id}');
+        '${Config.baseURl}/favorite/get?_id=${globalData.userData.id}');
     return response;
   }
 
