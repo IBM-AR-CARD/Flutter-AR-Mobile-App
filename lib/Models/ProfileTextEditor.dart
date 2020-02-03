@@ -44,18 +44,22 @@ class _ProfileTextEditor extends State<ProfileTextEditor> {
 
   @override
   void initState(){
-    _controller = widget._controller;
     super.initState();
+    _controller = widget._controller;
     setState(() {});
   }
   Widget build(context) {
+    int maxLines = 4;
+    if(widget._hint != null && (widget._hint == 'your first name' || widget._hint == 'your Last name')){
+      maxLines = 1;
+    }
     Widget box;
     if (widget._type == TEXTBOX) {
       box = new Padding(
         padding: EdgeInsets.only(top: 30),
         child: new TextField(
           style: new TextStyle(color: Colors.white),
-          maxLines: 4,
+          maxLines: maxLines,
 //          expands: true,
           controller: _controller,
           decoration: new InputDecoration(

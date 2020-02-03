@@ -539,13 +539,6 @@ class _UnityPage extends State<UnityPage> {
                                   style: TextStyle(fontSize: 15),
                                 ),
                               );
-//                              return Bubble(
-//                                style: styleMe,
-//                                child: Text(
-//                                  bubble.content,
-//                                  style: TextStyle(fontSize: 15),
-//                                ),
-//                              );
                             } else {
                               return Bubble(
                                 style: styleSomebody,

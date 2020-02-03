@@ -1,4 +1,6 @@
+import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -230,9 +232,6 @@ class _Login extends State<Login> with TickerProviderStateMixin {
       return Scaffold(
         resizeToAvoidBottomInset: true,
         body: SingleChildScrollView(
-          child: SwipeDetector(
-          onSwipeLeft: changeToRegister,
-          onSwipeRight: changeToLogin,
           child:Container(
                   color: Colors.white,
                   width: _width,
@@ -317,7 +316,6 @@ class _Login extends State<Login> with TickerProviderStateMixin {
                     ],
                   ),
                 )
-            )
         )
       );
     }
@@ -455,15 +453,15 @@ class _Login extends State<Login> with TickerProviderStateMixin {
     @override
     void initState() {
       super.initState();
-      initAnimation();
-      loginText =  'Welcome back to IBM AR Card';
-      registerText = 'Register now to sync your scan history and\nfavourites, also creating your own AR card!';
       SystemChrome.setEnabledSystemUIOverlays([]);
       PermissionHandler().requestPermissions([
         PermissionGroup.camera,
         PermissionGroup.microphone,
         PermissionGroup.storage
       ]);
+      initAnimation();
+      loginText =  'Welcome back to IBM AR Card';
+      registerText = 'Register now to sync your scan history and\nfavourites, also creating your own AR card!';
     }
 
     changeToLogin() {
@@ -510,11 +508,10 @@ class _Login extends State<Login> with TickerProviderStateMixin {
 
       ProgressDialog pr = new ProgressDialog(context, isDismissible: false);
       Map<String,dynamic> map = {
-        "email": loginEMAIL.text,
-        "password": loginPassword.text,
+        "email": isLogin ? loginEMAIL.text : registerEmail.text,
+        "password": isLogin ? loginPassword.text : registerPassword.text,
       };
       String value = jsonEncoder.convert(map);
-      pr.show();
       try{
         print('request');
         final data = await http.post('${Config.baseURl}/user/login', headers: {"Content-Type": "application/json"}, body: value).timeout(Duration(seconds: 5));
@@ -525,11 +522,10 @@ class _Login extends State<Login> with TickerProviderStateMixin {
           var Msg = jsonDecoder.convert(data.body);
           GlobalData globalData = GlobalData();
           globalData.token = Msg['token'];
-          globalData.userData.id = Msg['_id'];
+          globalData.id = Msg['_id'];
           globalData.hasLogin = true;
-          globalData.hasData = true;
           pr.hide();
-          Navigator.push(context, FadeRoute(page: ScanQR()));
+          Navigator.pushReplacement(context, FadeRoute(page: ScanQR()));
         }
       }catch(err){
         print(err);
@@ -539,7 +535,7 @@ class _Login extends State<Login> with TickerProviderStateMixin {
           // return object of type Dialog
           return AlertDialog(
             title: new Text('login fail please try again'),
-            content: new Text(err.toString()),
+            content: new Text((err is SocketException || err is TimeoutException) ? 'Network error' : err.toString()),
             actions: <Widget>[
               // usually buttons at the bottom of the dialog
               new FlatButton(
@@ -566,19 +562,21 @@ class _Login extends State<Login> with TickerProviderStateMixin {
         "password": registerPassword.text,
       };
       String value = jsonEncoder.convert(map);
-      pr.show();
       try{
         print('request');
+        pr.show();
         final data = await http.post('${Config.baseURl}/user/register', headers: {"Content-Type": "application/json"}, body: value).timeout(Duration(seconds: 5));
+        pr.hide();
         if(data.statusCode != 200){
           var errorMsg = jsonDecoder.convert(data.body);
           throw Exception(errorMsg['error']);
         }else {
           var Msg = jsonDecoder.convert(data.body);
           pr.hide();
-          await onLoginNoCheck();
+          await onLogin();
         }
       }catch(err){
+        pr.hide();
         print(err);
         await showDialog(
             context: context,
@@ -586,7 +584,7 @@ class _Login extends State<Login> with TickerProviderStateMixin {
           // return object of type Dialog
           return AlertDialog(
             title: new Text('register fail please try again'),
-            content: new Text(err.toString()),
+            content: new Text((err is SocketException || err is TimeoutException) ? 'Network error' : err.toString()),
             actions: <Widget>[
               // usually buttons at the bottom of the dialog
               new FlatButton(
@@ -600,58 +598,7 @@ class _Login extends State<Login> with TickerProviderStateMixin {
           );
         });
       }finally{
-      print('final');
       pr.hide();
-      }
-    }
-    onLoginNoCheck() async{
-      ProgressDialog pr = new ProgressDialog(context, isDismissible: false);
-      Map<String,dynamic> map = {
-        "email": registerEmail.text,
-        "password": registerPassword.text,
-      };
-      String value = jsonEncoder.convert(map);
-      pr.show();
-      try{
-        print('request');
-        final data = await http.post('${Config.baseURl}/user/login', headers: {"Content-Type": "application/json"}, body: value).timeout(Duration(seconds: 5));
-        if(data.statusCode != 200){
-          var errorMsg = jsonDecoder.convert(data.body);
-          throw Exception(errorMsg['error']);
-        }else {
-          var Msg = jsonDecoder.convert(data.body);
-          GlobalData globalData = GlobalData();
-          globalData.token = Msg['token'];
-          globalData.userData.id = Msg['_id'];
-          globalData.hasLogin = true;
-          globalData.hasData = true;
-          pr.hide();
-          Navigator.push(context, FadeRoute(page: ScanQR()));
-        }
-      }catch(err){
-        print(err);
-        await showDialog(
-            context: context,
-            builder: (BuildContext context) {
-              // return object of type Dialog
-              return AlertDialog(
-                title: new Text('login fail please try again'),
-                content: new Text(err.toString()),
-                actions: <Widget>[
-                  // usually buttons at the bottom of the dialog
-                  new FlatButton(
-                    child: new Text("Close"),
-                    onPressed: () {
-                      pr.hide();
-                      Navigator.pop(context);
-                    },
-                  ),
-                ],
-              );
-            });
-      }finally{
-        print('final');
-        pr.hide();
       }
     }
 }

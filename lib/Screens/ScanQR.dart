@@ -37,8 +37,9 @@ class _ScanQR extends State<ScanQR> {
   @override
   void initState() {
     super.initState();
-    fetchUserData = fetchPost();
+    print('initState');
     globalData = GlobalData();
+    fetchUserData = fetchPost();
   }
 
   fetchPostedData(response) async {
@@ -46,25 +47,44 @@ class _ScanQR extends State<ScanQR> {
       userData = UserData.toUserData(response.body);
       SharedPreferences storeValue = await SharedPreferences.getInstance();
       storeValue.setString("UserData", response.body);
-      globalData.userData = userData;
-      globalData.hasData = true;
-      setState(() {});
+      setState(() {
+        globalData.userData = userData;
+        globalData.hasData = true;
+      });
+    }else{
+      await showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            // return object of type Dialog
+            return AlertDialog(
+              title: new Text('login fail please try again'),
+              content: new Text( 'Network error' ),
+              actions: <Widget>[
+                // usually buttons at the bottom of the dialog
+                new FlatButton(
+                  child: new Text("Close"),
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                ),
+              ],
+            );
+          });
     }
   }
   Future<void> fetchPost() async {
-    Map<String,dynamic> map = {
-      "_id": globalData.userData.id,
+    Map<String, String> map = {
+      "_id":globalData.id,
     };
     String value = JsonEncoder().convert(map);
-    final retry = RetryOptions(maxAttempts: 16);
+    final retry = RetryOptions(maxAttempts: 6);
     final response = await retry.retry(
       // Make a GET request
-          () => http.post('${Config.baseURl}/profile/get',headers: {"Content-Type": "application/json"}, body: value),
+          () => http.post('${Config.baseURl}/profile/get?_id=${globalData.id}',headers: {"Content-Type": "application/json"}, body: value),
       // Retry on SocketException or TimeoutException
       retryIf: (e) => e is SocketException || e is TimeoutException,
     );
-    await fetchPostedData(response);
-    return;
+    return await fetchPostedData(response);
   }
   @override
   Widget build(BuildContext context) {
@@ -166,7 +186,6 @@ class _ScanQR extends State<ScanQR> {
                                             context,
                                             SlideRightRoute(page: UnityPage()),
                                           );
-                                            globalData.resumeController();
                                             controller.resumeCamera();
                                           }
                                       ),

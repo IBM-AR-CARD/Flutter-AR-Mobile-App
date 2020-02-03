@@ -24,7 +24,6 @@ dependencies:
   pull_to_refresh:
   flutter_unity_widget:
   qr_code_scanner:
-  speech_recognition:
   speech_to_text:
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.

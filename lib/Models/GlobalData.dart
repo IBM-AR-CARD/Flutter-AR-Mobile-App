@@ -34,6 +34,13 @@ class GlobalData {
   }
   UserData _scanData;
   bool _hasLogin = false;
+  String _id;
+
+  String get id => _id;
+
+  set id(String value) {
+    _id = value;
+  }
 
   bool get hasLogin => _hasLogin;
 

@@ -96,6 +96,7 @@ class UserData{
       'profile':_profile,
       'model':_model
     };
+    _profile = _profile??"";
     var json = JsonEncoder();
     return json.convert(map);
   }
@@ -105,7 +106,7 @@ class UserData{
       Map<String, dynamic> json;
       json = decoder.convert(userJson);
       user = UserData(
-          json['_id'],json['firstname'], json['lastname'], json['profile'],json['username'],
+          json['_id'],json['firstname'], json['lastname'], json['profile']??"",json['username'],
           description: json['description'] ?? "",
           experience: json['experience'] ?? "",
           education: json['education'] ?? "",

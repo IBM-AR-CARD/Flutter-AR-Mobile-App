@@ -51,7 +51,7 @@ class _Settings extends State<Settings> {
   }
   initUserData() async {
     userData = widget.globalData.userData;
-    _profile = userData.profile;
+    _profile = (userData.profile)??"";
     _firstName = userData.firstName;
     _lastName = userData.lastName;
     _userName = userData.userName;
@@ -84,8 +84,8 @@ class _Settings extends State<Settings> {
 
   @override
   void initState() {
-    initUserData();
     super.initState();
+    initUserData();
   }
 
 
@@ -100,6 +100,7 @@ class _Settings extends State<Settings> {
     double _topHeight = _height * 0.25;
     double _middleHeight = _height * 0.68;
     double _bottomHeight = _height - _topHeight - _middleHeight;
+    print(_profile);
     return new WillPopScope(
         child: Scaffold(
           resizeToAvoidBottomPadding: false,
@@ -488,7 +489,7 @@ class _Settings extends State<Settings> {
     pr.show();
     try{
       print('request');
-      await http.post('${Config.baseURl}/profile/update', headers: {"Content-Type": "application/json"}, body: userJson).timeout(Duration(seconds: 5));
+      await http.post('${Config.baseURl}/profile/update', headers: {"Content-Type": "application/json","Authorization":"Bearer ${widget.globalData.token}"}, body: userJson).timeout(Duration(seconds: 5));
     }catch(err){
       print(err);
       await showDialog(
