@@ -23,6 +23,7 @@ class _Login extends State<Login> with TickerProviderStateMixin {
   double _width;
   double _height;
   bool isLogin = true;
+  bool isRemembered = false;
   final jsonEncoder = JsonEncoder();
   final jsonDecoder = JsonDecoder();
   TextEditingController loginEMAIL = TextEditingController();
@@ -347,6 +348,36 @@ class _Login extends State<Login> with TickerProviderStateMixin {
                 height: 15,
               ),
               getTextField('loginPASSWORD'),
+              Divider(
+                color: Colors.transparent,
+                height: 15,
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: <Widget>[
+                  Padding(
+                    padding: EdgeInsets.only(left: _width*0.17),
+                    child:Checkbox(
+                      value: isRemembered,
+                      checkColor: Colors.white,
+                      activeColor: Color.fromARGB(255, 104, 111, 139),
+                      onChanged: (value){
+                        setState(() {
+                          isRemembered = !isRemembered;
+                        });
+                      },
+                    ) ,
+                  ),
+                  Text(
+                      'Remember me',
+                    style: TextStyle(
+                      color: Color.fromARGB(255, 104, 111, 139),
+                      fontWeight: FontWeight.bold,
+                      fontSize: 15
+                    ),
+                  )
+                ],
+              )
             ],
           ),
         ),
