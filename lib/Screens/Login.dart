@@ -14,6 +14,8 @@ import 'package:progress_dialog/progress_dialog.dart';
 import 'package:swipedetector/swipedetector.dart';
 import '../Models/Config.dart';
 import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter/scheduler.dart';
 class Login extends StatefulWidget {
   @override
   State createState() => _Login();
@@ -45,9 +47,6 @@ class _Login extends State<Login> with TickerProviderStateMixin {
   FocusNode registerEmailFocus = FocusNode();
   String loginText =  'Welcome back to IBM AR Card';
   String registerText = 'Register now to sync your scan history and\nfavourites, also creating your own AR card!';
-  restoreRegisterText(){
-    registerText = 'Register now to sync your scan history and\nfavourites, also creating your own AR card!';
-  }
   final ERROR_COLOR =  Colors.pink;
   final NORMAL_COLOR = Color.fromARGB(130, 31, 34, 52);
   bool loginValid = true;
@@ -320,7 +319,14 @@ class _Login extends State<Login> with TickerProviderStateMixin {
         )
       );
     }
+    rememberLogin(value)async{
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      await prefs.setBool('remember', value);
+      isRemembered = value;
+      setState(() {
 
+      });
+    }
     Widget getLoginPage() {
       return Column(children: <Widget>[
         Container(
@@ -361,11 +367,7 @@ class _Login extends State<Login> with TickerProviderStateMixin {
                       value: isRemembered,
                       checkColor: Colors.white,
                       activeColor: Color.fromARGB(255, 104, 111, 139),
-                      onChanged: (value){
-                        setState(() {
-                          isRemembered = !isRemembered;
-                        });
-                      },
+                      onChanged: rememberLogin,
                     ) ,
                   ),
                   Text(
@@ -484,6 +486,7 @@ class _Login extends State<Login> with TickerProviderStateMixin {
     @override
     void initState() {
       super.initState();
+      initRememberState();
       SystemChrome.setEnabledSystemUIOverlays([]);
       PermissionHandler().requestPermissions([
         PermissionGroup.camera,
@@ -493,6 +496,20 @@ class _Login extends State<Login> with TickerProviderStateMixin {
       initAnimation();
       loginText =  'Welcome back to IBM AR Card';
       registerText = 'Register now to sync your scan history and\nfavourites, also creating your own AR card!';
+    }
+    initRememberState() {
+      SchedulerBinding.instance.addPostFrameCallback((_) async{
+        SharedPreferences preferences = await SharedPreferences.getInstance();
+        bool value = preferences.getBool('remember')??false;
+        isRemembered = value;
+        setState(() {
+
+        });
+        if(isRemembered){
+          await restoreDetail();
+          onLogin();
+        }
+      });
     }
 
     changeToLogin() {
@@ -550,6 +567,7 @@ class _Login extends State<Login> with TickerProviderStateMixin {
           var errorMsg = jsonDecoder.convert(data.body);
           throw Exception(errorMsg['error']);
         }else {
+          await storeDetail();
           var Msg = jsonDecoder.convert(data.body);
           GlobalData globalData = GlobalData();
           globalData.token = Msg['token'];
@@ -631,5 +649,15 @@ class _Login extends State<Login> with TickerProviderStateMixin {
       }finally{
       pr.hide();
       }
+    }
+    storeDetail()async{
+      SharedPreferences preferences = await SharedPreferences.getInstance();
+      await preferences.setString('E-MAIL', loginEMAIL.text);
+      await preferences.setString('PASSWORD', loginPassword.text);
+    }
+    restoreDetail()async{
+      SharedPreferences preferences = await SharedPreferences.getInstance();
+      loginEMAIL.text = preferences.getString('E-MAIL');
+      loginPassword.text = preferences.getString('PASSWORD');
     }
 }

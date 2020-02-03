@@ -521,9 +521,6 @@ class _Settings extends State<Settings> {
     return;
   }
   onLogOut()async{
-    if(hasChangedContent()){
-      return true;
-    }
     if(await showDialog(
       context: context,
       builder: (context) => new AlertDialog(
@@ -546,7 +543,11 @@ class _Settings extends State<Settings> {
     ) ??
         false){
       GlobalData().clearData();
-      Navigator.push(context, FadeRoute(page: Login()));
+      SharedPreferences preferences = await SharedPreferences.getInstance();
+      await preferences.setString('E-MAIL','');
+      await preferences.setString('PASSWORD', '');
+      await preferences.setBool('remember', false);
+      Navigator.pushReplacement(context, FadeRoute(page: Login()));
     }
   }
 
