@@ -36,6 +36,7 @@ dependencies:
   global_configuration:
   shared_preferences:
   progress_dialog:
+  vibration:
   cached_network_image:
   icon_shadow:
   retry:
@@ -43,6 +44,7 @@ dependencies:
   flutter_launcher_icons:
   qr_flutter:
   path_provider:
+  vector_math: any
   fluttertoast:
   permission_handler:
 dev_dependencies:

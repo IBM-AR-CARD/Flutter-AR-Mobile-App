@@ -17,6 +17,7 @@ import '../Models/UserData.dart';
 import 'package:progress_dialog/progress_dialog.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../Models/Config.dart';
+import 'package:vibration/vibration.dart';
 class ScanQR extends StatefulWidget {
   ScanQR({Key key, this.title}) : super(key: key);
 
@@ -95,23 +96,23 @@ class _ScanQR extends State<ScanQR> {
         body: SwipeDetector(
           onSwipeLeft: () async{
             if (!globalData.hasData) return;
-            controller.pauseCamera();
+//            controller.pauseCamera();
             await Navigator.push(
               context,
               SlideLeftRoute(
                 page: Settings(),
               ),
             );
-            controller.resumeCamera();
+//            controller.resumeCamera();
           },
           onSwipeRight: ()async {
           if (!globalData.hasData) return;
-          controller.pauseCamera();
+//          controller.pauseCamera();
           await Navigator.push(
             context,
             SlideRightRoute(page: MyCards()),
           );
-          controller.resumeCamera();
+//          controller.resumeCamera();
         },
             child: Stack(
               children: <Widget>[
@@ -181,12 +182,12 @@ class _ScanQR extends State<ScanQR> {
                                             pr.hide();
                                           }
                                             _find = true;
-                                          controller.pauseCamera();
+//                                          controller.pauseCamera();
                                             await Navigator.push(
                                             context,
                                             SlideRightRoute(page: UnityPage()),
                                           );
-                                            controller.resumeCamera();
+//                                            controller.resumeCamera();
                                           }
                                       ),
                                       TextSpan(
@@ -273,6 +274,7 @@ class _ScanQR extends State<ScanQR> {
   void _onQRViewCreated(QRViewController controller) {
     this.controller = controller;
     controller.scannedDataStream.listen((scanData) async {
+      Vibration.vibrate(duration: 300);
       if (!_find) {
         _find = true;
         if(scanData.startsWith("${Config.baseURl}/profile/get")){
@@ -339,12 +341,12 @@ class _ScanQR extends State<ScanQR> {
               IconButton(
                 onPressed: ()async {
                   if (!globalData.hasData) return;
-                  controller.pauseCamera();
+//                  controller.pauseCamera();
                   await Navigator.push(
                     context,
                     SlideRightRoute(page: MyCards()),
                   );
-                  controller.resumeCamera();
+//                  controller.resumeCamera();
                 },
                 tooltip: 'List',
                 iconSize: 40.0,
@@ -356,14 +358,14 @@ class _ScanQR extends State<ScanQR> {
               IconButton(
                 onPressed: ()async {
                   if (!globalData.hasData) return;
-                  controller.pauseCamera();
+//                  controller.pauseCamera();
                   await Navigator.push(
                     context,
                     SlideLeftRoute(
                       page: Settings(),
                     ),
                   );
-                  controller.resumeCamera();
+//                  controller.resumeCamera();
                 },
                 tooltip: 'Person',
                 iconSize: 40.0,

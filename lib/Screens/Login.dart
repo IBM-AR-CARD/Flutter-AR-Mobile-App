@@ -5,6 +5,7 @@ import 'dart:io';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'dart:math';
 import 'package:flutter_app/Models/GlobalData.dart';
 import 'package:flutter_app/Models/SlideRoute.dart';
 import 'package:flutter_app/Models/UserData.dart';
@@ -12,9 +13,11 @@ import 'package:flutter_app/Screens/ScanQR.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:progress_dialog/progress_dialog.dart';
 import 'package:swipedetector/swipedetector.dart';
+import 'package:vibration/vibration.dart';
 import '../Models/Config.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:vector_math/vector_math_64.dart' as math;
 import 'package:flutter/scheduler.dart';
 class Login extends StatefulWidget {
   @override
@@ -37,6 +40,10 @@ class _Login extends State<Login> with TickerProviderStateMixin {
   Animation<Offset> offset1;
   Animation<Offset> offset2;
   Animation<Offset> expandOffset;
+  AnimationController loginTextController;
+  Animation<double> loginTextOffset;
+  AnimationController registerTextController;
+  Animation<double> registerTextOffset;
   AnimationController controller1;
   AnimationController controller2;
   AnimationController expandController;
@@ -54,6 +61,15 @@ class _Login extends State<Login> with TickerProviderStateMixin {
   bool loginValid = true;
   bool registerValid = true;
   bool hasExpand = true;
+  toDefaultText(){
+    registerValid  = true;
+    loginValid =  true;
+    loginText =  'Welcome back to IBM AR Card';
+    registerText = 'Register now to sync your scan history and\nfavourites, also creating your own AR card!';
+    setState(() {
+
+    });
+  }
   initAnimation() {
     controller1 =
         AnimationController(vsync: this, duration: Duration(milliseconds: 400));
@@ -61,6 +77,14 @@ class _Login extends State<Login> with TickerProviderStateMixin {
         AnimationController(vsync: this, duration: Duration(milliseconds: 400));
     expandController =
         AnimationController(vsync: this, duration: Duration(milliseconds: 500));
+    loginTextController = new AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 300),
+    )..addListener(()=>setState((){}));
+    registerTextController = new AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 300),
+    )..addListener(()=>setState((){}));
     offset1 = Tween<Offset>(begin: Offset(1.0, 0.0), end: Offset(0.0, 0.0))
         .animate(
         new CurvedAnimation(parent: controller1, curve: Curves.easeInOut));
@@ -73,7 +97,11 @@ class _Login extends State<Login> with TickerProviderStateMixin {
     controller2.animateTo(1,
         duration: Duration(milliseconds: 50), curve: Curves.easeInOut);
   }
-
+  math.Vector3 getTranslation(controller) {
+    double progress = controller.value;
+    double offset = sin(progress * pi * 90)*3;
+    return math.Vector3(offset, 0.0, 0.0);
+  }
   Widget getTextField(String name) {
     bool obscure = false;
     if(name.endsWith("PASSWORD")){
@@ -391,14 +419,17 @@ class _Login extends State<Login> with TickerProviderStateMixin {
           width: _width * 0.95,
           height: _height * 0.1,
           child: Center(
-            child: Text(
-              loginText,
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  color: loginValid ? NORMAL_COLOR : ERROR_COLOR,
-                  fontSize: 18),
-            ),
+            child:Transform(
+              transform: Matrix4.translation(getTranslation(loginTextController)),
+              child: Text(
+                loginText,
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    color: loginValid ? NORMAL_COLOR : ERROR_COLOR,
+                    fontSize: 18),
+              ),
+            )
           ),
         ),
         Container(
@@ -482,14 +513,17 @@ class _Login extends State<Login> with TickerProviderStateMixin {
           width: _width * 0.95,
           height: _height * 0.1,
           child: Center(
-            child: Text(
-              registerText,
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  color: registerValid ? NORMAL_COLOR : ERROR_COLOR,
-                  fontSize: 18),
-            ),
+              child:Transform(
+                transform: Matrix4.translation(getTranslation(registerTextController)),
+                child: Text(
+                  registerText,
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      color: registerValid ? NORMAL_COLOR : ERROR_COLOR,
+                      fontSize: 18),
+                ),
+              )
           ),
         ),
         Container(
@@ -615,7 +649,7 @@ class _Login extends State<Login> with TickerProviderStateMixin {
       registerEmail.dispose();
     }
     onLogin() async{
-
+//      toDefaultText();
       ProgressDialog pr = new ProgressDialog(context, isDismissible: false);
       Map<String,dynamic> map = {
         "email": isLogin ? loginEMAIL.text : registerEmail.text,
@@ -639,34 +673,35 @@ class _Login extends State<Login> with TickerProviderStateMixin {
           Navigator.pushReplacement(context, FadeRoute(page: ScanQR()));
         }
       }catch(err){
+        vibrateLoginText();
+
+        Vibration.vibrate(duration: 200,amplitude: 60);
         toDetailLayout();
         print(err);
-        await showDialog(
-            context: context,
-            builder: (BuildContext context) {
-          // return object of type Dialog
-          return AlertDialog(
-            title: new Text('login fail please try again'),
-            content: new Text((err is SocketException || err is TimeoutException) ? 'Network error' : err.toString()),
-            actions: <Widget>[
-              // usually buttons at the bottom of the dialog
-              new FlatButton(
-                child: new Text("Close"),
-                onPressed: () {
-                  pr.hide();
-                  Navigator.pop(context);
-                },
-              ),
-            ],
-          );
+        String errorCode = (err is SocketException || err is TimeoutException) ? 'Network error' : err.toString();
+        if(errorCode.startsWith('Exception: ')){
+          errorCode = errorCode.replaceFirst('Exception: ', '');
+        }
+        loginText = errorCode;
+        loginValid = false;
+        setState(() {
+
         });
       }finally{
       print('final');
       pr.hide();
       }
     }
-
+    vibrateLoginText()async{
+      await loginTextController.forward();
+      await loginTextController.reverse();
+    }
+  vibrateRegisterText()async{
+    await registerTextController.forward();
+    await registerTextController.reverse();
+  }
     onRegister()async{
+//    toDefaultText();
       ProgressDialog pr = new ProgressDialog(context, isDismissible: false);
       Map<String,dynamic> map = {
         "username":registerUserName.text,
@@ -694,24 +729,18 @@ class _Login extends State<Login> with TickerProviderStateMixin {
       }catch(err){
         pr.hide();
         print(err);
-        await showDialog(
-            context: context,
-            builder: (BuildContext context) {
-          // return object of type Dialog
-          return AlertDialog(
-            title: new Text('register fail please try again'),
-            content: new Text((err is SocketException || err is TimeoutException) ? 'Network error' : err.toString()),
-            actions: <Widget>[
-              // usually buttons at the bottom of the dialog
-              new FlatButton(
-                child: new Text("Close"),
-                onPressed: () {
-                  pr.hide();
-                  Navigator.pop(context);
-                },
-              ),
-            ],
-          );
+        vibrateRegisterText();
+        Vibration.vibrate(duration: 300,amplitude: 60);
+        toDetailLayout();
+        print(err);
+        String errorCode = (err is SocketException || err is TimeoutException) ? 'Network error' : err.toString();
+        if(errorCode.startsWith('Exception: ')){
+          errorCode = errorCode.replaceFirst('Exception: ', '');
+        }
+        registerText = errorCode;
+        registerValid =false;
+        setState(() {
+
         });
       }finally{
       pr.hide();
