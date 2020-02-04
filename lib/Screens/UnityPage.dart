@@ -31,13 +31,11 @@ class UnityPage extends StatefulWidget {
 
 class _UnityPage extends State<UnityPage> {
   Timer _timer;
-  bool _hasScaned = false;
   String currentLocal;
   final double CHAT_ORIGIN_HEIGHT = 150;
   final double CHAT_EXTEND_HEIGHT = 550;
   UnityWidgetController _unityWidgetController;
   final ScrollController bubbleScrollController = ScrollController();
-  bool _hasSpeech = false;
   List<BubblePair> bubbleMap = new List();
   String lastWords = "";
   String lastStatus = "";
@@ -100,7 +98,6 @@ class _UnityPage extends State<UnityPage> {
     await initLocal();
     if (!mounted) return;
     setState(() {
-      _hasSpeech = hasSpeech;
     });
   }
 
@@ -143,8 +140,7 @@ class _UnityPage extends State<UnityPage> {
   }
 
   void startListening() {
-    if (!globalData.hasData || !_hasScaned) return;
-    _hasSpeech = true;
+    if (!globalData.hasData) return;
     lastWords = "";
     speech.listen(
         listenFor: Duration(seconds: 25),
@@ -562,11 +558,9 @@ class _UnityPage extends State<UnityPage> {
 
   navigateToScan() async {
     _tracked = false;
-    _hasScaned = false;
     await _unityWidgetController.pause();
     await Navigator.push(context, FadeRoute(page: ScanQR()));
     updateGender();
-    _hasScaned = true;
     await _unityWidgetController.resume();
     setState(() {});
     setMessage("changeCharacter", widget.globalData.scanData.model);
