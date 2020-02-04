@@ -36,8 +36,10 @@ class _Login extends State<Login> with TickerProviderStateMixin {
   TextEditingController registerEmail = TextEditingController();
   Animation<Offset> offset1;
   Animation<Offset> offset2;
+  Animation<Offset> expandOffset;
   AnimationController controller1;
   AnimationController controller2;
+  AnimationController expandController;
   List<Widget> inputFields = List();
   FocusNode loginEMAILFocus = FocusNode();
   FocusNode loginPasswordFocus = FocusNode();
@@ -51,23 +53,32 @@ class _Login extends State<Login> with TickerProviderStateMixin {
   final NORMAL_COLOR = Color.fromARGB(130, 31, 34, 52);
   bool loginValid = true;
   bool registerValid = true;
-
+  bool hasExpand = true;
   initAnimation() {
     controller1 =
         AnimationController(vsync: this, duration: Duration(milliseconds: 400));
     controller2 =
         AnimationController(vsync: this, duration: Duration(milliseconds: 400));
+    expandController =
+        AnimationController(vsync: this, duration: Duration(milliseconds: 500));
     offset1 = Tween<Offset>(begin: Offset(1.0, 0.0), end: Offset(0.0, 0.0))
         .animate(
         new CurvedAnimation(parent: controller1, curve: Curves.easeInOut));
     offset2 = Tween<Offset>(begin: Offset(-1.0, 0.0), end: Offset(0.0, 0.0))
         .animate(
         new CurvedAnimation(parent: controller2, curve: Curves.easeInOut));
+    expandOffset = Tween<Offset>(begin: Offset(0.0, 1.5), end: Offset(0.0, 0.25))
+        .animate(
+        new CurvedAnimation(parent: expandController, curve: Curves.easeInOut));
     controller2.animateTo(1,
         duration: Duration(milliseconds: 50), curve: Curves.easeInOut);
   }
 
   Widget getTextField(String name) {
+    bool obscure = false;
+    if(name.endsWith("PASSWORD")){
+      obscure = true;
+    }
     return Padding(
         padding: EdgeInsets.only(top: 20),
         child: Container(
@@ -77,6 +88,7 @@ class _Login extends State<Login> with TickerProviderStateMixin {
               borderRadius: BorderRadius.all(Radius.circular(5)),
             ),
             child: TextFormField(
+              obscureText: obscure,
               textInputAction: getTextInputAction(name),
               focusNode: getFocusNode(name),
               onFieldSubmitted: getOnSubmit(name),
@@ -230,16 +242,17 @@ class _Login extends State<Login> with TickerProviderStateMixin {
           .size
           .height;
       return Scaffold(
+        backgroundColor: Color.fromARGB(255, 55, 51, 75),
         resizeToAvoidBottomInset: true,
         body: SingleChildScrollView(
           child:Container(
-                  color: Colors.white,
                   width: _width,
                   height: _height,
-                  child: Column(
+                  child: Stack(
                     children: <Widget>[
-                      Container(
-                        height: _height * 0.2,
+                      AnimatedContainer(
+                        duration: Duration(milliseconds: 500),
+                        height: hasExpand ? _height : _height*0.2 ,
                         decoration: BoxDecoration(
                             gradient: LinearGradient(
                                 begin: Alignment.topCenter,
@@ -260,64 +273,109 @@ class _Login extends State<Login> with TickerProviderStateMixin {
                           ),
                         ),
                       ),
-                      Container(
-                        height: _height * 0.1,
-                        child: Row(
-                          children: <Widget>[
-                            AnimatedContainer(
-                              width: _width * 0.5,
-                              height: _height * 0.1,
-                              duration: Duration(milliseconds: 500),
-                              color: isLogin
-                                  ? Colors.white
-                                  : Color.fromARGB(255, 219, 220, 230),
-                              child: FlatButton(
-                                onPressed: changeToLogin,
-                                child: Text(
-                                  'LOGIN',
-                                  style: TextStyle(
-                                      fontSize: 20,
-                                      fontWeight: FontWeight.bold,
-                                      color: Color.fromARGB(255, 69, 67, 89)),
+//                      Align(
+//                        alignment: Alignment.topCenter,
+//                        child: FlatButton(
+//                          child: Text('A'),
+//                          onPressed: (){
+//                            if(hasExpand){
+//                              toDefaultLayout();
+//                            }else{
+//                              toDetailLayout();
+//                            }
+//                          },
+//                        ),
+//                      ),
+                      SlideTransition(
+                        position: expandOffset,
+                        child:ClipRRect(
+                            borderRadius: BorderRadius.only(topLeft:Radius.circular(20.0),topRight: Radius.circular(20.0)),
+                        child:Container(
+                          color: Colors.transparent,
+                          height: _height*0.8,
+                          child: Column(
+                            children: <Widget>[
+                              Container(
+                                height: _height * 0.1,
+                                child: Row(
+                                  children: <Widget>[
+                                    AnimatedContainer(
+                                      width: _width * 0.5,
+                                      height: _height * 0.1,
+                                      duration: Duration(milliseconds: 500),
+                                      color: isLogin
+                                          ? Colors.white
+                                          : Color.fromARGB(255, 219, 220, 230),
+                                      child: FlatButton(
+                                        onPressed: changeToLogin,
+                                        child: Text(
+                                          'LOGIN',
+                                          style: TextStyle(
+                                              fontSize: 20,
+                                              fontWeight: FontWeight.bold,
+                                              color: Color.fromARGB(255, 69, 67, 89)),
+                                        ),
+                                      ),
+                                    ),
+                                    AnimatedContainer(
+                                      width: _width * 0.5,
+                                      height: _height * 0.1,
+                                      duration: Duration(milliseconds: 500),
+                                      color: !isLogin
+                                          ? Colors.white
+                                          : Color.fromARGB(255, 219, 220, 230),
+                                      child: FlatButton(
+                                        onPressed: changeToRegister,
+                                        child: Text(
+                                          'REGISTER',
+                                          style: TextStyle(
+                                              fontSize: 20,
+                                              fontWeight: FontWeight.bold,
+                                              color: Color.fromARGB(255, 69, 67, 89)),
+                                        ),
+                                      ),
+                                    ),
+                                  ],
                                 ),
                               ),
-                            ),
-                            AnimatedContainer(
-                              width: _width * 0.5,
-                              height: _height * 0.1,
-                              duration: Duration(milliseconds: 500),
-                              color: !isLogin
-                                  ? Colors.white
-                                  : Color.fromARGB(255, 219, 220, 230),
-                              child: FlatButton(
-                                onPressed: changeToRegister,
-                                child: Text(
-                                  'REGISTER',
-                                  style: TextStyle(
-                                      fontSize: 20,
-                                      fontWeight: FontWeight.bold,
-                                      color: Color.fromARGB(255, 69, 67, 89)),
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
+                              Container(
+                                color: Colors.white,
+                                child: Stack(children: [
+                                  SlideTransition(
+                                    position: offset1,
+                                    child: getRegisterPage(),
+                                  ),
+                                  SlideTransition(
+                                    position: offset2,
+                                    child: getLoginPage(),
+                                  ),
+                                ]),
+                              )
+                            ],
+                          ),
+                        )
                       ),
-                      Stack(children: [
-                        SlideTransition(
-                          position: offset1,
-                          child: getRegisterPage(),
-                        ),
-                        SlideTransition(
-                          position: offset2,
-                          child: getLoginPage(),
-                        ),
-                      ]),
+                      )
                     ],
                   ),
                 )
         )
       );
+    }
+    toDefaultLayout()async{
+      hasExpand = true;
+      setState(() {
+
+      });
+      await expandController.reverse();
+    }
+    toDetailLayout()async{
+      hasExpand = false;
+
+      setState(() {
+
+      });
+      await expandController.forward();
     }
     rememberLogin(value)async{
       SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -486,6 +544,7 @@ class _Login extends State<Login> with TickerProviderStateMixin {
     @override
     void initState() {
       super.initState();
+      hasExpand = true;
       initRememberState();
       SystemChrome.setEnabledSystemUIOverlays([]);
       PermissionHandler().requestPermissions([
@@ -502,11 +561,14 @@ class _Login extends State<Login> with TickerProviderStateMixin {
         SharedPreferences preferences = await SharedPreferences.getInstance();
         bool value = preferences.getBool('remember')??false;
         isRemembered = value;
+        if(!isRemembered){
+          await toDetailLayout();
+        }
         setState(() {
-
         });
         if(isRemembered){
           await restoreDetail();
+          await Future.delayed(Duration(seconds:1));
           onLogin();
         }
       });
@@ -561,12 +623,12 @@ class _Login extends State<Login> with TickerProviderStateMixin {
       };
       String value = jsonEncoder.convert(map);
       try{
-        print('request');
         final data = await http.post('${Config.baseURl}/user/login', headers: {"Content-Type": "application/json"}, body: value).timeout(Duration(seconds: 5));
         if(data.statusCode != 200){
           var errorMsg = jsonDecoder.convert(data.body);
           throw Exception(errorMsg['error']);
         }else {
+          await toDefaultLayout();
           await storeDetail();
           var Msg = jsonDecoder.convert(data.body);
           GlobalData globalData = GlobalData();
@@ -577,6 +639,7 @@ class _Login extends State<Login> with TickerProviderStateMixin {
           Navigator.pushReplacement(context, FadeRoute(page: ScanQR()));
         }
       }catch(err){
+        toDetailLayout();
         print(err);
         await showDialog(
             context: context,
@@ -613,6 +676,9 @@ class _Login extends State<Login> with TickerProviderStateMixin {
       String value = jsonEncoder.convert(map);
       try{
         print('request');
+        if(registerPassword.text != registerPasswordConfirm.text){
+          throw Exception('pasword must match confirm password');
+        }
         pr.show();
         final data = await http.post('${Config.baseURl}/user/register', headers: {"Content-Type": "application/json"}, body: value).timeout(Duration(seconds: 5));
         pr.hide();
@@ -621,6 +687,7 @@ class _Login extends State<Login> with TickerProviderStateMixin {
           throw Exception(errorMsg['error']);
         }else {
           var Msg = jsonDecoder.convert(data.body);
+          isRemembered = true;
           pr.hide();
           await onLogin();
         }
@@ -652,8 +719,8 @@ class _Login extends State<Login> with TickerProviderStateMixin {
     }
     storeDetail()async{
       SharedPreferences preferences = await SharedPreferences.getInstance();
-      await preferences.setString('E-MAIL', loginEMAIL.text);
-      await preferences.setString('PASSWORD', loginPassword.text);
+      await preferences.setString('E-MAIL', isLogin ? loginEMAIL.text : registerEmail.text);
+      await preferences.setString('PASSWORD', isLogin ? loginPassword.text: registerPassword.text);
     }
     restoreDetail()async{
       SharedPreferences preferences = await SharedPreferences.getInstance();

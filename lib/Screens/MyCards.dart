@@ -384,7 +384,7 @@ class _MyCards extends State<MyCards> with TickerProviderStateMixin {
       child: Row(
         children: <Widget>[
           Padding(
-            padding: EdgeInsets.only(left: 10),
+            padding: EdgeInsets.only(left: 0),
             child: SizedBox(
               child: ClipRRect(
                 borderRadius: new BorderRadius.all(const Radius.circular(40.0)),
