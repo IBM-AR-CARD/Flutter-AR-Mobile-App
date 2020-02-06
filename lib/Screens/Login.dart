@@ -201,7 +201,7 @@ class _Login extends State<Login> with TickerProviderStateMixin {
         return loginPasswordFocus;
     }
   }
-    TextEditingController getController(String name) {
+  TextEditingController getController(String name) {
       switch (name) {
         case 'registerUSERNAME':
           return registerUserName;
@@ -217,8 +217,7 @@ class _Login extends State<Login> with TickerProviderStateMixin {
           return loginPassword;
       }
     }
-
-    Icon getPrefixIcon(String name) {
+  Icon getPrefixIcon(String name) {
       switch (name) {
         case 'loginEMAIL':
           return Icon(
@@ -260,7 +259,7 @@ class _Login extends State<Login> with TickerProviderStateMixin {
     }
 
     @override
-    Widget build(BuildContext context) {
+  Widget build(BuildContext context) {
       _width = MediaQuery
           .of(context)
           .size
@@ -301,19 +300,6 @@ class _Login extends State<Login> with TickerProviderStateMixin {
                           ),
                         ),
                       ),
-//                      Align(
-//                        alignment: Alignment.topCenter,
-//                        child: FlatButton(
-//                          child: Text('A'),
-//                          onPressed: (){
-//                            if(hasExpand){
-//                              toDefaultLayout();
-//                            }else{
-//                              toDetailLayout();
-//                            }
-//                          },
-//                        ),
-//                      ),
                       SlideTransition(
                         position: expandOffset,
                         child:ClipRRect(
@@ -390,370 +376,386 @@ class _Login extends State<Login> with TickerProviderStateMixin {
         )
       );
     }
-    toDefaultLayout()async{
-      hasExpand = true;
-      setState(() {
+  toDefaultLayout()async{
+    hasExpand = true;
+    setState(() {
 
-      });
-      await expandController.reverse();
-    }
-    toDetailLayout()async{
-      hasExpand = false;
+    });
+    await expandController.reverse();
+  }
+  toDetailLayout()async{
+    hasExpand = false;
 
-      setState(() {
+    setState(() {
 
-      });
-      await expandController.forward();
-    }
-    rememberLogin(value)async{
-      SharedPreferences prefs = await SharedPreferences.getInstance();
-      await prefs.setBool('remember', value);
-      isRemembered = value;
-      setState(() {
+    });
+    await expandController.forward();
+  }
+  rememberLogin(value)async{
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setBool('remember', value);
+    isRemembered = value;
+    setState(() {
 
-      });
-    }
-    Widget getLoginPage() {
-      return Column(children: <Widget>[
-        Container(
-          width: _width * 0.95,
-          height: _height * 0.1,
-          child: Center(
-            child:Transform(
-              transform: Matrix4.translation(getTranslation(loginTextController)),
-              child: Text(
-                loginText,
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    color: loginValid ? NORMAL_COLOR : ERROR_COLOR,
-                    fontSize: 18),
-              ),
-            )
-          ),
+    });
+  }
+  Widget getLoginPage() {
+    return Column(children: <Widget>[
+      Container(
+        width: _width * 0.95,
+        height: _height * 0.1,
+        child: Center(
+          child:Transform(
+            transform: Matrix4.translation(getTranslation(loginTextController)),
+            child: Text(
+              loginText,
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  color: loginValid ? NORMAL_COLOR : ERROR_COLOR,
+                  fontSize: 18),
+            ),
+          )
         ),
-        Container(
-          height: _height * 0.45,
-          width: _width * 0.8,
-          child: Column(
-            children: <Widget>[
-              getTextField('loginEMAIL'),
-              Divider(
-                color: Colors.transparent,
-                height: 15,
-              ),
-              getTextField('loginPASSWORD'),
-              Divider(
-                color: Colors.transparent,
-                height: 15,
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: <Widget>[
-                  Padding(
-                    padding: EdgeInsets.only(left: _width*0.17),
-                    child:Checkbox(
-                      value: isRemembered,
-                      checkColor: Colors.white,
-                      activeColor: Color.fromARGB(255, 104, 111, 139),
-                      onChanged: rememberLogin,
-                    ) ,
-                  ),
-                  Text(
-                      'Remember me',
-                    style: TextStyle(
-                      color: Color.fromARGB(255, 104, 111, 139),
-                      fontWeight: FontWeight.bold,
-                      fontSize: 15
-                    ),
-                  )
-                ],
-              )
-            ],
-          ),
-        ),
-        Container(
-            height: _height * 0.15,
-            width: _width,
-            color: Colors.white,
-            child: Column(
+      ),
+      Container(
+        height: _height * 0.45,
+        width: _width * 0.8,
+        child: Column(
+          children: <Widget>[
+            getTextField('loginEMAIL'),
+            Divider(
+              color: Colors.transparent,
+              height: 15,
+            ),
+            getTextField('loginPASSWORD'),
+            Divider(
+              color: Colors.transparent,
+              height: 15,
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.start,
               children: <Widget>[
-                Container(
-                  color: Color.fromARGB(255, 104, 111, 139),
-                  width: _width * 0.8,
-                  height: _height * 0.07,
-                  child: FlatButton(
-                    onPressed: onLogin,
-                    child: Text(
-                      'LOG IN',
-                      style: TextStyle(
-                          fontSize: 25,
-                          color: Colors.white,
-                          fontWeight: FontWeight.bold),
-                    ),
-                  ),
+                Padding(
+                  padding: EdgeInsets.only(left: _width*0.17),
+                  child:Checkbox(
+                    value: isRemembered,
+                    checkColor: Colors.white,
+                    activeColor: Color.fromARGB(255, 104, 111, 139),
+                    onChanged: rememberLogin,
+                  ) ,
                 ),
-                FlatButton(
-                  child: Text(
-                    'Forgot your user name or password?',
-                    style: TextStyle(
-                      decoration: TextDecoration.underline,
-                      color: Color.fromARGB(180, 104, 111, 139),
-                    ),
+                Text(
+                    'Remember me',
+                  style: TextStyle(
+                    color: Color.fromARGB(255, 104, 111, 139),
+                    fontWeight: FontWeight.bold,
+                    fontSize: 15
                   ),
                 )
               ],
-            ))
-      ]);
-    }
-
-    Widget getRegisterPage() {
-      return Column(children: <Widget>[
-        Container(
-          width: _width * 0.95,
-          height: _height * 0.1,
-          child: Center(
-              child:Transform(
-                transform: Matrix4.translation(getTranslation(registerTextController)),
-                child: Text(
-                  registerText,
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      color: registerValid ? NORMAL_COLOR : ERROR_COLOR,
-                      fontSize: 18),
-                ),
-              )
-          ),
+            )
+          ],
         ),
-        Container(
-          height: _height * 0.45,
-          width: _width * 0.8,
-          child: Column(
-            children: <Widget>[
-              getTextField('registerUSERNAME'),
-              Divider(
-                color: Colors.transparent,
-                height: 15,
-              ),
-              getTextField('registerE-MAIL'),
-              Divider(
-                color: Colors.transparent,
-                height: 15,
-              ),
-              getTextField('registerPASSWORD'),
-              Divider(
-                color: Colors.transparent,
-                height: 15,
-              ),
-              getTextField('registerCONFIRM PASSWORD'),
-            ],
-          ),
-        ),
-        Container(
+      ),
+      Container(
           height: _height * 0.15,
           width: _width,
           color: Colors.white,
-          child: Column(children: <Widget>[
-            Container(
-              color: Color.fromARGB(255, 104, 111, 139),
-              width: _width * 0.8,
-              height: _height * 0.07,
-              child: FlatButton(
-                onPressed: onRegister,
-                child: Text(
-                  'REGISTER',
-                  style: TextStyle(
-                      fontSize: 25,
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold),
+          child: Column(
+            children: <Widget>[
+              Container(
+                color: Color.fromARGB(255, 104, 111, 139),
+                width: _width * 0.8,
+                height: _height * 0.07,
+                child: FlatButton(
+                  onPressed: onLogin,
+                  child: Text(
+                    'LOG IN',
+                    style: TextStyle(
+                        fontSize: 25,
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold),
+                  ),
                 ),
               ),
-            ),
-          ]),
-        )
-      ]);
-    }
-
-    @override
-    void initState() {
-      super.initState();
-      hasExpand = true;
-      initRememberState();
-      SystemChrome.setEnabledSystemUIOverlays([]);
-      PermissionHandler().requestPermissions([
-        PermissionGroup.camera,
-        PermissionGroup.microphone,
-        PermissionGroup.storage
-      ]);
-      initAnimation();
-      loginText =  'Welcome back to IBM AR Card';
-      registerText = 'Register now to sync your scan history and\nfavourites, also creating your own AR card!';
-    }
-    initRememberState() {
-      SchedulerBinding.instance.addPostFrameCallback((_) async{
-        SharedPreferences preferences = await SharedPreferences.getInstance();
-        bool value = preferences.getBool('remember')??false;
-        isRemembered = value;
-        if(!isRemembered){
-          await toDetailLayout();
-        }
-        setState(() {
-        });
-        if(isRemembered){
-          await restoreDetail();
-          await Future.delayed(Duration(seconds:1));
-          onLogin();
-        }
-      });
-    }
-
-    changeToLogin() {
-      if (isLogin) return;
-      isLogin = true;
-//      registerPasswordConfirm.text = '';
-//      registerPassword.text = '';
-//      registerEmail.text = '';
-//      registerUserName.text = '';
-      controller2.forward();
-      controller1.reverse();
-      setState(() {});
-    }
-
-    changeToRegister() {
-      if (!isLogin) return;
-      isLogin = false;
-//      loginPassword.text = '';
-//      loginEMAIL.text = '';
-      controller1.forward();
-      controller2.reverse();
-      setState(() {});
-    }
-
-    @override
-    void dispose() {
-      super.dispose();
-      controller1.dispose();
-      controller2.dispose();
-      loginEMAILFocus.dispose();
-      loginPasswordFocus.dispose();
-      registerUserNameFocus.dispose();
-      registerPasswordFocus.dispose();
-      registerPasswordConfirmFocus.dispose();
-      registerEmailFocus.dispose();
-      loginEMAIL.dispose();
-      loginPassword.dispose();
-      registerUserName.dispose();
-      registerPassword.dispose();
-      registerPasswordConfirm.dispose();
-      registerEmail.dispose();
-    }
-    onLogin() async{
-//      toDefaultText();
-      ProgressDialog pr = new ProgressDialog(context, isDismissible: false);
-      Map<String,dynamic> map = {
-        "email": isLogin ? loginEMAIL.text : registerEmail.text,
-        "password": isLogin ? loginPassword.text : registerPassword.text,
-      };
-      String value = jsonEncoder.convert(map);
-      try{
-        final data = await http.post('${Config.baseURl}/user/login', headers: {"Content-Type": "application/json"}, body: value).timeout(Duration(seconds: 5));
-        if(data.statusCode != 200){
-          var errorMsg = jsonDecoder.convert(data.body);
-          throw Exception(errorMsg['error']);
-        }else {
-          await toDefaultLayout();
-          await storeDetail();
-          var Msg = jsonDecoder.convert(data.body);
-          GlobalData globalData = GlobalData();
-          globalData.token = Msg['token'];
-          globalData.id = Msg['_id'];
-          globalData.hasLogin = true;
-          pr.hide();
-          Navigator.pushReplacement(context, FadeRoute(page: ScanQR()));
-        }
-      }catch(err){
-        vibrateLoginText();
-
-        Vibration.vibrate(duration: 200,amplitude: 60);
-        toDetailLayout();
-        print(err);
-        String errorCode = (err is SocketException || err is TimeoutException) ? 'Network error' : err.toString();
-        if(errorCode.startsWith('Exception: ')){
-          errorCode = errorCode.replaceFirst('Exception: ', '');
-        }
-        loginText = errorCode;
-        loginValid = false;
-        setState(() {
-
-        });
-      }finally{
-      print('final');
-      pr.hide();
-      }
-    }
-    vibrateLoginText()async{
-      await loginTextController.forward();
-      await loginTextController.reverse();
-    }
-  vibrateRegisterText()async{
-    await registerTextController.forward();
-    await registerTextController.reverse();
+              FlatButton(
+                child: Text(
+                  'Forgot your user name or password?',
+                  style: TextStyle(
+                    decoration: TextDecoration.underline,
+                    color: Color.fromARGB(180, 104, 111, 139),
+                  ),
+                ),
+              )
+            ],
+          ))
+    ]);
   }
-    onRegister()async{
-//    toDefaultText();
-      ProgressDialog pr = new ProgressDialog(context, isDismissible: false);
-      Map<String,dynamic> map = {
-        "username":registerUserName.text,
-        "email": registerEmail.text,
-        "password": registerPassword.text,
-      };
-      String value = jsonEncoder.convert(map);
-      try{
-        print('request');
-        if(registerPassword.text != registerPasswordConfirm.text){
-          throw Exception('pasword must match confirm password');
-        }
-        pr.show();
-        final data = await http.post('${Config.baseURl}/user/register', headers: {"Content-Type": "application/json"}, body: value).timeout(Duration(seconds: 5));
-        pr.hide();
-        if(data.statusCode != 200){
-          var errorMsg = jsonDecoder.convert(data.body);
-          throw Exception(errorMsg['error']);
-        }else {
-          var Msg = jsonDecoder.convert(data.body);
-          isRemembered = true;
-          pr.hide();
-          await onLogin();
-        }
-      }catch(err){
-        pr.hide();
-        print(err);
-        vibrateRegisterText();
-        Vibration.vibrate(duration: 300,amplitude: 60);
-        toDetailLayout();
-        print(err);
-        String errorCode = (err is SocketException || err is TimeoutException) ? 'Network error' : err.toString();
-        if(errorCode.startsWith('Exception: ')){
-          errorCode = errorCode.replaceFirst('Exception: ', '');
-        }
-        registerText = errorCode;
-        registerValid =false;
-        setState(() {
 
-        });
-      }finally{
-      pr.hide();
+  Widget getRegisterPage() {
+    return Column(children: <Widget>[
+      Container(
+        width: _width * 0.95,
+        height: _height * 0.1,
+        child: Center(
+            child:Transform(
+              transform: Matrix4.translation(getTranslation(registerTextController)),
+              child: Text(
+                registerText,
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    color: registerValid ? NORMAL_COLOR : ERROR_COLOR,
+                    fontSize: 18),
+              ),
+            )
+        ),
+      ),
+      Container(
+        height: _height * 0.45,
+        width: _width * 0.8,
+        child: Column(
+          children: <Widget>[
+            getTextField('registerUSERNAME'),
+            Divider(
+              color: Colors.transparent,
+              height: 15,
+            ),
+            getTextField('registerE-MAIL'),
+            Divider(
+              color: Colors.transparent,
+              height: 15,
+            ),
+            getTextField('registerPASSWORD'),
+            Divider(
+              color: Colors.transparent,
+              height: 15,
+            ),
+            getTextField('registerCONFIRM PASSWORD'),
+          ],
+        ),
+      ),
+      Container(
+        height: _height * 0.15,
+        width: _width,
+        color: Colors.white,
+        child: Column(children: <Widget>[
+          Container(
+            color: Color.fromARGB(255, 104, 111, 139),
+            width: _width * 0.8,
+            height: _height * 0.07,
+            child: FlatButton(
+              onPressed: onRegister,
+              child: Text(
+                'REGISTER',
+                style: TextStyle(
+                    fontSize: 25,
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold),
+              ),
+            ),
+          ),
+        ]),
+      )
+    ]);
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    hasExpand = true;
+    initRememberState();
+    SystemChrome.setEnabledSystemUIOverlays([]);
+    PermissionHandler().requestPermissions([
+      PermissionGroup.camera,
+      PermissionGroup.microphone,
+      PermissionGroup.storage
+    ]);
+    initAnimation();
+    loginText =  'Welcome back to IBM AR Card';
+    registerText = 'Register now to sync your scan history and\nfavourites, also creating your own AR card!';
+  }
+  initRememberState() {
+    SchedulerBinding.instance.addPostFrameCallback((_) async{
+      SharedPreferences preferences = await SharedPreferences.getInstance();
+      bool value = preferences.getBool('remember')??false;
+      GlobalData globalData = GlobalData();
+      globalData.hasLogin = preferences.getBool('hasLogin')??false;
+      if(globalData.wantLogin){
+        await toDetailLayout();
+        return;
+      }else if(!globalData.hasLogin){
+        await Future.delayed(Duration(seconds:1));
+        globalData.resumeQRViewController();
+        Navigator.pushReplacement(context, FadeRoute(page: ScanQR()));
+        return;
       }
+      isRemembered = value;
+      setState(() {
+      });
+      if(isRemembered){
+        await restoreDetail();
+        await Future.delayed(Duration(seconds:1));
+        onLogin();
+      }else{
+        await preferences.setBool('hasLogin', false);
+        globalData.hasLogin = false;
+        await Future.delayed(Duration(seconds:1));
+        globalData.resumeQRViewController();
+        Navigator.pushReplacement(context, FadeRoute(page: ScanQR()));
+        return;
+      }
+    });
+  }
+
+  changeToLogin() {
+    if (isLogin) return;
+    isLogin = true;
+  //      registerPasswordConfirm.text = '';
+  //      registerPassword.text = '';
+  //      registerEmail.text = '';
+  //      registerUserName.text = '';
+    controller2.forward();
+    controller1.reverse();
+    setState(() {});
+  }
+
+  changeToRegister() {
+    if (!isLogin) return;
+    isLogin = false;
+    controller1.forward();
+    controller2.reverse();
+    setState(() {});
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    controller1.dispose();
+    controller2.dispose();
+    loginEMAILFocus.dispose();
+    loginPasswordFocus.dispose();
+    registerUserNameFocus.dispose();
+    registerPasswordFocus.dispose();
+    registerPasswordConfirmFocus.dispose();
+    registerEmailFocus.dispose();
+    loginEMAIL.dispose();
+    loginPassword.dispose();
+    registerUserName.dispose();
+    registerPassword.dispose();
+    registerPasswordConfirm.dispose();
+    registerEmail.dispose();
+  }
+  onLogin() async{
+  //      toDefaultText();
+    ProgressDialog pr = new ProgressDialog(context, isDismissible: false);
+    Map<String,dynamic> map = {
+      "email": isLogin ? loginEMAIL.text : registerEmail.text,
+      "password": isLogin ? loginPassword.text : registerPassword.text,
+    };
+    String value = jsonEncoder.convert(map);
+    try{
+      final data = await http.post('${Config.baseURl}/user/login', headers: {"Content-Type": "application/json"}, body: value).timeout(Duration(seconds: 5));
+      if(data.statusCode != 200){
+        var errorMsg = jsonDecoder.convert(data.body);
+        throw Exception(errorMsg['error']);
+      }else {
+        await toDefaultLayout();
+        await storeDetail();
+        var Msg = jsonDecoder.convert(data.body);
+        GlobalData globalData = GlobalData();
+        globalData.token = Msg['token'];
+        globalData.id = Msg['_id'];
+        globalData.hasLogin = true;
+        SharedPreferences sharedPreferences =await SharedPreferences.getInstance();
+        await sharedPreferences.setBool('hasLogin',true);
+        pr.hide();
+        globalData.resumeQRViewController();
+        Navigator.pushReplacement(context, FadeRoute(page: ScanQR()));
+      }
+    }catch(err){
+      vibrateLoginText();
+
+      Vibration.vibrate(duration: 200,amplitude: 60);
+      toDetailLayout();
+      print(err);
+      String errorCode = (err is SocketException || err is TimeoutException) ? 'Network error' : err.toString();
+      if(errorCode.startsWith('Exception: ')){
+        errorCode = errorCode.replaceFirst('Exception: ', '');
+      }
+      loginText = errorCode;
+      loginValid = false;
+      setState(() {
+
+      });
+    }finally{
+    print('final');
+    pr.hide();
     }
-    storeDetail()async{
-      SharedPreferences preferences = await SharedPreferences.getInstance();
-      await preferences.setString('E-MAIL', isLogin ? loginEMAIL.text : registerEmail.text);
-      await preferences.setString('PASSWORD', isLogin ? loginPassword.text: registerPassword.text);
+  }
+  vibrateLoginText()async{
+    await loginTextController.forward();
+    await loginTextController.reverse();
+  }
+  vibrateRegisterText()async{
+  await registerTextController.forward();
+  await registerTextController.reverse();
+  }
+  onRegister()async{
+  //    toDefaultText();
+    ProgressDialog pr = new ProgressDialog(context, isDismissible: false);
+    Map<String,dynamic> map = {
+      "username":registerUserName.text,
+      "email": registerEmail.text,
+      "password": registerPassword.text,
+    };
+    String value = jsonEncoder.convert(map);
+    try{
+      print('request');
+      if(registerPassword.text != registerPasswordConfirm.text){
+        throw Exception('pasword must match confirm password');
+      }
+      pr.show();
+      final data = await http.post('${Config.baseURl}/user/register', headers: {"Content-Type": "application/json"}, body: value).timeout(Duration(seconds: 5));
+      pr.hide();
+      if(data.statusCode != 200){
+        var errorMsg = jsonDecoder.convert(data.body);
+        throw Exception(errorMsg['error']);
+      }else {
+        var Msg = jsonDecoder.convert(data.body);
+        isRemembered = true;
+        pr.hide();
+        await onLogin();
+      }
+    }catch(err){
+      pr.hide();
+      print(err);
+      vibrateRegisterText();
+      Vibration.vibrate(duration: 300,amplitude: 60);
+      toDetailLayout();
+      print(err);
+      String errorCode = (err is SocketException || err is TimeoutException) ? 'Network error' : err.toString();
+      if(errorCode.startsWith('Exception: ')){
+        errorCode = errorCode.replaceFirst('Exception: ', '');
+      }
+      registerText = errorCode;
+      registerValid =false;
+      setState(() {
+
+      });
+    }finally{
+    pr.hide();
     }
-    restoreDetail()async{
-      SharedPreferences preferences = await SharedPreferences.getInstance();
-      loginEMAIL.text = preferences.getString('E-MAIL');
-      loginPassword.text = preferences.getString('PASSWORD');
-    }
+  }
+  storeDetail()async{
+    SharedPreferences preferences = await SharedPreferences.getInstance();
+    await preferences.setString('E-MAIL', isLogin ? loginEMAIL.text : registerEmail.text);
+    await preferences.setString('PASSWORD', isLogin ? loginPassword.text: registerPassword.text);
+  }
+  restoreDetail()async{
+    SharedPreferences preferences = await SharedPreferences.getInstance();
+    loginEMAIL.text = preferences.getString('E-MAIL');
+    loginPassword.text = preferences.getString('PASSWORD');
+  }
 }

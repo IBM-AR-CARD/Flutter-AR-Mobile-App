@@ -2,6 +2,7 @@ import 'dart:ui';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_app/Models/GlobalData.dart';
+import 'package:flutter_app/Screens/Login.dart';
 import '../Screens/MyCards.dart';
 import '../Screens/ScanQR.dart';
 import '../Models/SlideRoute.dart';
@@ -184,13 +185,7 @@ class _UnityPage extends State<UnityPage> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: <Widget>[
               IconButton(
-                onPressed: () {
-                  if (!globalData.hasData) return;
-                  Navigator.push(
-                    context,
-                    SlideRightRoute(page: MyCards()),
-                  );
-                },
+                onPressed: navigateToMyCards,
                 tooltip: 'List',
                 iconSize: 40.0,
                 icon: Icon(
@@ -211,19 +206,7 @@ class _UnityPage extends State<UnityPage> {
                     size: 60,
                   )),
               IconButton(
-                onPressed: () async {
-                  if (!globalData.hasData) return;
-                  _unityWidgetController.pause();
-                  await Navigator.push(
-                    context,
-                    SlideLeftRoute(
-                      page: Settings(),
-                    ),
-                  );
-                  _unityWidgetController.resume();
-                  updateGender();
-
-                },
+                onPressed: navigateToSetting,
                 tooltip: 'Person',
                 iconSize: 40.0,
                 icon: Icon(
@@ -555,15 +538,45 @@ class _UnityPage extends State<UnityPage> {
       ),
     );
   }
-
+  navigateToMyCards()async{
+    if (!globalData.hasLogin){
+      globalData.wantLogin = true;
+      _tracked = false;
+      globalData.stopAllController();
+      await Navigator.push(
+          context,
+          FadeRoute(
+            page: Login(),
+          ));
+    }else{
+      await Navigator.push(context, SlideRightRoute(page: MyCards()));
+    }
+  }
   navigateToScan() async {
     _tracked = false;
-    await _unityWidgetController.pause();
+    globalData.resumeQRViewController();
     await Navigator.push(context, FadeRoute(page: ScanQR()));
     updateGender();
-    await _unityWidgetController.resume();
     setState(() {});
-    setMessage("changeCharacter", widget.globalData.scanData.model);
+  }
+  navigateToSetting()async{
+    _tracked = false;
+    if (!globalData.hasLogin){
+      globalData.wantLogin = true;
+      globalData.stopAllController();
+      await Navigator.push(
+          context,
+          FadeRoute(
+            page: Login(),
+          ));
+    }else{
+      await Navigator.push(context, SlideLeftRoute(page: Settings()));
+      updateGender();
+      setMessage("changeCharacter", widget.globalData.scanData.model);
+    }
+    setState(() {
+
+    });
   }
 
   flipHint() {

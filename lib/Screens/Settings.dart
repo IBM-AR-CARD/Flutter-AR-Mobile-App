@@ -547,6 +547,8 @@ class _Settings extends State<Settings> {
       await preferences.setString('E-MAIL','');
       await preferences.setString('PASSWORD', '');
       await preferences.setBool('remember', false);
+      GlobalData().wantLogin = true;
+      GlobalData().stopAllController();
       Navigator.pushReplacement(context, FadeRoute(page: Login()));
     }
   }

@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:ui';
+import 'package:flutter_app/Screens/Login.dart';
 import 'package:flutter_app/Screens/UnityPage.dart';
 import 'package:http/http.dart' as http;
 import 'package:retry/retry.dart';
@@ -38,11 +39,17 @@ class _ScanQR extends State<ScanQR> {
   @override
   void initState() {
     super.initState();
-    print('initState');
     globalData = GlobalData();
-    fetchUserData = fetchPost();
-  }
+    if(globalData.hasLogin){
+      fetchUserData = fetchPost();
+    }else{
+      fetchUserData = fetchNoneUserData();
+    }
 
+  }
+  fetchNoneUserData()async{
+    globalData.hasData = true;
+  }
   fetchPostedData(response) async {
     if (response.statusCode == 200) {
       userData = UserData.toUserData(response.body);
@@ -94,26 +101,8 @@ class _ScanQR extends State<ScanQR> {
     return WillPopScope(
       child: Scaffold(
         body: SwipeDetector(
-          onSwipeLeft: () async{
-            if (!globalData.hasData) return;
-//            controller.pauseCamera();
-            await Navigator.push(
-              context,
-              SlideLeftRoute(
-                page: Settings(),
-              ),
-            );
-//            controller.resumeCamera();
-          },
-          onSwipeRight: ()async {
-          if (!globalData.hasData) return;
-//          controller.pauseCamera();
-          await Navigator.push(
-            context,
-            SlideRightRoute(page: MyCards()),
-          );
-//          controller.resumeCamera();
-        },
+          onSwipeLeft: navigateToSetting,
+          onSwipeRight: navigateToMyCards,
             child: Stack(
               children: <Widget>[
                 Container(
@@ -177,17 +166,16 @@ class _ScanQR extends State<ScanQR> {
                                           try {
                                             pr = new ProgressDialog(context, isDismissible: false);
                                             pr.show();
-                                            await setDemoUserData("demo");
+                                            await setDemoUserData();
                                           }finally{
                                             pr.hide();
                                           }
                                             _find = true;
-//                                          controller.pauseCamera();
+                                          globalData.resumeUnityController();
                                             await Navigator.push(
                                             context,
-                                            SlideRightRoute(page: UnityPage()),
+                                            FadeRoute(page: UnityPage()),
                                           );
-//                                            controller.resumeCamera();
                                           }
                                       ),
                                       TextSpan(
@@ -273,6 +261,7 @@ class _ScanQR extends State<ScanQR> {
 
   void _onQRViewCreated(QRViewController controller) {
     this.controller = controller;
+    globalData.qrViewController = controller;
     controller.scannedDataStream.listen((scanData) async {
       Vibration.vibrate(duration: 300);
       if (!_find) {
@@ -280,19 +269,49 @@ class _ScanQR extends State<ScanQR> {
         if(scanData.startsWith("${Config.baseURl}/profile/get")){
           await setScannedUserData(scanData);
         }else {
-          await setDemoUserData(scanData);
+          await setDemoUserData();
         }
       }
     });
   }
-  setDemoUserData(scanData)async{
-    GlobalData globalData = GlobalData();
-    UserData userData = await Future.delayed(Duration(seconds: 2),(){
-      globalData = GlobalData();
-      return globalData.userData;
+  setDemoUserData()async{
+
+    ProgressDialog pr = new ProgressDialog(context, isDismissible: false);
+    pr.show();
+    try{
+      print('request');
+      final response = await http.post('${Config.baseURl}/profile/get?username=jonmcnamara', headers: {"Content-Type": "application/json"}).timeout(Duration(seconds: 5));
+      if(response.statusCode == 200){
+        UserData userData = UserData.toUserData(response.body);
+        GlobalData().scanData = userData;
+      }else{
+        throw new Exception();
+      }
+    }catch(err){
+      print(err);
+      await showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            // return object of type Dialog
+            return AlertDialog(
+              title: new Text("Can not find that person"),
+              content: new Text("please contact admin"),
+              actions: <Widget>[
+                // usually buttons at the bottom of the dialog
+                new FlatButton(
+                  child: new Text("Close"),
+                  onPressed: () {
+                    pr.hide();
+                  },
+                ),
+              ],
+            );
+          });
+      _find = false;
+    }finally{
+      print('final');
+      pr.hide();
     }
-    );
-    globalData.scanData = userData;
   }
   setScannedUserData(scanData)async{
     ProgressDialog pr = new ProgressDialog(context, isDismissible: false);
@@ -339,15 +358,7 @@ class _ScanQR extends State<ScanQR> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: <Widget>[
               IconButton(
-                onPressed: ()async {
-                  if (!globalData.hasData) return;
-//                  controller.pauseCamera();
-                  await Navigator.push(
-                    context,
-                    SlideRightRoute(page: MyCards()),
-                  );
-//                  controller.resumeCamera();
-                },
+                onPressed: navigateToMyCards,
                 tooltip: 'List',
                 iconSize: 40.0,
                 icon: Icon(
@@ -356,17 +367,7 @@ class _ScanQR extends State<ScanQR> {
                 ),
               ),
               IconButton(
-                onPressed: ()async {
-                  if (!globalData.hasData) return;
-//                  controller.pauseCamera();
-                  await Navigator.push(
-                    context,
-                    SlideLeftRoute(
-                      page: Settings(),
-                    ),
-                  );
-//                  controller.resumeCamera();
-                },
+                onPressed: navigateToSetting,
                 tooltip: 'Person',
                 iconSize: 40.0,
                 icon: Icon(
@@ -376,7 +377,43 @@ class _ScanQR extends State<ScanQR> {
               ),
             ]));
   }
-
+  navigateToSetting()async{
+    if (!globalData.hasData) return;
+    if (!globalData.hasLogin){
+      globalData.wantLogin = true;
+      globalData.stopAllController();
+      await Navigator.push(
+          context,
+          FadeRoute(
+            page: Login(),
+          ));
+    }else{
+      await Navigator.push(
+          context,
+          SlideLeftRoute(
+            page: Settings(),
+          ));
+    }
+  }
+  navigateToMyCards()async{
+      if (!globalData.hasData) return;
+      if (!globalData.hasLogin){
+        globalData.stopAllController();
+        globalData.wantLogin = true;
+        SharedPreferences preferences = await SharedPreferences.getInstance();
+        await preferences.setBool('wantLogin', true);
+        await Navigator.push(
+            context,
+            FadeRoute(
+              page: Login(),
+            ));
+      }else {
+        await Navigator.push(
+          context,
+          SlideRightRoute(page: MyCards()),
+        );
+      }
+  }
   @override
   void dispose() {
     controller?.dispose();
