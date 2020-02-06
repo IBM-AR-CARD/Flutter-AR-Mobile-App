@@ -272,6 +272,7 @@ class _Login extends State<Login> with TickerProviderStateMixin {
         backgroundColor: Color.fromARGB(255, 55, 51, 75),
         resizeToAvoidBottomInset: true,
         body: SingleChildScrollView(
+          child:WillPopScope(
           child:Container(
                   width: _width,
                   height: _height,
@@ -372,7 +373,9 @@ class _Login extends State<Login> with TickerProviderStateMixin {
                       )
                     ],
                   ),
-                )
+                ),
+              onWillPop: () async => Future.value(false),
+        )
         )
       );
     }
@@ -612,10 +615,6 @@ class _Login extends State<Login> with TickerProviderStateMixin {
   changeToLogin() {
     if (isLogin) return;
     isLogin = true;
-  //      registerPasswordConfirm.text = '';
-  //      registerPassword.text = '';
-  //      registerEmail.text = '';
-  //      registerUserName.text = '';
     controller2.forward();
     controller1.reverse();
     setState(() {});
@@ -754,6 +753,7 @@ class _Login extends State<Login> with TickerProviderStateMixin {
     await preferences.setString('PASSWORD', isLogin ? loginPassword.text: registerPassword.text);
   }
   restoreDetail()async{
+
     SharedPreferences preferences = await SharedPreferences.getInstance();
     loginEMAIL.text = preferences.getString('E-MAIL');
     loginPassword.text = preferences.getString('PASSWORD');
