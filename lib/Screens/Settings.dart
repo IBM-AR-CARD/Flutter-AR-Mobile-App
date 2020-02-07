@@ -546,7 +546,8 @@ class _Settings extends State<Settings> {
       SharedPreferences preferences = await SharedPreferences.getInstance();
       await preferences.setString('E-MAIL','');
       await preferences.setString('PASSWORD', '');
-      await preferences.setBool('remember', false);
+      await  preferences.setBool('hasLogin',false);
+      GlobalData().hasLogin = false;
       GlobalData().wantLogin = true;
       GlobalData().stopAllController();
       Navigator.pushReplacement(context, FadeRoute(page: Login()));
