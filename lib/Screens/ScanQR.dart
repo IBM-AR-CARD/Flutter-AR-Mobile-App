@@ -98,9 +98,10 @@ class _ScanQR extends State<ScanQR> {
   Widget build(BuildContext context) {
     double _width = MediaQuery.of(context).size.width;
     double _height = MediaQuery.of(context).size.height;
-    return WillPopScope(
-      child: Scaffold(
-        body: SwipeDetector(
+    return Scaffold(
+      resizeToAvoidBottomInset: false,
+      body: WillPopScope(
+        child: SwipeDetector(
           onSwipeLeft: navigateToSetting,
           onSwipeRight: navigateToMyCards,
             child: Stack(
@@ -249,13 +250,14 @@ class _ScanQR extends State<ScanQR> {
             ),
 
         ),
-          floatingActionButtonLocation:
-          FloatingActionButtonLocation.centerDocked,
-          floatingActionButton: bottomRow()
+          onWillPop: () async {
+            return false;
+          },
+
       ),
-      onWillPop: () async {
-        return false;
-      },
+        floatingActionButtonLocation:
+        FloatingActionButtonLocation.centerDocked,
+        floatingActionButton: bottomRow()
     );
   }
 
@@ -416,8 +418,8 @@ class _ScanQR extends State<ScanQR> {
   }
   @override
   void dispose() {
+    super.dispose();
     controller?.dispose();
     globalData.qrViewController = null;
-    super.dispose();
   }
 }

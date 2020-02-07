@@ -41,13 +41,13 @@ class _MyCards extends State<MyCards> with TickerProviderStateMixin {
     Colors.blue,
   ];
   toDefaultSearchText(){
-    if(_searchController.text == ''){
+    if(_searchController.text != ''){
       return;
     }
     if (_status == 0) {
-      searchResult = "Favourite";
-    }else{
       searchResult = "History";
+    }else{
+      searchResult = "Favourite";
     }
     setState(() {
 
@@ -57,25 +57,35 @@ class _MyCards extends State<MyCards> with TickerProviderStateMixin {
     if (_status == 0) {
       return;
     }
-    toDefaultSearchText();
+    _status = 0;
     controller2.forward();
     controller1.reverse();
+    toDefaultSearchText();
     setState(() {
-      _status = 0;
     });
   }
 
   void _changeToHistory() {
+    _status = 1;
+    controller1.forward();
+    controller2.reverse();
+    toDefaultSearchText();
+    setState(() {
+    });
+  }
+
+  void _changeToHistoryOnSwipe() {
     if (_status == 1) {
       setState(() {
         leave = true;
       });
+      globalData.resumeControllerState();
       Navigator.pop(context);
       return;
     }
-    toDefaultSearchText();
     controller1.forward();
     controller2.reverse();
+    toDefaultSearchText();
     setState(() {
       _status = 1;
     });
@@ -103,6 +113,8 @@ class _MyCards extends State<MyCards> with TickerProviderStateMixin {
     });
     controller2.animateTo(1,
         duration: Duration(milliseconds: 50), curve: Curves.easeInOut);
+    _status = 0;
+    toDefaultSearchText();
   }
 
   @override
@@ -110,11 +122,11 @@ class _MyCards extends State<MyCards> with TickerProviderStateMixin {
     width = MediaQuery.of(context).size.width;
     height = MediaQuery.of(context).size.height;
     containerHeight = height - 206;
-    return new WillPopScope(
-      child: Scaffold(
-        resizeToAvoidBottomPadding: false,
-        backgroundColor: Color.fromARGB(255, 31, 34, 52),
-        body: Column(
+    return new Scaffold(
+      resizeToAvoidBottomInset: false,
+      backgroundColor: Color.fromARGB(255, 31, 34, 52),
+      body: WillPopScope(
+        child: Column(
           children: <Widget>[
             Container(
               child: Container(
@@ -135,7 +147,7 @@ class _MyCards extends State<MyCards> with TickerProviderStateMixin {
                         ),
                         Container(
                         child:Text(
-                          _searchController.text == '' ? "$searchResult" : "your search result $searchResult",
+                          _searchController.text == '' ? "$searchResult" : "Result: $searchResult",
                           style: TextStyle(
                               color: Colors.white,
                               fontSize: 21,
@@ -160,6 +172,7 @@ class _MyCards extends State<MyCards> with TickerProviderStateMixin {
                               setState(() {
                                 leave = true;
                               });
+                              globalData.resumeControllerState();
                               Navigator.pop(context);
                             },
                           ),
@@ -202,6 +215,7 @@ class _MyCards extends State<MyCards> with TickerProviderStateMixin {
                             autofocus: true,
                             onSubmitted: (content){
                               if(_searchController.text == ''){
+                                onSearch = !onSearch;
                                 toDefaultSearchText();
                                 return;
                               }
@@ -263,7 +277,7 @@ class _MyCards extends State<MyCards> with TickerProviderStateMixin {
                     duration: Duration(milliseconds: 300),
                     switchInCurve: Curves.easeIn,
                     switchOutCurve: Curves.easeOut,
-                    child:onSearch? SizedBox.shrink(): AnimatedPadding(
+                    child:onSearch? Container(): AnimatedPadding(
                       child: Container(
                         height: 6.0,
                         color: Colors.blue,
@@ -281,7 +295,7 @@ class _MyCards extends State<MyCards> with TickerProviderStateMixin {
               color: Color.fromARGB(255, 41, 43, 66),
             ),
             SwipeDetector(
-              onSwipeLeft: _changeToHistory,
+              onSwipeLeft: _changeToHistoryOnSwipe,
               onSwipeRight: _changeToFavourite,
               child: leave
                   ? Container()
@@ -298,13 +312,14 @@ class _MyCards extends State<MyCards> with TickerProviderStateMixin {
             ),
           ],
         ),
+        onWillPop: () async {
+          globalData.resumeControllerState();
+          setState(() {
+            leave = true;
+          });
+          return true;
+        },
       ),
-      onWillPop: () async {
-        setState(() {
-          leave = true;
-        });
-        return true;
-      },
     );
   }
 

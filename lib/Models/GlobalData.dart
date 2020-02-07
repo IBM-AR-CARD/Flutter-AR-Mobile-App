@@ -1,6 +1,11 @@
 import 'package:flutter_app/Models/UserData.dart';
 import 'package:flutter_unity_widget/flutter_unity_widget.dart';
 import 'package:qr_code_scanner/qr_code_scanner.dart';
+enum CameraState{
+  QRViewOpen,
+  UnityViewOpen,
+  Closed
+}
 class GlobalData {
   static final GlobalData globalData = GlobalData._internal();
   bool _hasData = false;
@@ -11,6 +16,13 @@ class GlobalData {
     _hasData = value;
   }
   String _token;
+  CameraState _currentState = CameraState.Closed;
+
+  CameraState get currentState => _currentState;
+
+  set currentState(CameraState value) {
+    _currentState = value;
+  }
 
   String get token => _token;
   bool _wantLogin = false;
@@ -48,6 +60,7 @@ class GlobalData {
     if(_unityWidgetController != null){
       _unityWidgetController.resume();
     }
+    _currentState = CameraState.UnityViewOpen;
   }
   resumeQRViewController() {
     if (_unityWidgetController != null) {
@@ -56,6 +69,7 @@ class GlobalData {
     if (_qrViewController != null) {
       _qrViewController.resumeCamera();
     }
+    _currentState = CameraState.QRViewOpen;
   }
   stopAllController() {
     if (_unityWidgetController != null) {
@@ -63,6 +77,20 @@ class GlobalData {
     }
     if (_qrViewController != null) {
       _qrViewController.pauseCamera();
+    }
+    _currentState = CameraState.Closed;
+  }
+  resumeControllerState(){
+    switch(_currentState) {
+      case CameraState.Closed:
+        stopAllController();
+        break;
+      case CameraState.QRViewOpen:
+        resumeQRViewController();
+        break;
+      case CameraState.UnityViewOpen:
+        resumeUnityController();
+        break;
     }
   }
 
