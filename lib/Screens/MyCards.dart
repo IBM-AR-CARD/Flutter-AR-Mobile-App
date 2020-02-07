@@ -79,7 +79,6 @@ class _MyCards extends State<MyCards> with TickerProviderStateMixin {
       setState(() {
         leave = true;
       });
-      globalData.resumeControllerState();
       Navigator.pop(context);
       return;
     }
@@ -150,7 +149,7 @@ class _MyCards extends State<MyCards> with TickerProviderStateMixin {
                           _searchController.text == '' ? "$searchResult" : "Result: $searchResult",
                           style: TextStyle(
                               color: Colors.white,
-                              fontSize: 21,
+                              fontSize: _searchController.text == '' ? 26 : 21,
                               fontFamily: "IBM Plex Sans"),
                           overflow: TextOverflow.ellipsis,
                         ),
@@ -172,7 +171,6 @@ class _MyCards extends State<MyCards> with TickerProviderStateMixin {
                               setState(() {
                                 leave = true;
                               });
-                              globalData.resumeControllerState();
                               Navigator.pop(context);
                             },
                           ),
