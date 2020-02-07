@@ -31,6 +31,7 @@ class _MyCards extends State<MyCards> with TickerProviderStateMixin {
   final GlobalData globalData = GlobalData();
   Future<List> post;
   int _status = 0;
+  String searchResult = '';
   List<String> _stringList = [
     "Favourite",
     "History",
@@ -39,11 +40,24 @@ class _MyCards extends State<MyCards> with TickerProviderStateMixin {
     Colors.white,
     Colors.blue,
   ];
+  toDefaultSearchText(){
+    if(_searchController.text == ''){
+      return;
+    }
+    if (_status == 0) {
+      searchResult = "Favourite";
+    }else{
+      searchResult = "History";
+    }
+    setState(() {
 
+    });
+  }
   void _changeToFavourite() {
     if (_status == 0) {
       return;
     }
+    toDefaultSearchText();
     controller2.forward();
     controller1.reverse();
     setState(() {
@@ -59,6 +73,7 @@ class _MyCards extends State<MyCards> with TickerProviderStateMixin {
       Navigator.pop(context);
       return;
     }
+    toDefaultSearchText();
     controller1.forward();
     controller2.reverse();
     setState(() {
@@ -105,18 +120,34 @@ class _MyCards extends State<MyCards> with TickerProviderStateMixin {
               child: Container(
                 child: Column(children: <Widget>[
                   Row(children: <Widget>[
-                    Container(
-                      child: Padding(
-                        child: Text(
-                          "MyCards\n" + _stringList[_status ^ 1],
+                    Padding(
+                    child:Column(
+                      children: <Widget>[
+                        Container(
+                            child: Text(
+                              "MyCards",
+                              style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 36,
+                                  fontFamily: "IBM Plex Sans"),
+                            ),
+                          width: 200.0,
+                        ),
+                        Container(
+                        child:Text(
+                          _searchController.text == '' ? "$searchResult" : "your search result $searchResult",
                           style: TextStyle(
                               color: Colors.white,
-                              fontSize: 36,
+                              fontSize: 21,
                               fontFamily: "IBM Plex Sans"),
+                          overflow: TextOverflow.ellipsis,
                         ),
-                        padding: EdgeInsets.only(top: 20.0, left: 20.0),
-                      ),
-                      width: 200.0,
+                          width: 200.0,
+                        ),
+                      ],
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                    ),
+                      padding: EdgeInsets.only(left: 10),
                     ),
                     Column(
                       children: <Widget>[
@@ -170,13 +201,22 @@ class _MyCards extends State<MyCards> with TickerProviderStateMixin {
                             controller: _searchController,
                             autofocus: true,
                             onSubmitted: (content){
-                              _searchController.text = content;
+                              if(_searchController.text == ''){
+                                toDefaultSearchText();
+                                return;
+                              }
+                              searchResult = _searchController.text;
                               setState(() {
 
                               });
                               onSearch = !onSearch;
                             },
                             onChanged: (content){
+                              if(_searchController.text == ''){
+                                toDefaultSearchText();
+                                return;
+                              }
+                              searchResult = _searchController.text;
                               setState(() {
 
                               });
@@ -467,6 +507,7 @@ class _MyCards extends State<MyCards> with TickerProviderStateMixin {
   @override
   void dispose() {
     super.dispose();
+    _searchController.dispose();
     controller1.dispose();
     controller2.dispose();
   }

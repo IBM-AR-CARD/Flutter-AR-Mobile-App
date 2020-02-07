@@ -28,7 +28,6 @@ class _Login extends State<Login> with TickerProviderStateMixin {
   double _width;
   double _height;
   bool isLogin = true;
-  bool isRemembered = false;
   final jsonEncoder = JsonEncoder();
   final jsonDecoder = JsonDecoder();
   TextEditingController loginEMAIL = TextEditingController();
@@ -394,14 +393,6 @@ class _Login extends State<Login> with TickerProviderStateMixin {
     });
     await expandController.forward();
   }
-  rememberLogin(value)async{
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    await prefs.setBool('remember', value);
-    isRemembered = value;
-    setState(() {
-
-    });
-  }
   Widget getLoginPage() {
     return Column(children: <Widget>[
       Container(
@@ -436,28 +427,28 @@ class _Login extends State<Login> with TickerProviderStateMixin {
               color: Colors.transparent,
               height: 15,
             ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: <Widget>[
-                Padding(
-                  padding: EdgeInsets.only(left: _width*0.17),
-                  child:Checkbox(
-                    value: isRemembered,
-                    checkColor: Colors.white,
-                    activeColor: Color.fromARGB(255, 104, 111, 139),
-                    onChanged: rememberLogin,
-                  ) ,
-                ),
-                Text(
-                    'Remember me',
-                  style: TextStyle(
-                    color: Color.fromARGB(255, 104, 111, 139),
-                    fontWeight: FontWeight.bold,
-                    fontSize: 15
-                  ),
-                )
-              ],
-            )
+//            Row(
+//              mainAxisAlignment: MainAxisAlignment.start,
+//              children: <Widget>[
+//                Padding(
+//                  padding: EdgeInsets.only(left: _width*0.17),
+//                  child:Checkbox(
+//                    value: isRemembered,
+//                    checkColor: Colors.white,
+//                    activeColor: Color.fromARGB(255, 104, 111, 139),
+//                    onChanged: rememberLogin,
+//                  ) ,
+//                ),
+//                Text(
+//                    'Remember me',
+//                  style: TextStyle(
+//                    color: Color.fromARGB(255, 104, 111, 139),
+//                    fontWeight: FontWeight.bold,
+//                    fontSize: 15
+//                  ),
+//                )
+//              ],
+//            )
           ],
         ),
       ),
@@ -593,21 +584,10 @@ class _Login extends State<Login> with TickerProviderStateMixin {
         globalData.resumeQRViewController();
         Navigator.pushReplacement(context, FadeRoute(page: ScanQR()));
         return;
-      }
-      isRemembered = value;
-      setState(() {
-      });
-      if(isRemembered){
+      }else{
         await restoreDetail();
         await Future.delayed(Duration(seconds:1));
         onLogin();
-      }else{
-        await preferences.setBool('hasLogin', false);
-        globalData.hasLogin = false;
-        await Future.delayed(Duration(seconds:1));
-        globalData.resumeQRViewController();
-        Navigator.pushReplacement(context, FadeRoute(page: ScanQR()));
-        return;
       }
     });
   }
@@ -723,7 +703,6 @@ class _Login extends State<Login> with TickerProviderStateMixin {
         throw Exception(errorMsg['error']);
       }else {
         var Msg = jsonDecoder.convert(data.body);
-        isRemembered = true;
         pr.hide();
         await onLogin();
       }

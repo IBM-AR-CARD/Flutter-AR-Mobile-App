@@ -312,6 +312,7 @@ class _UnityPage extends State<UnityPage> {
   void dispose() {
     _timer.cancel();
     super.dispose();
+    globalData.unityWidgetController = null;
   }
 
   updateGender() {

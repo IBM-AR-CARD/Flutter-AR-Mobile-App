@@ -417,6 +417,7 @@ class _ScanQR extends State<ScanQR> {
   @override
   void dispose() {
     controller?.dispose();
+    globalData.qrViewController = null;
     super.dispose();
   }
 }
