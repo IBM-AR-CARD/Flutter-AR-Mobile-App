@@ -4,7 +4,6 @@ import 'package:qr_code_scanner/qr_code_scanner.dart';
 enum CameraState{
   QRViewOpen,
   UnityViewOpen,
-  Closed
 }
 class GlobalData {
   static final GlobalData globalData = GlobalData._internal();
@@ -16,7 +15,7 @@ class GlobalData {
     _hasData = value;
   }
   String _token;
-  CameraState _currentState = CameraState.Closed;
+  CameraState _currentState;
 
   CameraState get currentState => _currentState;
 
@@ -78,13 +77,13 @@ class GlobalData {
     if (_qrViewController != null) {
       _qrViewController.pauseCamera();
     }
-    _currentState = CameraState.Closed;
+//    _currentState = CameraState.Closed;
   }
   resumeControllerState(){
     switch(_currentState) {
-      case CameraState.Closed:
-        stopAllController();
-        break;
+//      case CameraState.Closed:
+//        stopAllController();
+//        break;
       case CameraState.QRViewOpen:
         resumeQRViewController();
         break;

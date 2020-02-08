@@ -15,6 +15,11 @@ import '../Models/UserData.dart';
 import 'package:progress_dialog/progress_dialog.dart';
 import 'package:http/http.dart' as http;
 import '../Models/GlobalData.dart';
+import 'package:flutter/cupertino.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:image_cropper/image_cropper.dart';
+import '../Screens/CameraView.dart';
+import 'package:camera/camera.dart';
 class Settings extends StatefulWidget {
   static final PERFER_NOT_TO_SAY = 0;
   static final FEMALE = 1;
@@ -41,6 +46,7 @@ class _Settings extends State<Settings> {
   String _userName;
   UserData userData;
   String _model;
+  File _imageFile;
   String _profile;
   final storedData = SharedPreferences.getInstance();
   bool hasChangedContent(){
@@ -87,7 +93,61 @@ class _Settings extends State<Settings> {
     super.initState();
     initUserData();
   }
+  Future<void> _pickImage(ImageSource source)async{
+    File selected = await ImagePicker.pickImage(source: source);
+    setState(() {
+      _imageFile = selected;
+    });
+  }
 
+
+  Future<void> _cropImage()async{
+    File cropped =  await ImageCropper.cropImage(
+      sourcePath: _imageFile.path,
+      aspectRatio:CropAspectRatio(ratioX: 1,ratioY: 1),
+
+    );
+    setState(() {
+      _imageFile = cropped ?? _imageFile;
+    });
+  }
+
+  Future<void> _takePicture()async{
+    final cameras = await availableCameras();
+    await Navigator.push(context, SlideLeftRoute(page:TakePictureScreen(camera: cameras)));
+  }
+  _onCamera()async{
+    GlobalData globalData = GlobalData();
+    globalData.stopAllController();
+    print(globalData.currentState);
+    await _takePicture();
+    globalData.resumeControllerState();
+    print(globalData.currentState);
+  }
+  showImageActionSheet()async{
+    showModalBottomSheet(
+        context: context,
+        builder: (BuildContext bc){
+          return Container(
+            child: new Wrap(
+              children: <Widget>[
+                new ListTile(
+                    leading: new Icon(Icons.camera_alt),
+                    title: new Text('Camera'),
+                    onTap:_onCamera
+                ),
+                new ListTile(
+                  leading: new Icon(Icons.photo),
+                  title: new Text('Gallery'),
+                  onTap: () => {},
+                ),
+              ],
+            ),
+          );
+        }
+    );
+
+  }
 
   double _height;
   double _width;
@@ -137,23 +197,29 @@ class _Settings extends State<Settings> {
                       ),
                     ),
                     Padding(
-                      padding: EdgeInsets.only(top: 30, left: 65),
+                      padding: EdgeInsets.only(top: 30, left: 50),
                       child: Row(
                         children: <Widget>[
                           SizedBox(
-                            child: ClipRRect(
-                              borderRadius: new BorderRadius.all(
-                                  const Radius.circular(40.0)),
-                              child: FadeInImage(
-                                image:NetworkImage(_profile),
-                                placeholder: AssetImage('assets/images/unknown-avatar.jpg'),
+                            child:FlatButton(
+                              child: ClipRRect(
+
+                                borderRadius: new BorderRadius.all(
+                                    const Radius.circular(40.0)),
+                                child: FadeInImage(
+                                  width: 60,
+                                  height: 60,
+                                  image:NetworkImage(_profile),
+                                  placeholder: AssetImage(
+                                      'assets/images/unknown-avatar.jpg'
+                                  ),
+                                ),
                               ),
+                              onPressed: showImageActionSheet,
                             ),
-                            height: 70.0,
-                            width: 70.0,
                           ),
                           Padding(
-                            padding: EdgeInsets.only(left: 10),
+                            padding: EdgeInsets.only(left: 5),
                             child:SizedBox(
                               width: _width * 0.4,
                               child: Column(
@@ -558,7 +624,7 @@ class _Settings extends State<Settings> {
     if(!hasChangedContent()){
       return true;
     }
-    return (
+    final bool =
         await showDialog(
           context: context,
           builder: (context) => new AlertDialog(
@@ -578,8 +644,12 @@ class _Settings extends State<Settings> {
                   }),
             ],
           ),
-        )) ??
+        ) ??
         false;
+    if(bool){
+      GlobalData().resumeControllerState();
+    }
+    return bool;
   }
   _showQR(){
     SaveQR qr = SaveQR('${Config.baseURl}/profile/get?username=${widget.globalData.userData.userName}');

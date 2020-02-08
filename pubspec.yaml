@@ -47,6 +47,9 @@ dependencies:
   vector_math: any
   fluttertoast:
   permission_handler:
+  image_picker:
+  camera:
+  image_cropper:
 dev_dependencies:
   flutter_test:
     sdk: flutter
