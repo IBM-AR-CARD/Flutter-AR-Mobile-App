@@ -5,111 +5,231 @@ import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:path/path.dart' show join;
 import 'package:path_provider/path_provider.dart';
-class TakePictureScreen extends StatefulWidget {
+class CameraScreen  extends StatefulWidget {
   final List<CameraDescription> camera;
 
-  const TakePictureScreen({
+  const CameraScreen ({
     Key key,
     @required this.camera,
   }) : super(key: key);
 
   @override
-  TakePictureScreenState createState() => TakePictureScreenState();
+  _CameraScreen createState() => _CameraScreen();
 }
 
-class TakePictureScreenState extends State<TakePictureScreen> {
-  CameraController _controller;
-  Future<void> _initializeControllerFuture;
-
+class _CameraScreen  extends State<CameraScreen> {
+  CameraController controller;
+  List cameras;
+  int selectedCameraIdx;
+  String imagePath;
   @override
   void initState() {
     super.initState();
-    // To display the current output from the Camera,
-    // create a CameraController.
-    _controller = CameraController(
-      // Get a specific camera from the list of available cameras.
-      widget.camera[0],
-      // Define the resolution to use.
-      ResolutionPreset.medium,
-    );
+    // 1
+    availableCameras().then((availableCameras) {
 
-    // Next, initialize the controller. This returns a Future.
-    _initializeControllerFuture = _controller.initialize();
+      cameras = availableCameras;
+      if (cameras.length > 0) {
+        setState(() {
+          // 2
+          selectedCameraIdx = 0;
+        });
+
+        _initCameraController(cameras[selectedCameraIdx]).then((void v) {});
+      }else{
+        print("No camera available");
+      }
+    }).catchError((err) {
+      // 3
+      print('Error: $err.code\nError Message: $err.message');
+    });
   }
 
-
-  @override
-  void dispose() {
-    // Dispose of the controller when the widget is disposed.
-    _controller.dispose();
-    super.dispose();
-  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Color.fromARGB(255,41,43,66),
       appBar: AppBar(
-          title: Text('Take a picture'),
+        title: Text('Camera'),
         leading: IconButton(
           onPressed: (){
             Navigator.pop(context);
           },
-          icon:Icon(
+          icon: Icon(
             Icons.arrow_back_ios
-          )
+          ),
         ),
       ),
-      // Wait until the controller is initialized before displaying the
-      // camera preview. Use a FutureBuilder to display a loading spinner
-      // until the controller has finished initializing.
-      body: FutureBuilder<void>(
-        future: _initializeControllerFuture,
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.done) {
-            // If the Future is complete, display the preview.
-            return CameraPreview(_controller);
-          } else {
-            // Otherwise, display a loading indicator.
-            return Center(child: CircularProgressIndicator());
-          }
-        },
+//      body: _cameraPreviewWidget(),
+      body: WillPopScope(
+        child:Column(
+        children: <Widget>[
+          _cameraPreviewWidget(),
+          _cameraTogglesRowWidget(),
+        ],
       ),
-      floatingActionButton: FloatingActionButton(
-        child: Icon(Icons.camera_alt),
-        // Provide an onPressed callback.
-        onPressed: () async {
-          // Take the Picture in a try / catch block. If anything goes wrong,
-          // catch the error.
-          try {
-            // Ensure that the camera is initialized.
-            await _initializeControllerFuture;
-
-            // Construct the path where the image should be saved using the
-            // pattern package.
-            final path = join(
-              // Store the picture in the temp directory.
-              // Find the temp directory using the `path_provider` plugin.
-              (await getTemporaryDirectory()).path,
-              '${DateTime.now()}.png',
-            );
-
-            // Attempt to take a picture and log where it's been saved.
-            await _controller.takePicture(path);
-
-            // If the picture was taken, display it on a new screen.
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => DisplayPictureScreen(imagePath: path),
-              ),
-            );
-          } catch (e) {
-            // If an error occurs, log the error to the console.
-            print(e);
-          }
+        onWillPop: ()async{
+          controller.dispose();
+          return true;
         },
+      )
+    );
+  }
+  Future _initCameraController(CameraDescription cameraDescription) async {
+    if (controller != null) {
+      await controller.dispose();
+    }
+
+    // 3
+    controller = CameraController(cameraDescription, ResolutionPreset.high);
+
+    // If the controller is updated then update the UI.
+    // 4
+    controller.addListener(() {
+      // 5
+      if (mounted) {
+        setState(() {});
+      }
+
+      if (controller.value.hasError) {
+        print('Camera error ${controller.value.errorDescription}');
+      }
+    });
+
+    // 6
+    try {
+      await controller.initialize();
+    } on CameraException catch (e) {
+      print(e);
+    }
+    setState(() {});
+//    if (mounted) {
+//      setState(() {});
+//    }
+  }
+  Widget _cameraPreviewWidget() {
+    if (controller == null || !controller.value.isInitialized) {
+      return const Text(
+        'Loading',
+        style: TextStyle(
+          color: Colors.white,
+          fontSize: 20.0,
+          fontWeight: FontWeight.w900,
+        ),
+      );
+    }
+
+    return AspectRatio(
+      aspectRatio: controller.value.aspectRatio,
+      child: CameraPreview(controller),
+    );
+  }
+  Widget _cameraTogglesRowWidget() {
+    if (cameras == null || cameras.isEmpty) {
+      return Spacer();
+    }
+
+    CameraDescription selectedCamera = cameras[selectedCameraIdx];
+    CameraLensDirection lensDirection = selectedCamera.lensDirection;
+
+    return Expanded(
+      child: Align(
+        alignment: Alignment.center,
+        child:Row(
+
+            mainAxisAlignment:MainAxisAlignment.start,
+//            crossAxisAlignment: CrossAxisAlignment.center,
+            children: <Widget>[
+                FlatButton.icon(
+                    onPressed: _onSwitchCamera,
+                    icon: Icon(
+                        _getCameraLensIcon(lensDirection),
+                      color: Colors.white,
+                    ),
+                    label: Text(
+                        "${lensDirection.toString().substring(lensDirection.toString().indexOf('.') + 1)}",
+                      style: TextStyle(
+                        color: Colors.white
+                      ),
+                    )
+                ),
+                Expanded(
+                  child:Padding(
+                    child: IconButton(
+                      iconSize: 60,
+                      onPressed: _onCapturePressed,
+                      icon: Icon(
+                        Icons.camera,
+                        color: Colors.white,
+                      ),
+                    ) ,
+                    padding: EdgeInsets.only(right: 90),
+                  )
+                )
+
+
+          ],
+        )
       ),
     );
+  }
+
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    // App state changed before we got the chance to initialize.
+    if (controller == null || !controller.value.isInitialized) {
+      return;
+    }
+    if (state == AppLifecycleState.inactive ) {
+      controller?.dispose();
+    } else if (state == AppLifecycleState.resumed) {
+      if (controller != null) {
+        _initCameraController(controller.description);
+
+      }
+    }
+  }
+  IconData _getCameraLensIcon(CameraLensDirection direction) {
+    switch (direction) {
+      case CameraLensDirection.back:
+        return Icons.camera_rear;
+      case CameraLensDirection.front:
+        return Icons.camera_front;
+      case CameraLensDirection.external:
+        return Icons.camera;
+      default:
+        return Icons.device_unknown;
+    }
+  }
+  void _onSwitchCamera() {
+    selectedCameraIdx =
+    selectedCameraIdx < cameras.length - 1 ? selectedCameraIdx + 1 : 0;
+    CameraDescription selectedCamera = cameras[selectedCameraIdx];
+    _initCameraController(selectedCamera);
+  }
+  void _onCapturePressed() async {
+    try {
+      // 1
+      final path = join(
+        (await getTemporaryDirectory()).path,
+        '${DateTime.now().millisecondsSinceEpoch}.jpg',
+      );
+      // 2
+      await controller.takePicture(path);
+      // 3
+      final result = await Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => DisplayPictureScreen(imagePath: path),
+        ),
+      );
+      if(result != null){
+        Navigator.pop(context,result);
+      }
+    } catch (e) {
+      print(123);
+      print(e);
+    }
   }
 }
 
@@ -129,18 +249,55 @@ class DisplayPictureScreen extends StatelessWidget {
               Navigator.pop(context);
             },
             icon:Icon(
-                Icons.arrow_back_ios
+                Icons.arrow_back_ios,
             )
         ),
       ),
-      backgroundColor: Colors.black,
+      backgroundColor: Color.fromARGB(255,41,43,66),
       // The image is stored as a file on the device. Use the `Image.file`
       // constructor with the given path to display the image.
-      body: Image.file(
-          File(
-              imagePath
+      body: Column(
+        children: <Widget>[
+          Image.file(
+              File(
+                  imagePath
+              )
+          ),
+          Expanded(
+              child:Row(
+                mainAxisAlignment:MainAxisAlignment.start,
+//            crossAxisAlignment: CrossAxisAlignment.center,
+                children: <Widget>[
+                  Expanded(
+                      child:Padding(
+                        child: IconButton(
+                          iconSize: 60,
+                          onPressed: (){
+                            Navigator.pop(context);
+                          },
+                          icon: Icon(
+                            Icons.cancel,
+                            color: Colors.white,
+                          ),
+                        ) ,
+                        padding: EdgeInsets.only(left: 85),
+                      )
+                  ),
+                  IconButton(
+                    iconSize: 60,
+                    onPressed: (){
+                      Navigator.pop(context, imagePath);
+                    },
+                    icon: Icon(
+                      Icons.check,
+                      color: Colors.white,
+                    ),
+                  ) ,
+                ],
+              )
           )
-      ),
+        ],
+      )
     );
   }
 }

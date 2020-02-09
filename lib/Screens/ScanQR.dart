@@ -304,6 +304,7 @@ class _ScanQR extends State<ScanQR> {
                   child: new Text("Close"),
                   onPressed: () {
                     pr.hide();
+                    Navigator.pop(context);
                   },
                 ),
               ],

@@ -655,7 +655,6 @@ class _Login extends State<Login> with TickerProviderStateMixin {
       }
     }catch(err){
       vibrateLoginText();
-
       Vibration.vibrate(duration: 200,amplitude: 60);
       toDetailLayout();
       print(err);

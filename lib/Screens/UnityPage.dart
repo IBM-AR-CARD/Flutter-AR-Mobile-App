@@ -227,9 +227,10 @@ class _UnityPage extends State<UnityPage> {
   Widget build(BuildContext context) {
     final _width = MediaQuery.of(context).size.width;
     final _height = MediaQuery.of(context).size.height;
-    SystemChrome.setEnabledSystemUIOverlays([]);
     return Scaffold(
-        body: Container(
+        resizeToAvoidBottomInset: false,
+        body: WillPopScope(
+        child:Container(
             child: SwipeDetector(
               onSwipeLeft: () async {
                 if (!globalData.hasData) return;
@@ -277,9 +278,15 @@ class _UnityPage extends State<UnityPage> {
                   )
                 ],
               ),
-            )),
+            )
+    ),
+          onWillPop: ()async{
+          return false;
+          },
+        ),
         floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-        floatingActionButton: bottomRow());
+        floatingActionButton: bottomRow()
+    );
   }
 
   void setMessage(String function, String msg) {

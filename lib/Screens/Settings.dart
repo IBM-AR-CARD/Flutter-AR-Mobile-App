@@ -16,10 +16,15 @@ import 'package:progress_dialog/progress_dialog.dart';
 import 'package:http/http.dart' as http;
 import '../Models/GlobalData.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:path/path.dart' as path;
 import 'package:image_picker/image_picker.dart';
 import 'package:image_cropper/image_cropper.dart';
 import '../Screens/CameraView.dart';
 import 'package:camera/camera.dart';
+import 'package:flutter_image_compress/flutter_image_compress.dart';
+import 'package:dio/dio.dart';
+import 'package:path/path.dart' show join;
+import 'package:path_provider/path_provider.dart';
 class Settings extends StatefulWidget {
   static final PERFER_NOT_TO_SAY = 0;
   static final FEMALE = 1;
@@ -93,11 +98,12 @@ class _Settings extends State<Settings> {
     super.initState();
     initUserData();
   }
-  Future<void> _pickImage(ImageSource source)async{
-    File selected = await ImagePicker.pickImage(source: source);
+  Future<void> _pickImage()async{
+    File selected = await ImagePicker.pickImage(source: ImageSource.gallery);
     setState(() {
       _imageFile = selected;
     });
+    _cropImage();
   }
 
 
@@ -107,14 +113,96 @@ class _Settings extends State<Settings> {
       aspectRatio:CropAspectRatio(ratioX: 1,ratioY: 1),
 
     );
-    setState(() {
-      _imageFile = cropped ?? _imageFile;
-    });
+    if(cropped != null) {
+      setState(() {
+        _imageFile = cropped ?? _imageFile;
+      });
+      await _upLoadImage(_imageFile);
+    }
+  }
+  Future<File> CompressAndGetFile(File file) async {
+    final path = join(
+      (await getTemporaryDirectory()).path,
+      '${DateTime.now().millisecondsSinceEpoch}_compress.jpg',
+    );
+      var result = await FlutterImageCompress.compressAndGetFile(
+      file.absolute.path, path,
+      quality: 88,
+    );
+
+    print(file.lengthSync());
+    print(result.lengthSync());
+
+    return result;
   }
 
+  showProgress(){
+
+  }
+  _upLoadImage(File image)async{
+//    Response response;
+
+    Dio dio = new Dio();
+    dio.options.connectTimeout = 5000; //5s
+    dio.options.receiveTimeout = 3000;
+    final imageCompress = await CompressAndGetFile(image);
+    FormData formData = FormData.fromMap(
+      {
+        "file": await MultipartFile.fromFile(imageCompress.absolute.path,filename: path.basename(imageCompress.path))
+      }
+    );
+    try {
+      final response = await dio.post(
+        '${Config.baseURl}/upload',
+        onSendProgress: (count, total) {
+
+        },
+        data: formData, //create a Stream<List<int>>
+        options: Options(
+          headers: {
+            Headers.contentLengthHeader: imageCompress.length,
+            // set content-length
+            "Authorization": "Bearer ${widget.globalData.token}"
+          },
+        ),
+      );
+
+      print(response.data);
+      GlobalData().userData.profile = response.data['path'];
+      _profile = response.data['path'];
+      setState(() {
+
+      });
+    }catch(err){
+      await showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            // return object of type Dialog
+            return AlertDialog(
+              title: new Text("Network error"),
+              content: new Text("please contact admin"),
+              actions: <Widget>[
+                // usually buttons at the bottom of the dialog
+                new FlatButton(
+                  child: new Text("Close"),
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                ),
+              ],
+            );
+          });
+      print(err);
+    }
+  }
   Future<void> _takePicture()async{
     final cameras = await availableCameras();
-    await Navigator.push(context, SlideLeftRoute(page:TakePictureScreen(camera: cameras)));
+    final result = await Navigator.push(context, SlideLeftRoute(page:CameraScreen(camera: cameras)));
+    print(result);
+    if(result != null){
+      _imageFile = new File(result);
+      await _cropImage();
+    }
   }
   _onCamera()async{
     GlobalData globalData = GlobalData();
@@ -134,12 +222,18 @@ class _Settings extends State<Settings> {
                 new ListTile(
                     leading: new Icon(Icons.camera_alt),
                     title: new Text('Camera'),
-                    onTap:_onCamera
+                    onTap:()async{
+                      Navigator.pop(bc);
+                      await _onCamera();
+                    }
                 ),
                 new ListTile(
                   leading: new Icon(Icons.photo),
                   title: new Text('Gallery'),
-                  onTap: () => {},
+                  onTap:()async{
+                    Navigator.pop(bc);
+                    await _pickImage();
+                  },
                 ),
               ],
             ),
