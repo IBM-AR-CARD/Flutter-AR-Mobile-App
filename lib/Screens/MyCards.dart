@@ -41,9 +41,7 @@ class _MyCards extends State<MyCards> with TickerProviderStateMixin {
     Colors.blue,
   ];
   toDefaultSearchText(){
-    if(_searchController.text != ''){
-      return;
-    }
+    _searchController.text = '';
     if (_status == 0) {
       searchResult = "History";
     }else{
@@ -212,12 +210,7 @@ class _MyCards extends State<MyCards> with TickerProviderStateMixin {
                             controller: _searchController,
                             autofocus: true,
                             onSubmitted: (content){
-                              if(_searchController.text == ''){
-                                onSearch = !onSearch;
                                 toDefaultSearchText();
-                                return;
-                              }
-                              searchResult = _searchController.text;
                               setState(() {
 
                               });

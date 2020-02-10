@@ -49,9 +49,11 @@ class _ProfileTextEditor extends State<ProfileTextEditor> {
     setState(() {});
   }
   Widget build(context) {
-    int maxLines = 4;
+    int maxLines;
+    int minLines = 4;
     if(widget._hint != null && (widget._hint == 'your first name' || widget._hint == 'your Last name')){
       maxLines = 1;
+      minLines = 1;
     }
     Widget box;
     if (widget._type == TEXTBOX) {
@@ -60,6 +62,7 @@ class _ProfileTextEditor extends State<ProfileTextEditor> {
         child: new TextField(
           style: new TextStyle(color: Colors.white),
           maxLines: maxLines,
+          minLines:minLines,
 //          expands: true,
           controller: _controller,
           decoration: new InputDecoration(

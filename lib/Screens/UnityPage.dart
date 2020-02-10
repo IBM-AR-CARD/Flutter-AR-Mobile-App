@@ -229,7 +229,7 @@ class _UnityPage extends State<UnityPage> {
     return Scaffold(
         resizeToAvoidBottomInset: false,
         body: WillPopScope(
-        child:Container(
+        child:SafeArea(
             child: SwipeDetector(
               onSwipeLeft: () async {
                 if (!globalData.hasData) return;

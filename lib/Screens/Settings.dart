@@ -157,7 +157,6 @@ class _Settings extends State<Settings> {
         ),
       );
 
-      print(response.data);
 //      GlobalData().userData.profile = response.data['path'];
       _profile = response.data['path'];
       setState(() {
@@ -246,12 +245,12 @@ class _Settings extends State<Settings> {
     double _topHeight = _height * 0.25;
     double _middleHeight = _height * 0.68;
     double _bottomHeight = _height - _topHeight - _middleHeight;
-    print(_profile);
     return new WillPopScope(
         child: Scaffold(
-          resizeToAvoidBottomPadding: false,
+          resizeToAvoidBottomInset: false,
           backgroundColor: Color.fromARGB(255, 31, 34, 52),
-          body: SwipeDetector(
+          body: SingleChildScrollView(
+          child:SwipeDetector(
             child: Column(
             children: <Widget>[
               Container(
@@ -382,178 +381,183 @@ class _Settings extends State<Settings> {
                 color: Color.fromARGB(255, 41, 43, 66),
                 height: _topHeight,
               ),
-              Container(
-                height: _middleHeight,
-                width: _width * 0.88,
-                child: ListView(
-                  children: <Widget>[
-                    Padding(
-                      padding: EdgeInsets.only(top: 25),
-                      child: Opacity(
-                        opacity: 0.38,
-                        child: Text(
-                          'Write down the information you want other people to know about you, choose your 3D avatar, customise your own AR business card below!  ',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 15,
-                          ),
-                        ),
-                      ),
-                    ),
-                    Padding(
-                      padding: EdgeInsets.only(top: 40),
-                      child: ProfileTextEditor(
-                          Text(
-                            'First Name',
-                            style: TextStyle(fontSize: 24, color: Colors.white),
-                          ),
-                          ProfileTextEditor.TEXTBOX,
-                          _firstNameController,
-                          hint: 'your first name'),
-                    ),
-                    Padding(
-                      padding: EdgeInsets.only(top: 40),
-                      child: ProfileTextEditor(
-                          Text(
-                            'Last Name',
-                            style: TextStyle(fontSize: 24, color: Colors.white),
-                          ),
-                          ProfileTextEditor.TEXTBOX,
-                          _lastNameController,
-                          hint: 'your Last name'),
-                    ),
-                    Padding(
-                      padding: EdgeInsets.only(top: 40),
-                      child: ProfileTextEditor(
-                        Text(
-                          'Model',
-                          style: TextStyle(fontSize: 30, color: Colors.white),
-                        ),
-                        ProfileTextEditor.DROPDOWN,
-                        _descriptionController,
-                        dropContent: [ "TestMale", "Luffy", "FitFemale", "Jiraiya", "YodaRigged", "BusinessMale", "BusinessFemale", "SmartMale", "SmartFemale" ],
-                        currentSelect:_model,
-                        dropOnChange: (value) {
-                          _model=value;
-                          setState(() {});
-                        },
-                      ),
-                    ),
-                    Padding(
-                      padding: EdgeInsets.only(top: 40),
-                      child: ProfileTextEditor(
-                        Text(
-                          'Gender',
-                          style: TextStyle(fontSize: 30, color: Colors.white),
-                        ),
-                        ProfileTextEditor.DROPDOWN,
-                        _descriptionController,
-                        dropContent: ["Perfer not to say", "Female", "Male"],
-                        currentSelect:
-                            _gender == ProfileTextEditor.PERFER_NOT_TO_SAY
-                                ? 'Perfer not to say'
-                                : _gender == FEMALE ? 'Female' : 'Male',
-                        dropOnChange: (value) {
-                          if (value == 'Perfer not to say') {
-                            _gender = PERFER_NOT_TO_SAY;
-                          } else if (value == 'Female') {
-                            _gender = FEMALE;
-                          } else if (value == 'Male') {
-                            _gender = MALE;
-                          }
-                          setState(() {});
-                        },
-                      ),
-                    ),
-                    Padding(
-                      padding: EdgeInsets.only(top: 40),
-                      child: ProfileTextEditor(
-                          Text(
-                            'One-Sentence Description',
-                            style: TextStyle(fontSize: 24, color: Colors.white),
-                          ),
-                          ProfileTextEditor.TEXTBOX,
-                          _descriptionController,
-                          hint: 'Tell us more about yourself'),
-                    ),
-                    Padding(
-                      padding: EdgeInsets.only(top: 40),
-                      child: ProfileTextEditor(
-                          Text(
-                            'Work Experiences',
-                            style: TextStyle(fontSize: 24, color: Colors.white),
-                          ),
-                          ProfileTextEditor.TEXTBOX,
-                          _workExperiencesController,
-                          hint:
-                              'Where do you currently work? How about 3 years ago?'),
-                    ),
-                    Padding(
-                      padding: EdgeInsets.only(top: 40),
-                      child: ProfileTextEditor(
-                          Text(
-                            'Education',
-                            style: TextStyle(fontSize: 24, color: Colors.white),
-                          ),
-                          ProfileTextEditor.TEXTBOX,
-                          _educationController,
-                          hint:
-                              'Where did you attend your uni and high school? How was your grade?'),
-                    ),
-                    Padding(
-                      padding: EdgeInsets.only(top: 25),
-                      child: Opacity(
-                        opacity: 0.38,
-                        child: Text(
-                          'You can download your QR code for printing on your physical business card by tap the button at the top right corner.',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 15,
-                          ),
-                        ),
-                      ),
-                    ),
-                    Padding(
-                      padding: EdgeInsets.only(top: 25),
-                      child: Opacity(
-                        opacity: 0.38,
-                        child: Text(
-                          'Change your name and profile picture in your LinkedIn account.',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 15,
-                          ),
-                        ),
-                      ),
-                    ),
-                    Padding(
+              Theme(
+                data: ThemeData(
+                  primarySwatch: Colors.blue,
+                ),
+                child: Container(
+                  height: _middleHeight,
+                  width: _width * 0.88,
+                  child: ListView(
+                    children: <Widget>[
+                      Padding(
                         padding: EdgeInsets.only(top: 25),
-                        child: FlatButton(
-                            child: Container(
-                          decoration: BoxDecoration(
-                            color: Color.fromARGB(255, 61, 63, 83),
-                            borderRadius:
-                                BorderRadius.all(const Radius.circular(30.0)),
+                        child: Opacity(
+                          opacity: 0.38,
+                          child: Text(
+                            'Write down the information you want other people to know about you, choose your 3D avatar, customise your own AR business card below!  ',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 15,
+                            ),
                           ),
-                          width: 150,
-                          height: 40,
-                          child: Center(
-                              child: Text(
-                            'Open',
-                            style: TextStyle(color: Colors.white, fontSize: 15),
-                          )),
-                        ))),
-                    Padding(
-                      padding: EdgeInsets.only(top: 6, bottom: 80),
-                      child: FlatButton(
-                        onPressed: onLogOut,
-                        child: Text(
-                          'Logout LinkedIn',
-                          style: TextStyle(color: Colors.white, fontSize: 12),
                         ),
                       ),
-                    )
-                  ],
+                      Padding(
+                        padding: EdgeInsets.only(top: 40),
+                        child: ProfileTextEditor(
+                            Text(
+                              'First Name',
+                              style: TextStyle(fontSize: 24, color: Colors.white),
+                            ),
+                            ProfileTextEditor.TEXTBOX,
+                            _firstNameController,
+                            hint: 'your first name'),
+                      ),
+                      Padding(
+                        padding: EdgeInsets.only(top: 40),
+                        child: ProfileTextEditor(
+                            Text(
+                              'Last Name',
+                              style: TextStyle(fontSize: 24, color: Colors.white),
+                            ),
+                            ProfileTextEditor.TEXTBOX,
+                            _lastNameController,
+                            hint: 'your Last name'),
+                      ),
+                      Padding(
+                        padding: EdgeInsets.only(top: 40),
+                        child: ProfileTextEditor(
+                          Text(
+                            'Model',
+                            style: TextStyle(fontSize: 30, color: Colors.white),
+                          ),
+                          ProfileTextEditor.DROPDOWN,
+                          _descriptionController,
+                          dropContent: [ "TestMale", "Luffy", "FitFemale", "Jiraiya", "YodaRigged", "BusinessMale", "BusinessFemale", "SmartMale", "SmartFemale" ],
+                          currentSelect:_model,
+                          dropOnChange: (value) {
+                            _model=value;
+                            setState(() {});
+                          },
+                        ),
+                      ),
+                      Padding(
+                        padding: EdgeInsets.only(top: 40),
+                        child: ProfileTextEditor(
+                          Text(
+                            'Gender',
+                            style: TextStyle(fontSize: 30, color: Colors.white),
+                          ),
+                          ProfileTextEditor.DROPDOWN,
+                          _descriptionController,
+                          dropContent: ["Perfer not to say", "Female", "Male"],
+                          currentSelect:
+                          _gender == ProfileTextEditor.PERFER_NOT_TO_SAY
+                              ? 'Perfer not to say'
+                              : _gender == FEMALE ? 'Female' : 'Male',
+                          dropOnChange: (value) {
+                            if (value == 'Perfer not to say') {
+                              _gender = PERFER_NOT_TO_SAY;
+                            } else if (value == 'Female') {
+                              _gender = FEMALE;
+                            } else if (value == 'Male') {
+                              _gender = MALE;
+                            }
+                            setState(() {});
+                          },
+                        ),
+                      ),
+                      Padding(
+                        padding: EdgeInsets.only(top: 40),
+                        child: ProfileTextEditor(
+                            Text(
+                              'One-Sentence Description',
+                              style: TextStyle(fontSize: 24, color: Colors.white),
+                            ),
+                            ProfileTextEditor.TEXTBOX,
+                            _descriptionController,
+                            hint: 'Tell us more about yourself'),
+                      ),
+                      Padding(
+                        padding: EdgeInsets.only(top: 40),
+                        child: ProfileTextEditor(
+                            Text(
+                              'Work Experiences',
+                              style: TextStyle(fontSize: 24, color: Colors.white),
+                            ),
+                            ProfileTextEditor.TEXTBOX,
+                            _workExperiencesController,
+                            hint:
+                            'Where do you currently work? How about 3 years ago?'),
+                      ),
+                      Padding(
+                        padding: EdgeInsets.only(top: 40),
+                        child: ProfileTextEditor(
+                            Text(
+                              'Education',
+                              style: TextStyle(fontSize: 24, color: Colors.white),
+                            ),
+                            ProfileTextEditor.TEXTBOX,
+                            _educationController,
+                            hint:
+                            'Where did you attend your uni and high school? How was your grade?'),
+                      ),
+                      Padding(
+                        padding: EdgeInsets.only(top: 25),
+                        child: Opacity(
+                          opacity: 0.38,
+                          child: Text(
+                            'You can download your QR code for printing on your physical business card by tap the button at the top right corner.',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 15,
+                            ),
+                          ),
+                        ),
+                      ),
+                      Padding(
+                        padding: EdgeInsets.only(top: 25),
+                        child: Opacity(
+                          opacity: 0.38,
+                          child: Text(
+                            'Change your name and profile picture in your LinkedIn account.',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 15,
+                            ),
+                          ),
+                        ),
+                      ),
+                      Padding(
+                          padding: EdgeInsets.only(top: 25),
+                          child: FlatButton(
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  color: Color.fromARGB(255, 61, 63, 83),
+                                  borderRadius:
+                                  BorderRadius.all(const Radius.circular(30.0)),
+                                ),
+                                width: 150,
+                                height: 40,
+                                child: Center(
+                                    child: Text(
+                                      'Open',
+                                      style: TextStyle(color: Colors.white, fontSize: 15),
+                                    )),
+                              ))),
+                      Padding(
+                        padding: EdgeInsets.only(top: 6, bottom: 80),
+                        child: FlatButton(
+                          onPressed: onLogOut,
+                          child: Text(
+                            'Logout LinkedIn',
+                            style: TextStyle(color: Colors.white, fontSize: 12),
+                          ),
+                        ),
+                      )
+                    ],
+                  ),
                 ),
               ),
               Container(
@@ -613,15 +617,14 @@ class _Settings extends State<Settings> {
                 Navigator.of(context).pop(true);
               }
             },
-        ),
+          ),
+          ),
         ),
         onWillPop: _onLeaving
     );
   }
 
   contentOnSave() async {
-    print(_profile);
-    print( userData.profile);
     if(!hasChangedContent() && _profile == userData.profile){
       return;
     }
