@@ -48,7 +48,7 @@ dependencies:
   fluttertoast:
   permission_handler:
   image_picker:
-  camera:
+#  camera:
   image_cropper:
   flutter_image_compress:
 dev_dependencies:

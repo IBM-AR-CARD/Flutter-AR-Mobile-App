@@ -7,7 +7,6 @@ import '../Screens/MyCards.dart';
 import '../Screens/ScanQR.dart';
 import '../Models/SlideRoute.dart';
 import '../Screens/Settings.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_unity_widget/flutter_unity_widget.dart';
 import 'dart:async';
 import 'package:flutter_tts/flutter_tts.dart';
@@ -20,7 +19,6 @@ import 'package:flutter/foundation.dart';
 import '../Models/UserData.dart';
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:swipedetector/swipedetector.dart';
-import 'package:permission_handler/permission_handler.dart';
 class UnityPage extends StatefulWidget {
   UnityPage({Key key, this.title}) : super(key: key);
   final String title;

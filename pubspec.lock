@@ -7,7 +7,7 @@ packages:
       name: animator
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "1.0.0+3"
+    version: "1.0.0+4"
   archive:
     dependency: transitive
     description:
@@ -57,13 +57,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.0.0"
-  camera:
-    dependency: "direct main"
-    description:
-      name: camera
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "0.5.7+3"
   charcode:
     dependency: transitive
     description:
@@ -152,7 +145,7 @@ packages:
       name: flutter_svg
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.16.1"
+    version: "0.17.1"
   flutter_test:
     dependency: "direct dev"
     description: flutter
@@ -164,7 +157,7 @@ packages:
       name: flutter_tts
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.8.6"
+    version: "0.8.7"
   flutter_unity_widget:
     dependency: "direct main"
     description:
@@ -183,7 +176,7 @@ packages:
       name: flutter_widgets
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.1.9"
+    version: "0.1.10"
   fluttertoast:
     dependency: "direct main"
     description:
@@ -197,7 +190,7 @@ packages:
       name: global_configuration
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "1.4.0"
+    version: "1.5.0"
   html:
     dependency: transitive
     description:
@@ -295,7 +288,7 @@ packages:
       name: path_provider
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "1.5.1"
+    version: "1.6.0"
   pedantic:
     dependency: transitive
     description:
@@ -309,7 +302,7 @@ packages:
       name: permission_handler
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "4.2.0+hotfix.2"
+    version: "4.2.0+hotfix.3"
   petitparser:
     dependency: transitive
     description:
@@ -419,7 +412,7 @@ packages:
       name: speech_to_text
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.7.2"
+    version: "0.8.0"
   sqflite:
     dependency: transitive
     description:
@@ -440,7 +433,7 @@ packages:
       name: states_rebuilder
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "1.11.2"
+    version: "1.12.1"
   stream_channel:
     dependency: transitive
     description:
@@ -510,7 +503,7 @@ packages:
       name: vibration
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "1.2.2"
+    version: "1.2.4"
   xml:
     dependency: transitive
     description:

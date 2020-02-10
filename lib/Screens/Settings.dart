@@ -7,7 +7,6 @@ import 'package:flutter_app/Models/SaveQR.dart';
 import 'package:flutter_app/Models/SlideRoute.dart';
 import 'package:flutter_app/Screens/Login.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:qr_code_scanner/qr_code_scanner.dart';
 import 'package:swipedetector/swipedetector.dart';
 import '../Models/ProfileTextEditor.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -19,8 +18,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:path/path.dart' as path;
 import 'package:image_picker/image_picker.dart';
 import 'package:image_cropper/image_cropper.dart';
-import '../Screens/CameraView.dart';
-import 'package:camera/camera.dart';
 import 'package:flutter_image_compress/flutter_image_compress.dart';
 import 'package:dio/dio.dart';
 import 'package:path/path.dart' show join;
@@ -101,7 +98,7 @@ class _Settings extends State<Settings> {
   Future<void> _pickImage()async{
     File selected = await ImagePicker.pickImage(source: ImageSource.gallery);
     setState(() {
-      _imageFile = selected;
+      _imageFile = selected??_imageFile;
     });
     _cropImage();
   }
@@ -136,9 +133,6 @@ class _Settings extends State<Settings> {
     return result;
   }
 
-  showProgress(){
-
-  }
   _upLoadImage(File image)async{
 //    Response response;
 
@@ -195,13 +189,17 @@ class _Settings extends State<Settings> {
       print(err);
     }
   }
+
   Future<void> _takePicture()async{
-    final cameras = await availableCameras();
-    final result = await Navigator.push(context, SlideLeftRoute(page:CameraScreen(camera: cameras)));
-    print(result);
+    GlobalData globalData = GlobalData();
+    globalData.stopAllController();
+    File result = await ImagePicker.pickImage(source: ImageSource.camera);
+    globalData.resumeControllerState();
     if(result != null){
-      _imageFile = new File(result);
-      await _cropImage();
+      setState(() {
+        _imageFile = result;
+      });
+      _cropImage();
     }
   }
   _onCamera()async{
