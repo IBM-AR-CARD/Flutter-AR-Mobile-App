@@ -348,14 +348,19 @@ class _MyCards extends State<MyCards> with TickerProviderStateMixin {
   }
 
   Future _getHistory() async {
+//    var response = HttpUtils.get(
+//        '${Config.baseURl}/history/get?_id=${globalData.userData.id}',options: {"Authorization":"Bearer ${globalData.token}"});
+//    return response;
     var response = HttpUtils.get(
-        '${Config.baseURl}/history/get?_id=${globalData.userData.id}');
+        '${Config.baseURl}/history/get',header: {"Authorization":"Bearer ${globalData.token}"});
     return response;
   }
 
   Future _getFavourite() async {
+//    var response = HttpUtils.get(
+//        '${Config.baseURl}/favorite/get?_id=${globalData.userData.id}',options: {"Authorization":"Bearer ${globalData.token}"});
     var response = HttpUtils.get(
-        '${Config.baseURl}/favorite/get?_id=${globalData.userData.id}');
+        '${Config.baseURl}/favorite/get',header: {"Authorization":"Bearer ${globalData.token}"});
     return response;
   }
 
@@ -386,9 +391,7 @@ class _MyCards extends State<MyCards> with TickerProviderStateMixin {
       child: Stack(
         children: <Widget>[
           Center(
-            child: Text('NetWork Error'
-
-            ),
+            child: Text('NetWork Error'),
           ),
           ListView()
         ],
@@ -410,6 +413,7 @@ class _MyCards extends State<MyCards> with TickerProviderStateMixin {
   }
 
   Widget _itemBuilder(BuildContext context, int index, list) {
+    print(list);
     if(index==0){
       return Divider(
         height: 5,
@@ -439,11 +443,19 @@ class _MyCards extends State<MyCards> with TickerProviderStateMixin {
           Padding(
             padding: EdgeInsets.only(left: 10),
             child: SizedBox(
+
+
               child: ClipRRect(
-                borderRadius: new BorderRadius.all(const Radius.circular(40.0)),
+
+                borderRadius: new BorderRadius.all(
+                    const Radius.circular(40.0)),
                 child: FadeInImage(
-                  image: NetworkImage(list[index]["avatar"]),
-                  placeholder: AssetImage('assets/images/unknown-avatar.jpg'),
+                  width: 70,
+                  height: 70,
+                  image:NetworkImage(list[index]["profile"]),
+                  placeholder: AssetImage(
+                      'assets/images/unknown-avatar.jpg'
+                  ),
                 ),
               ),
               height: 70.0,
@@ -461,7 +473,7 @@ class _MyCards extends State<MyCards> with TickerProviderStateMixin {
                   child: SizedBox(
                     width: width - width * 0.1 - 100,
                     child: Text(
-                      list[index]["name"],
+                      list[index]["name"]??"",
                       overflow: TextOverflow.ellipsis,
                       softWrap: false,
                       maxLines: 1,
@@ -477,7 +489,7 @@ class _MyCards extends State<MyCards> with TickerProviderStateMixin {
                   child: SizedBox(
                     width: width - width * 0.1 - 100,
                     child: Text(
-                      list[index]["description"],
+                      list[index]["description"]??"",
                       overflow: TextOverflow.ellipsis,
                       softWrap: false,
                       maxLines: 1,

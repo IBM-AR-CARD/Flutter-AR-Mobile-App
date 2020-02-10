@@ -265,14 +265,19 @@ class _ScanQR extends State<ScanQR> {
     this.controller = controller;
     globalData.qrViewController = controller;
     controller.scannedDataStream.listen((scanData) async {
-      Vibration.vibrate(duration: 300);
       if (!_find) {
         _find = true;
         if(scanData.startsWith("${Config.baseURl}/profile/get")){
+          Vibration.vibrate(duration: 300);
           await setScannedUserData(scanData);
         }else {
           await setDemoUserData();
         }
+        _find = true;
+        globalData.resumeUnityController();
+        await Navigator.push(
+            context,
+            FadeRoute(page: UnityPage()));
       }
     });
   }
@@ -325,10 +330,23 @@ class _ScanQR extends State<ScanQR> {
       if(response.statusCode == 200){
         UserData userData = UserData.toUserData(response.body);
         GlobalData().scanData = userData;
+        JsonEncoder jsonEncoder = JsonEncoder();
+        final scanedId = jsonEncoder.convert({
+          "userid": userData.id
+        });
+        final responseAddHistory = await http.post(
+            '${Config.baseURl}/history/add',
+            headers: {"Authorization":"Bearer ${globalData.token}","Content-Type": "application/json"},
+            body:scanedId
+        ).timeout(Duration(seconds: 5));
+        if(responseAddHistory.statusCode != 200){
+          throw new Exception();
+        }
       }else{
         throw new Exception();
       }
     }catch(err){
+      pr.hide();
       print(err);
       await showDialog(
           context: context,

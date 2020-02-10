@@ -97,10 +97,8 @@ class _Settings extends State<Settings> {
   }
   Future<void> _pickImage()async{
     File selected = await ImagePicker.pickImage(source: ImageSource.gallery);
-    setState(() {
-      _imageFile = selected??_imageFile;
-    });
-    _cropImage();
+    _imageFile = selected??_imageFile;
+    await _cropImage();
   }
 
 
@@ -134,8 +132,6 @@ class _Settings extends State<Settings> {
   }
 
   _upLoadImage(File image)async{
-//    Response response;
-
     Dio dio = new Dio();
     dio.options.connectTimeout = 5000; //5s
     dio.options.receiveTimeout = 3000;
@@ -162,7 +158,7 @@ class _Settings extends State<Settings> {
       );
 
       print(response.data);
-      GlobalData().userData.profile = response.data['path'];
+//      GlobalData().userData.profile = response.data['path'];
       _profile = response.data['path'];
       setState(() {
 
@@ -191,15 +187,10 @@ class _Settings extends State<Settings> {
   }
 
   Future<void> _takePicture()async{
-    GlobalData globalData = GlobalData();
-    globalData.stopAllController();
     File result = await ImagePicker.pickImage(source: ImageSource.camera);
-    globalData.resumeControllerState();
     if(result != null){
-      setState(() {
         _imageFile = result;
-      });
-      _cropImage();
+      await _cropImage();
     }
   }
   _onCamera()async{
@@ -230,7 +221,10 @@ class _Settings extends State<Settings> {
                   title: new Text('Gallery'),
                   onTap:()async{
                     Navigator.pop(bc);
+                    GlobalData globalData = GlobalData();
+                    globalData.stopAllController();
                     await _pickImage();
+                    globalData.resumeControllerState();
                   },
                 ),
               ],
@@ -626,9 +620,12 @@ class _Settings extends State<Settings> {
   }
 
   contentOnSave() async {
-    if(!hasChangedContent()){
+    print(_profile);
+    print( userData.profile);
+    if(!hasChangedContent() && _profile == userData.profile){
       return;
     }
+
     widget.globalData.userData = userData;
     userData.experience = _workExperiencesController.text;
     userData.gender = _gender;
@@ -637,6 +634,7 @@ class _Settings extends State<Settings> {
     userData.model = _model;
     userData.firstName = _firstNameController.text;
     userData.lastName=_lastNameController.text;
+    userData.profile = _profile;
     String userJson = userData.getJson();
     await storeValue(userJson);
     return;

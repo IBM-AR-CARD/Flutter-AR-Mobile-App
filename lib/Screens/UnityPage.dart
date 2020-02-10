@@ -38,6 +38,7 @@ class _UnityPage extends State<UnityPage> {
   List<BubblePair> bubbleMap = new List();
   String lastWords = "";
   String lastStatus = "";
+  bool isFavourite = false;
   bool _isTalking = false;
   var fetchUserData;
   final SpeechToText speech = SpeechToText();
@@ -279,6 +280,7 @@ class _UnityPage extends State<UnityPage> {
             )
     ),
           onWillPop: ()async{
+          navigateToScan();
           return false;
           },
         ),
@@ -445,11 +447,27 @@ class _UnityPage extends State<UnityPage> {
                   ),
                 ),
                 Padding(
-                  padding: EdgeInsets.only(right: 10),
+                  padding: EdgeInsets.only(right: 0),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.end,
 //                      crossAxisAlignment:CrossAxisAlignment.end,
                     children: <Widget>[
+                      IconButton(
+                        splashColor: Colors.transparent,
+                        highlightColor: Colors.transparent,
+                        icon: IconShadowWidget(
+                          Icon(
+                            Icons.favorite,
+                            size: 30,
+                            color: isFavourite
+                                ? Color.fromRGBO(15, 232, 149, 1)
+                                : Colors.white,
+                          ),
+                          shadowColor: Colors.greenAccent.shade200,
+                          showShadow: isFavourite,
+                        ),
+                        onPressed: _onFavourite
+                      ),
                       IconButton(
                         splashColor: Colors.transparent,
                         highlightColor: Colors.transparent,
@@ -478,7 +496,8 @@ class _UnityPage extends State<UnityPage> {
                             size: 30,
                             color: Colors.white,
                           ),
-                          onPressed: navigateToScan)
+                          onPressed: navigateToScan
+                      )
                     ],
                   ),
                 ),
@@ -557,6 +576,11 @@ class _UnityPage extends State<UnityPage> {
     }else{
       await Navigator.push(context, SlideRightRoute(page: MyCards()));
     }
+  }
+  _onFavourite(){
+    setState(() {
+      isFavourite = !isFavourite;
+    });
   }
   navigateToScan() async {
     _tracked = false;
