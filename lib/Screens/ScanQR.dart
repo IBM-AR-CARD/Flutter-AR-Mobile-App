@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:ui';
+import 'package:flutter_app/Request/request.dart';
 import 'package:flutter_app/Screens/Login.dart';
 import 'package:flutter_app/Screens/UnityPage.dart';
 import 'package:http/http.dart' as http;
@@ -326,7 +327,14 @@ class _ScanQR extends State<ScanQR> {
     pr.show();
     try{
       print('request');
-      final response = await http.post(scanData, headers: {"Content-Type": "application/json"}).timeout(Duration(seconds: 5));
+      String id;
+      if(globalData.hasLogin){
+        JsonEncoder jsonEncoder = JsonEncoder();
+        id = jsonEncoder.convert({
+          "_id":globalData.userData.id
+        });
+      }
+      final response = await http.post(scanData, headers: {"Content-Type": "application/json"},body:id ).timeout(Duration(seconds: 5));
       if(response.statusCode == 200){
         UserData userData = UserData.toUserData(response.body);
         GlobalData().scanData = userData;
@@ -334,13 +342,11 @@ class _ScanQR extends State<ScanQR> {
         final scanedId = jsonEncoder.convert({
           "userid": userData.id
         });
-        final responseAddHistory = await http.post(
-            '${Config.baseURl}/history/add',
-            headers: {"Authorization":"Bearer ${globalData.token}","Content-Type": "application/json"},
-            body:scanedId
-        ).timeout(Duration(seconds: 5));
-        if(responseAddHistory.statusCode != 200){
-          throw new Exception();
+        if(globalData.hasLogin){
+          final responseAddHistory = await RequestCards.historyAdd(scanedId);
+          if(responseAddHistory.statusCode != 200){
+            throw new Exception();
+          }
         }
       }else{
         throw new Exception();

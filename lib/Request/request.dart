@@ -1,7 +1,16 @@
+import 'dart:convert';
+
 import 'package:dio/dio.dart';
+import 'package:flutter_app/Models/Config.dart';
+import 'package:flutter_app/Models/GlobalData.dart';
 class HttpUtils {
   static get(url, {data, options, cancelToken,header}) async {
-    Options options = Options(headers: header);
+    if(options){
+      options = Options();
+    }
+    options.merge(
+      headers: header
+    );
     print('get request started! url：$url ,body: $data');
     Response response;
     try {
@@ -22,7 +31,12 @@ class HttpUtils {
   }
 
   static post(url, {data, options, cancelToken,header}) async {
-    Options options = Options(headers: header);
+    if(options){
+      options = Options();
+    }
+    options.merge(
+        headers: header
+    );
     print('post request started! url：$url ,body: $data');
     Response response;
     try {
@@ -40,5 +54,43 @@ class HttpUtils {
       print('post request error：$e');
     }
     return response.data;
+  }
+}
+
+class RequestCards{
+  static JsonEncoder jsonEncoder = JsonEncoder();
+  static GlobalData globalData = GlobalData();
+  static JsonDecoder jsonDecoder = JsonDecoder();
+  static String encodeJson(Map<String,dynamic> map){
+    final result = jsonEncoder.convert(map);
+    return result;
+  }
+  static Future<Response> favouriteAdd(id)async{
+    final result = encodeJson({
+      "userid": id
+    });
+    final response = await HttpUtils.post('${Config.baseURl}/favorite/add',data: result,header:  {"Authorization":"Bearer ${globalData.token}"});
+    return response;
+  }
+  static Future<Response> favouriteRemove(id)async{
+    final result = encodeJson({
+      "userid": id
+    });
+    final response = await HttpUtils.post('${Config.baseURl}/favorite/remove',data: result,header:  {"Authorization":"Bearer ${globalData.token}"});
+    return response;
+  }
+  static Future<Response> historyAdd(id)async{
+    final result = encodeJson({
+      "userid": id
+    });
+    final response = await HttpUtils.post('${Config.baseURl}/history/add',data: result,header:  {"Authorization":"Bearer ${globalData.token}"});
+    return response;
+  }
+  static Future<Response> historyRemove(id)async{
+    final result = encodeJson({
+      "userid": id
+    });
+    final response = await HttpUtils.post('${Config.baseURl}/history/remove',data: result,header:  {"Authorization":"Bearer ${globalData.token}"});
+    return response;
   }
 }

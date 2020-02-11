@@ -14,6 +14,7 @@ class UserData{
   String _userName;
   String _id;
   String _model;
+  bool _isFavourite = false;
   UserData( this._id,this._firstName,this._lastName, this._profile,this._userName,{String description, String experience,
       String education,int gender,String model}){
     _gender=gender;
@@ -52,6 +53,12 @@ class UserData{
 
   set profile(String value) {
     _profile = value;
+  }
+
+  bool get isFavourite => _isFavourite;
+
+  set isFavourite(bool value) {
+    _isFavourite = value;
   }
 
   String get education => _education;
@@ -111,8 +118,9 @@ class UserData{
           experience: json['experience'] ?? "",
           education: json['education'] ?? "",
           gender : json['gender']??0,
-          model: json['model']??""
+          model: json['model']??"",
       );
+      user.isFavourite = json['isFav']??false;
     return user;
   }
 }

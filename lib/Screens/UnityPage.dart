@@ -2,6 +2,7 @@ import 'dart:ui';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_app/Models/GlobalData.dart';
+import 'package:flutter_app/Request/request.dart';
 import 'package:flutter_app/Screens/Login.dart';
 import '../Screens/MyCards.dart';
 import '../Screens/ScanQR.dart';
@@ -49,11 +50,13 @@ class _UnityPage extends State<UnityPage> {
   final FlutterTts flutterTts = FlutterTts();
   bool _tracked = false;
   UserData userData;
+  bool onFavouriteRequest = false;
   bool _hasExtend = false;
   @override
   void initState() {
     super.initState();
     flutterTts.setLanguage("en-US");
+    isFavourite = widget.globalData.scanData.isFavourite;
     initSpeechState();
     initFlutterTTS();
   }
@@ -577,10 +580,51 @@ class _UnityPage extends State<UnityPage> {
       await Navigator.push(context, SlideRightRoute(page: MyCards()));
     }
   }
-  _onFavourite(){
-    setState(() {
-      isFavourite = !isFavourite;
-    });
+  _onFavourite()async{
+    if(onFavouriteRequest) return;
+    try{
+      if(isFavourite){
+        final response = await RequestCards.favouriteRemove(widget.globalData.scanData.id);
+        if(response.statusCode == 200){
+          isFavourite = false;
+          widget.globalData.scanData.isFavourite = false;
+        }else{
+          throw Exception();
+        }
+      }else{
+        final response = await RequestCards.favouriteAdd(widget.globalData.scanData.id);
+        if(response.statusCode == 200){
+          isFavourite = true;
+          widget.globalData.scanData.isFavourite = true;
+        }else{
+          throw Exception();
+        }
+      }
+    }catch(err){
+      await showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            // return object of type Dialog
+            return AlertDialog(
+              title: new Text("Network Error"),
+              content: new Text("please contact admin"),
+              actions: <Widget>[
+                // usually buttons at the bottom of the dialog
+                new FlatButton(
+                  child: new Text("Close"),
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                ),
+              ],
+            );
+          });
+    }finally{
+      onFavouriteRequest = false;
+      setState(() {
+
+      });
+    }
   }
   navigateToScan() async {
     _tracked = false;
