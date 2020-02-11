@@ -344,17 +344,17 @@ class _MyCards extends State<MyCards> with TickerProviderStateMixin {
 //    var response = HttpUtils.get(
 //        '${Config.baseURl}/history/get?_id=${globalData.userData.id}',options: {"Authorization":"Bearer ${globalData.token}"});
 //    return response;
-    var response = HttpUtils.get(
+    var response = await HttpUtils.get(
         '${Config.baseURl}/history/get',header: {"Authorization":"Bearer ${globalData.token}"});
-    return response;
+    return response.data;
   }
 
   Future _getFavourite() async {
 //    var response = HttpUtils.get(
 //        '${Config.baseURl}/favorite/get?_id=${globalData.userData.id}',options: {"Authorization":"Bearer ${globalData.token}"});
-    var response = HttpUtils.get(
+    var response = await HttpUtils.get(
         '${Config.baseURl}/favorite/get',header: {"Authorization":"Bearer ${globalData.token}"});
-    return response;
+    return response.data;
   }
 
   Widget _buildFuture(BuildContext context, AsyncSnapshot snapshot) {

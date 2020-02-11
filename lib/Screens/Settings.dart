@@ -194,10 +194,8 @@ class _Settings extends State<Settings> {
   }
   _onCamera()async{
     GlobalData globalData = GlobalData();
-    globalData.stopAllController();
     print(globalData.currentState);
     await _takePicture();
-    globalData.resumeControllerState();
     print(globalData.currentState);
   }
   showImageActionSheet()async{
@@ -220,10 +218,7 @@ class _Settings extends State<Settings> {
                   title: new Text('Gallery'),
                   onTap:()async{
                     Navigator.pop(bc);
-                    GlobalData globalData = GlobalData();
-                    globalData.stopAllController();
                     await _pickImage();
-                    globalData.resumeControllerState();
                   },
                 ),
               ],
@@ -708,13 +703,13 @@ class _Settings extends State<Settings> {
       await  preferences.setBool('hasLogin',false);
       GlobalData().hasLogin = false;
       GlobalData().wantLogin = true;
-      GlobalData().stopAllController();
       Navigator.pushReplacement(context, FadeRoute(page: Login()));
     }
   }
 
   Future<bool> _onLeaving() async {
     if(!hasChangedContent()){
+      GlobalData.globalData.resumeControllerState();
       return true;
     }
     final bool =
@@ -739,9 +734,6 @@ class _Settings extends State<Settings> {
           ),
         ) ??
         false;
-    if(bool){
-      GlobalData().resumeControllerState();
-    }
     return bool;
   }
   _showQR(){

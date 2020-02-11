@@ -4,13 +4,10 @@ import 'package:dio/dio.dart';
 import 'package:flutter_app/Models/Config.dart';
 import 'package:flutter_app/Models/GlobalData.dart';
 class HttpUtils {
-  static get(url, {data, options, cancelToken,header}) async {
-    if(options){
-      options = Options();
+  static Future<Response> get(url, {data, options, cancelToken,header}) async {
+    if(options == null){
+      options = Options(headers: header);
     }
-    options.merge(
-      headers: header
-    );
     print('get request started! url：$url ,body: $data');
     Response response;
     try {
@@ -27,16 +24,16 @@ class HttpUtils {
       }
       print('get request error：$e');
     }
-    return response.data;
+    return response;
   }
 
-  static post(url, {data, options, cancelToken,header}) async {
-    if(options){
-      options = Options();
+  static Future<Response> post(url, {data, options, cancelToken,header}) async {
+    if(header != null){
+      print(header);
     }
-    options.merge(
-        headers: header
-    );
+    if(options == null){
+      options = Options(headers: header);
+    }
     print('post request started! url：$url ,body: $data');
     Response response;
     try {
@@ -53,7 +50,7 @@ class HttpUtils {
       }
       print('post request error：$e');
     }
-    return response.data;
+    return response;
   }
 }
 

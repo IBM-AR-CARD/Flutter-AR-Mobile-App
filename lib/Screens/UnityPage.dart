@@ -644,6 +644,7 @@ class _UnityPage extends State<UnityPage> {
             page: Login(),
           ));
     }else{
+      globalData.stopAllController();
       await Navigator.push(context, SlideLeftRoute(page: Settings()));
       updateGender();
       setMessage("changeCharacter", widget.globalData.scanData.model);
