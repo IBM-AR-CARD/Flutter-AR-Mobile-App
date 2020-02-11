@@ -440,7 +440,7 @@ class _UnityPage extends State<UnityPage> {
                     mainAxisAlignment: MainAxisAlignment.end,
 //                      crossAxisAlignment:CrossAxisAlignment.end,
                     children: <Widget>[
-                      IconButton(
+                      widget.globalData.hasLogin ? IconButton(
                         splashColor: Colors.transparent,
                         highlightColor: Colors.transparent,
                         icon: IconShadowWidget(
@@ -455,7 +455,7 @@ class _UnityPage extends State<UnityPage> {
                           showShadow: isFavourite,
                         ),
                         onPressed: _onFavourite
-                      ),
+                      ):SizedBox.shrink(),
                       IconButton(
                         splashColor: Colors.transparent,
                         highlightColor: Colors.transparent,

@@ -8,7 +8,7 @@ class HttpUtils {
     if(options == null){
       options = Options(headers: header);
     }
-    print('get request started! url：$url ,body: $data');
+//    print('get request started! url：$url ,body: $data');
     Response response;
     try {
       response = await Dio().get(
@@ -34,7 +34,7 @@ class HttpUtils {
     if(options == null){
       options = Options(headers: header);
     }
-    print('post request started! url：$url ,body: $data');
+//    print('post request started! url：$url ,body: $data');
     Response response;
     try {
       response = await Dio().post(
