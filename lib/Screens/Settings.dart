@@ -193,10 +193,7 @@ class _Settings extends State<Settings> {
     }
   }
   _onCamera()async{
-    GlobalData globalData = GlobalData();
-    print(globalData.currentState);
     await _takePicture();
-    print(globalData.currentState);
   }
   showImageActionSheet()async{
     showModalBottomSheet(
@@ -599,6 +596,7 @@ class _Settings extends State<Settings> {
                       ),
                       onPressed: () async{
                         await contentOnSave();
+                        GlobalData().resumeControllerState();
                         Navigator.of(context).pop(true);
                       },
                     )
@@ -734,6 +732,9 @@ class _Settings extends State<Settings> {
           ),
         ) ??
         false;
+    if(bool){
+      GlobalData.globalData.resumeControllerState();
+    }
     return bool;
   }
   _showQR(){

@@ -61,24 +61,25 @@ class GlobalData {
     }
     _currentState = CameraState.UnityViewOpen;
   }
-  resumeQRViewController() {
+  resumeQRViewController() async{
     if (_unityWidgetController != null) {
-      _unityWidgetController.pause();
+      await _unityWidgetController.pause();
     }
     if (_qrViewController != null) {
       _qrViewController.resumeCamera();
     }
     _currentState = CameraState.QRViewOpen;
   }
-  stopAllController() {
+  stopAllController() async{
     if (_unityWidgetController != null) {
-      _unityWidgetController.pause();
+      await _unityWidgetController.pause();
     }
     if (_qrViewController != null) {
       _qrViewController.pauseCamera();
     }
 //    _currentState = CameraState.Closed;
   }
+
   resumeControllerState(){
     switch(_currentState) {
 //      case CameraState.Closed:

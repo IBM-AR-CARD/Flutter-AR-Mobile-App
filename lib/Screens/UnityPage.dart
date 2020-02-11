@@ -234,23 +234,8 @@ class _UnityPage extends State<UnityPage> {
         body: WillPopScope(
         child:SafeArea(
             child: SwipeDetector(
-              onSwipeLeft: () async {
-                if (!globalData.hasData) return;
-                await Navigator.push(
-                  context,
-                  SlideLeftRoute(
-                    page: Settings(),
-                  ),
-                );
-                updateGender();
-              },
-              onSwipeRight: () {
-                if (!globalData.hasData) return;
-                Navigator.push(
-                  context,
-                  SlideRightRoute(page: MyCards()),
-                );
-              },
+              onSwipeLeft: navigateToSetting,
+              onSwipeRight: navigateToMyCards,
               child: Stack(
                 children: <Widget>[
                   BackdropFilter(
@@ -322,7 +307,7 @@ class _UnityPage extends State<UnityPage> {
   void dispose() {
     _timer.cancel();
     super.dispose();
-    globalData.unityWidgetController = null;
+//    globalData.unityWidgetController = null;
   }
 
   updateGender() {
@@ -637,7 +622,7 @@ class _UnityPage extends State<UnityPage> {
     _tracked = false;
     if (!globalData.hasLogin){
       globalData.wantLogin = true;
-      globalData.stopAllController();
+      await globalData.stopAllController();
       await Navigator.push(
           context,
           FadeRoute(
