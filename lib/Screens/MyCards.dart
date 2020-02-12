@@ -406,7 +406,7 @@ class _MyCards extends State<MyCards> with TickerProviderStateMixin {
   }
 
   Widget _itemBuilder(BuildContext context, int index, list) {
-    print(list);
+//    print(list);
     if(index==0){
       return Divider(
         height: 5,

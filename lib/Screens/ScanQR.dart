@@ -283,44 +283,7 @@ class _ScanQR extends State<ScanQR> {
     });
   }
   setDemoUserData()async{
-
-    ProgressDialog pr = new ProgressDialog(context, isDismissible: false);
-    pr.show();
-    try{
-      print('request');
-      final response = await http.post('${Config.baseURl}/profile/get?username=jonmcnamara', headers: {"Content-Type": "application/json"}).timeout(Duration(seconds: 5));
-      if(response.statusCode == 200){
-        UserData userData = UserData.toUserData(response.body);
-        GlobalData().scanData = userData;
-      }else{
-        throw new Exception();
-      }
-    }catch(err){
-      print(err);
-      await showDialog(
-          context: context,
-          builder: (BuildContext context) {
-            // return object of type Dialog
-            return AlertDialog(
-              title: new Text("Can not find that person"),
-              content: new Text("please contact admin"),
-              actions: <Widget>[
-                // usually buttons at the bottom of the dialog
-                new FlatButton(
-                  child: new Text("Close"),
-                  onPressed: () {
-                    pr.hide();
-                    Navigator.pop(context);
-                  },
-                ),
-              ],
-            );
-          });
-      _find = false;
-    }finally{
-      print('final');
-      pr.hide();
-    }
+    setScannedUserData('${Config.baseURl}/profile/get?username=jonmcnamara');
   }
   setScannedUserData(scanData)async{
     ProgressDialog pr = new ProgressDialog(context, isDismissible: false);
@@ -337,13 +300,12 @@ class _ScanQR extends State<ScanQR> {
       final response = await http.post(scanData, headers: {"Content-Type": "application/json"},body:id ).timeout(Duration(seconds: 5));
       if(response.statusCode == 200){
         UserData userData = UserData.toUserData(response.body);
-        GlobalData().scanData = userData;
-        JsonEncoder jsonEncoder = JsonEncoder();
-        final scanedId = jsonEncoder.convert({
-          "userid": userData.id
-        });
+        globalData.scanData = userData;
         if(globalData.hasLogin){
-          final responseAddHistory = await RequestCards.historyAdd(scanedId);
+//          final scanId = jsonEncoder.convert({
+//            "userid": userData.id
+//          });
+          final responseAddHistory = await RequestCards.historyAdd(userData.id);
           if(responseAddHistory.statusCode != 200){
             throw new Exception();
           }
@@ -366,6 +328,7 @@ class _ScanQR extends State<ScanQR> {
                 new FlatButton(
                   child: new Text("Close"),
                   onPressed: () {
+                    Navigator.pop(context);
                     pr.hide();
                   },
                 ),

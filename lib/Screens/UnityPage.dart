@@ -20,16 +20,17 @@ import 'package:flutter/foundation.dart';
 import '../Models/UserData.dart';
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:swipedetector/swipedetector.dart';
+import 'package:flutter/scheduler.dart';
 class UnityPage extends StatefulWidget {
   UnityPage({Key key, this.title}) : super(key: key);
   final String title;
-  final GlobalData globalData = GlobalData();
 
   @override
   _UnityPage createState() => _UnityPage();
 }
 
 class _UnityPage extends State<UnityPage> {
+  GlobalData globalData;
   Timer _timer;
   String currentLocal;
   final double CHAT_ORIGIN_HEIGHT = 150;
@@ -39,24 +40,20 @@ class _UnityPage extends State<UnityPage> {
   List<BubblePair> bubbleMap = new List();
   String lastWords = "";
   String lastStatus = "";
-  bool isFavourite = false;
   bool _isTalking = false;
   var fetchUserData;
   final SpeechToText speech = SpeechToText();
-  static final int age = 21;
-  static final String name = "henry";
-  GlobalData globalData = GlobalData();
-  static final String description = "second year university student";
   final FlutterTts flutterTts = FlutterTts();
   bool _tracked = false;
   UserData userData;
   bool onFavouriteRequest = false;
   bool _hasExtend = false;
+  bool isFavourite = false;
   @override
   void initState() {
     super.initState();
+    globalData = GlobalData();
     flutterTts.setLanguage("en-US");
-    isFavourite = widget.globalData.scanData.isFavourite;
     initSpeechState();
     initFlutterTTS();
   }
@@ -291,7 +288,7 @@ class _UnityPage extends State<UnityPage> {
     if (message == '#tracked#' && !_tracked) {
       _tracked = true;
       talk("Nice to meet you, I am " +
-          widget.globalData.scanData.firstName +
+          globalData.scanData.firstName +
           ', please click the mic icon to ask any questions.');
     }
     setState(() {});
@@ -311,17 +308,17 @@ class _UnityPage extends State<UnityPage> {
   }
 
   updateGender() {
-    if (widget.globalData.scanData.gender == 2) {
+    if (globalData.scanData.gender == 2) {
       flutterTts.setVoice('en-gb-x-fis#male_1-local');
     } else {
       flutterTts.setVoice('en-gb-x-gba-network');
     }
-    setMessage("changeCharacter", widget.globalData.scanData.model);
+    setMessage("changeCharacter", globalData.scanData.model);
     setState(() {});
   }
 
   Widget bubbleChatBoard(context) {
-    UserData userData = widget.globalData.scanData;
+    UserData userData = globalData.scanData;
     double _width = MediaQuery.of(context).size.width;
     double _height = MediaQuery.of(context).size.height;
     double pixelRatio = MediaQuery.of(context).devicePixelRatio;
@@ -330,16 +327,19 @@ class _UnityPage extends State<UnityPage> {
     String _lastName;
     String _avatar;
     String _username;
+    bool isFavourite;
     if (userData == null) {
       _firstName = "";
       _lastName = "";
       _avatar = "";
       _username = "";
+      isFavourite = false;
     } else {
       _firstName = userData.firstName;
       _lastName = userData.lastName;
       _avatar = userData.profile;
       _username = userData.userName;
+      isFavourite = userData.isFavourite;
     }
     BubbleStyle styleSomebody = BubbleStyle(
       nip: BubbleNip.leftTop,
@@ -440,7 +440,7 @@ class _UnityPage extends State<UnityPage> {
                     mainAxisAlignment: MainAxisAlignment.end,
 //                      crossAxisAlignment:CrossAxisAlignment.end,
                     children: <Widget>[
-                      widget.globalData.hasLogin ? IconButton(
+                      globalData.hasLogin ? IconButton(
                         splashColor: Colors.transparent,
                         highlightColor: Colors.transparent,
                         icon: IconShadowWidget(
@@ -569,18 +569,18 @@ class _UnityPage extends State<UnityPage> {
     if(onFavouriteRequest) return;
     try{
       if(isFavourite){
-        final response = await RequestCards.favouriteRemove(widget.globalData.scanData.id);
+        final response = await RequestCards.favouriteRemove(globalData.scanData.id);
         if(response.statusCode == 200){
+          globalData.scanData.isFavourite = false;
           isFavourite = false;
-          widget.globalData.scanData.isFavourite = false;
         }else{
           throw Exception();
         }
       }else{
-        final response = await RequestCards.favouriteAdd(widget.globalData.scanData.id);
+        final response = await RequestCards.favouriteAdd(globalData.scanData.id);
         if(response.statusCode == 200){
+          globalData.scanData.isFavourite = true;
           isFavourite = true;
-          widget.globalData.scanData.isFavourite = true;
         }else{
           throw Exception();
         }
@@ -632,7 +632,7 @@ class _UnityPage extends State<UnityPage> {
       globalData.stopAllController();
       await Navigator.push(context, SlideLeftRoute(page: Settings()));
       updateGender();
-      setMessage("changeCharacter", widget.globalData.scanData.model);
+      setMessage("changeCharacter", globalData.scanData.model);
     }
     setState(() {
 

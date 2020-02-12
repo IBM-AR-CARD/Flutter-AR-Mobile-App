@@ -15,6 +15,7 @@ class UserData{
   String _id;
   String _model;
   bool _isFavourite = false;
+
   UserData( this._id,this._firstName,this._lastName, this._profile,this._userName,{String description, String experience,
       String education,int gender,String model}){
     _gender=gender;
@@ -101,7 +102,8 @@ class UserData{
       'education':_education,
       'gender':_gender,
       'profile':_profile,
-      'model':_model
+      'model':_model,
+      'isFav':_isFavourite
     };
     _profile = _profile??"";
     var json = JsonEncoder();
@@ -112,6 +114,8 @@ class UserData{
       var decoder = JsonDecoder();
       Map<String, dynamic> json;
       json = decoder.convert(userJson);
+      print('favourite data ${json['isFav']??'NO FAVOURITE'}');
+      print('favourite data is bool ${json['isFav'] is bool}');
       user = UserData(
           json['_id'],json['firstname'], json['lastname'], json['profile']??"",json['username'],
           description: json['description'] ?? "",

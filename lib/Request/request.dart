@@ -8,7 +8,6 @@ class HttpUtils {
     if(options == null){
       options = Options(headers: header);
     }
-//    print('get request started! url：$url ,body: $data');
     Response response;
     try {
       response = await Dio().get(
@@ -16,7 +15,7 @@ class HttpUtils {
         cancelToken: cancelToken,
         options: options
       );
-      //print('get请求成功!response.data： ${response.data}');
+//      print('get请求成功!response.data： ${response.data}');
       print('get request success!');
     } on DioError catch (e) {
       if (CancelToken.isCancel(e)) {
@@ -28,9 +27,6 @@ class HttpUtils {
   }
 
   static Future<Response> post(url, {data, options, cancelToken,header}) async {
-    if(header != null){
-      print(header);
-    }
     if(options == null){
       options = Options(headers: header);
     }
@@ -43,7 +39,7 @@ class HttpUtils {
         cancelToken: cancelToken,
         options: options
       );
-      print('post request success!response.data：${response.data}');
+//      print('post request success!response.data：${response.data}');
     } on DioError catch (e) {
       if (CancelToken.isCancel(e)) {
         print('post request cancel! ' + e.message);

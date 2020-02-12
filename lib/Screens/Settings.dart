@@ -50,6 +50,7 @@ class _Settings extends State<Settings> {
   String _model;
   File _imageFile;
   String _profile;
+  GlobalData globalData;
   final storedData = SharedPreferences.getInstance();
   bool hasChangedContent(){
     if(_firstName == _firstNameController.text && _lastName == _lastNameController.text && _gender == userData.gender && _descriptionController.text == userData.description && _educationController.text == userData.education && _workExperiencesController.text == userData.experience && userData.model == _model){
@@ -94,6 +95,7 @@ class _Settings extends State<Settings> {
   void initState() {
     super.initState();
     initUserData();
+    globalData = GlobalData();
   }
   Future<void> _pickImage()async{
     File selected = await ImagePicker.pickImage(source: ImageSource.gallery);
@@ -109,9 +111,7 @@ class _Settings extends State<Settings> {
 
     );
     if(cropped != null) {
-      setState(() {
-        _imageFile = cropped ?? _imageFile;
-      });
+      _imageFile = cropped ?? _imageFile;
       await _upLoadImage(_imageFile);
     }
   }
@@ -194,6 +194,7 @@ class _Settings extends State<Settings> {
   }
   _onCamera()async{
     await _takePicture();
+    setState(() {});
   }
   showImageActionSheet()async{
     showModalBottomSheet(
@@ -694,13 +695,13 @@ class _Settings extends State<Settings> {
       ),
     ) ??
         false){
-      GlobalData().clearData();
+      globalData.clearData();
       SharedPreferences preferences = await SharedPreferences.getInstance();
       await preferences.setString('E-MAIL','');
       await preferences.setString('PASSWORD', '');
       await  preferences.setBool('hasLogin',false);
-      GlobalData().hasLogin = false;
-      GlobalData().wantLogin = true;
+      globalData.hasLogin = false;
+      globalData.wantLogin = true;
       Navigator.pushReplacement(context, FadeRoute(page: Login()));
     }
   }
@@ -733,7 +734,7 @@ class _Settings extends State<Settings> {
         ) ??
         false;
     if(bool){
-      GlobalData.globalData.resumeControllerState();
+      await GlobalData.globalData.resumeControllerState();
     }
     return bool;
   }
