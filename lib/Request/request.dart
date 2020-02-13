@@ -37,7 +37,7 @@ class HttpUtils {
         url,
         data: data,
         cancelToken: cancelToken,
-        options: options
+        options: options,
       );
 //      print('post request success!response.data：${response.data}');
     } on DioError catch (e) {
@@ -89,11 +89,13 @@ class RequestCards{
 
   static Future<Response> getWatsonContent(id,name,content)async{
     final result = encodeJson({
-      "userid": id,
+      "userid": id??"",
       "content":content,
-      "senderUsername": name
+      "senderUsername": name??""
     });
+    print(result);
     final response = await HttpUtils.post('${Config.baseURl}/chat',data: result);
+    print(response.data);
     return response;
   }
 }

@@ -73,8 +73,8 @@ class _UnityPage extends State<UnityPage> {
   }
 
   stopSpeaking() async {
-    _isTalking = false;
     await flutterTts.stop();
+    _isTalking = false;
     setMessage('changeAnimator', "idle");
     setState(() {});
   }
@@ -116,7 +116,7 @@ class _UnityPage extends State<UnityPage> {
 //    UserData userData = GlobalData().scanData;
 //    String text = lastWords.toLowerCase();
     final result = await getVoiceContent();
-    if(result != ''){
+    if(result!= null && result != ''){
       await talk(result);
     }
   }
@@ -126,14 +126,17 @@ class _UnityPage extends State<UnityPage> {
     String text = lastWords.toLowerCase();
     JsonDecoder jsonDecoder = JsonDecoder();
     try{
-      final response = await RequestCards.getWatsonContent(scanData.id, userData.id, text);
+      final response = await RequestCards.getWatsonContent(scanData.id, userData.userName, text);
       if(response.statusCode == 200){
-        final result = jsonDecoder.convert(response.data);
+        final result = (response.data);
+        print(result);
+        print(result['answer']);
         return result['answer'];
       }else{
         throw Exception('');
       }
     }catch(err){
+      print(err);
       await showDialog(
           context: context,
           builder: (BuildContext context) {
