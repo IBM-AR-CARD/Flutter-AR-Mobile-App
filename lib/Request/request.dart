@@ -86,4 +86,14 @@ class RequestCards{
     final response = await HttpUtils.post('${Config.baseURl}/history/remove',data: result,header:  {"Authorization":"Bearer ${globalData.token}"});
     return response;
   }
+
+  static Future<Response> getWatsonContent(id,name,content)async{
+    final result = encodeJson({
+      "userid": id,
+      "content":content,
+      "senderUsername": name
+    });
+    final response = await HttpUtils.post('${Config.baseURl}/chat',data: result);
+    return response;
+  }
 }
