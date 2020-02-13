@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:ui';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -72,8 +73,8 @@ class _UnityPage extends State<UnityPage> {
   }
 
   stopSpeaking() async {
-    _isTalking = false;
     await flutterTts.stop();
+    _isTalking = false;
     setMessage('changeAnimator', "idle");
     setState(() {});
   }
@@ -112,30 +113,49 @@ class _UnityPage extends State<UnityPage> {
   }
 
   speak() async {
-    UserData userData = GlobalData().scanData;
+//    UserData userData = GlobalData().scanData;
+//    String text = lastWords.toLowerCase();
+    final result = await getVoiceContent();
+    if(result!= null && result != ''){
+      await talk(result);
+    }
+  }
+  Future<String> getVoiceContent()async{
+    UserData scanData = GlobalData().scanData;
+    UserData userData = GlobalData().userData;
     String text = lastWords.toLowerCase();
-    print('recognized text : $text');
-    if (text.contains("name") || text.contains("who")) {
-      await talk("Hello! My name is " +
-          userData.firstName.toString() +
-          " " +
-          userData.lastName.toString());
-    } else if (text.contains("tell me about") || text.contains("description")) {
-      await talk(userData.description);
-    } else if (text.contains("experience") ||
-        text.contains("work") ||
-        text.contains("company")) {
-      await talk(userData.experience);
-    } else if (text == "start dancing") {
-      setMessage('changeAnimator', "dancing");
-    } else if (text == "random character") {
-      setMessage('randomModel', '');
-    } else if (text.contains("education") ||
-        text.contains("university") ||
-        text.contains("study")) {
-      await talk(userData.education);
-    } else {
-      await talk("Sorry, I haven't learned that yet.");
+    JsonDecoder jsonDecoder = JsonDecoder();
+    try{
+      final response = await RequestCards.getWatsonContent(scanData.id, userData.userName, text);
+      if(response.statusCode == 200){
+        final result = (response.data);
+        print(result);
+        print(result['answer']);
+        return result['answer'];
+      }else{
+        throw Exception('');
+      }
+    }catch(err){
+      print(err);
+      await showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            // return object of type Dialog
+            return AlertDialog(
+              title: new Text("Network Error"),
+              content: new Text("please contact admin"),
+              actions: <Widget>[
+                // usually buttons at the bottom of the dialog
+                new FlatButton(
+                  child: new Text("Close"),
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                ),
+              ],
+            );
+          });
+      return '';
     }
   }
 
