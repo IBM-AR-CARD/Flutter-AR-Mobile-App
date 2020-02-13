@@ -71,6 +71,7 @@ class GlobalData {
     _currentState = CameraState.QRViewOpen;
   }
   stopAllController() async{
+    print('stopAllController');
     if (_unityWidgetController != null) {
       await _unityWidgetController.pause();
     }
