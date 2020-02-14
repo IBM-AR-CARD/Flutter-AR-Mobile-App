@@ -52,16 +52,19 @@ class GlobalData {
     _qrViewController = value;
   }
 
-  resumeUnityController(){
+  resumeUnityController({List<Function> callback})async{
     if(_qrViewController != null){
       _qrViewController.pauseCamera();
     }
     if(_unityWidgetController != null){
-      _unityWidgetController.resume();
+      await _unityWidgetController.resume();
     }
     _currentState = CameraState.UnityViewOpen;
+    for(Function function in callback??[]){
+      function();
+    }
   }
-  resumeQRViewController() async{
+  resumeQRViewController({List<Function> callback}) async{
     if (_unityWidgetController != null) {
       await _unityWidgetController.pause();
     }
@@ -69,8 +72,11 @@ class GlobalData {
       _qrViewController.resumeCamera();
     }
     _currentState = CameraState.QRViewOpen;
+    for(Function function in callback??[]){
+      function();
+    }
   }
-  stopAllController() async{
+  stopAllController({List<Function> callback})async{
     print('stopAllController');
     if (_unityWidgetController != null) {
       await _unityWidgetController.pause();
@@ -78,6 +84,10 @@ class GlobalData {
     if (_qrViewController != null) {
       _qrViewController.pauseCamera();
     }
+    for(Function function in callback??[]){
+      function();
+    }
+
 //    _currentState = CameraState.Closed;
   }
 

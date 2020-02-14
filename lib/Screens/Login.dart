@@ -559,17 +559,17 @@ class _Login extends State<Login> with TickerProviderStateMixin {
     hasExpand = true;
     initRememberState();
     SystemChrome.setEnabledSystemUIOverlays([]);
-    PermissionHandler().requestPermissions([
-      PermissionGroup.camera,
-      PermissionGroup.microphone,
-      PermissionGroup.storage
-    ]);
     initAnimation();
     loginText =  'Welcome back to IBM AR Card';
     registerText = 'Register now to sync your scan history and\nfavourites, also creating your own AR card!';
   }
   initRememberState() {
     SchedulerBinding.instance.addPostFrameCallback((_) async{
+      await PermissionHandler().requestPermissions([
+        PermissionGroup.camera,
+        PermissionGroup.microphone,
+        PermissionGroup.storage
+      ]);
       SharedPreferences preferences = await SharedPreferences.getInstance();
       bool value = preferences.getBool('remember')??false;
       GlobalData globalData = GlobalData();

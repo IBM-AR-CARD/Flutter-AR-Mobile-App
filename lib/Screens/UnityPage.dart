@@ -575,7 +575,7 @@ class _UnityPage extends State<UnityPage> {
     if (!globalData.hasLogin){
       globalData.wantLogin = true;
       _tracked = false;
-      await globalData.stopAllController();
+      globalData.stopAllController();
       await Navigator.push(
           context,
           FadeRoute(
@@ -642,22 +642,22 @@ class _UnityPage extends State<UnityPage> {
     _tracked = false;
     if (!globalData.hasLogin){
       globalData.wantLogin = true;
-      await globalData.stopAllController();
+      globalData.stopAllController();
       await Navigator.push(
           context,
           FadeRoute(
             page: Login(),
           ));
     }else{
-      await globalData.stopAllController();
+      globalData.stopAllController();
       await Navigator.push(context, SlideLeftRoute(page: Settings()));
-      await Future.delayed(Duration(seconds: 1));
+//      await Future.delayed(Duration(seconds: 1));
       updateGender();
       setMessage("changeCharacter", globalData.scanData.model);
     }
-    setState(() {
-
-    });
+//    setState(() {
+//
+//    });
   }
 
   flipHint() {
