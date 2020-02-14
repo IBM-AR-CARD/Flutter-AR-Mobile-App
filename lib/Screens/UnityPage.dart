@@ -126,7 +126,7 @@ class _UnityPage extends State<UnityPage> {
     String text = lastWords.toLowerCase();
     JsonDecoder jsonDecoder = JsonDecoder();
     try{
-      final response = await RequestCards.getWatsonContent(scanData.id, userData.userName, text);
+      final response = await RequestCards.getWatsonContent(scanData.id, (userData?.userName)??"", text);
       if(response.statusCode == 200){
         final result = (response.data);
         print(result);
