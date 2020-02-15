@@ -571,11 +571,17 @@ class _UnityPage extends State<UnityPage> {
       ),
     );
   }
+  pauseControllerTheme(){
+    setMessage('switchSence', 'CharScene');
+  }
+  resumeControllerTheme(){
+    setMessage('switchSence', 'ARScene');
+  }
   navigateToMyCards()async{
     if (!globalData.hasLogin){
       globalData.wantLogin = true;
       _tracked = false;
-      globalData.stopAllController();
+      globalData.stopAllController(callback: [pauseControllerTheme]);
       await Navigator.push(
           context,
           FadeRoute(
@@ -586,6 +592,14 @@ class _UnityPage extends State<UnityPage> {
     }
   }
   _onFavourite()async{
+//    resumeControllerTheme();
+//    return;
+//    if(isFavourite){
+//      resumeControllerTheme();
+//    }else{
+//      pauseControllerTheme();
+//    }
+//    return;
     if(onFavouriteRequest) return;
     try{
       if(isFavourite){
