@@ -58,6 +58,11 @@ class GlobalData {
     }
     if(_unityWidgetController != null){
       await _unityWidgetController.resume();
+      _unityWidgetController.postMessage(
+        'Main Camera',
+        'switchSence',
+        'ARScene',
+      );
     }
     _currentState = CameraState.UnityViewOpen;
     for(Function function in callback??[]){
@@ -66,6 +71,11 @@ class GlobalData {
   }
   resumeQRViewController({List<Function> callback}) async{
     if (_unityWidgetController != null) {
+//      _unityWidgetController.postMessage(
+//        'Main Camera',
+//        'switchSence',
+//        'CharScene',
+//      );
       await _unityWidgetController.pause();
     }
     if (_qrViewController != null) {
@@ -78,14 +88,16 @@ class GlobalData {
   }
   stopAllController({List<Function> callback})async{
     print('stopAllController');
-    if (_unityWidgetController != null) {
-      await _unityWidgetController.pause();
-    }
     if (_qrViewController != null) {
       _qrViewController.pauseCamera();
     }
-    for(Function function in callback??[]){
-      function();
+    if (_unityWidgetController != null) {
+//      _unityWidgetController.postMessage(
+//        'Main Camera',
+//        'switchSence',
+//        'CharScene',
+//      );
+      await _unityWidgetController.pause();
     }
 
 //    _currentState = CameraState.Closed;
