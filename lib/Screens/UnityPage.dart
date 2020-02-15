@@ -592,14 +592,14 @@ class _UnityPage extends State<UnityPage> {
     }
   }
   _onFavourite()async{
-    resumeControllerTheme();
-    return;
-    if(isFavourite){
-      resumeControllerTheme();
-    }else{
-      pauseControllerTheme();
-    }
-    return;
+//    resumeControllerTheme();
+//    return;
+//    if(isFavourite){
+//      resumeControllerTheme();
+//    }else{
+//      pauseControllerTheme();
+//    }
+//    return;
     if(onFavouriteRequest) return;
     try{
       if(isFavourite){

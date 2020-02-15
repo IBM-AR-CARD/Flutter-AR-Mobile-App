@@ -71,11 +71,11 @@ class GlobalData {
   }
   resumeQRViewController({List<Function> callback}) async{
     if (_unityWidgetController != null) {
-//      _unityWidgetController.postMessage(
-//        'Main Camera',
-//        'switchSence',
-//        'CharScene',
-//      );
+      _unityWidgetController.postMessage(
+        'Main Camera',
+        'switchSence',
+        'CharScene',
+      );
       await _unityWidgetController.pause();
     }
     if (_qrViewController != null) {
@@ -92,11 +92,11 @@ class GlobalData {
       _qrViewController.pauseCamera();
     }
     if (_unityWidgetController != null) {
-//      _unityWidgetController.postMessage(
-//        'Main Camera',
-//        'switchSence',
-//        'CharScene',
-//      );
+      _unityWidgetController.postMessage(
+        'Main Camera',
+        'switchSence',
+        'CharScene',
+      );
       await _unityWidgetController.pause();
     }
 
