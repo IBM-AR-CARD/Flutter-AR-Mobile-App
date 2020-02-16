@@ -404,18 +404,21 @@ class _UnityPage extends State<UnityPage> {
                     padding: EdgeInsets.only(left: 30),
                     child: Row(
                       children: <Widget>[
-                        SizedBox(
-                          child: ClipRRect(
-                            borderRadius: new BorderRadius.all(
-                                const Radius.circular(40.0)),
-                            child: FadeInImage(
-                              image: NetworkImage(_avatar),
-                              placeholder: AssetImage(
-                                  'assets/images/unknown-avatar.jpg'),
+                        GestureDetector(
+                        onTap: _switchScene,
+                          child: SizedBox(
+                            child: ClipRRect(
+                              borderRadius: new BorderRadius.all(
+                                  const Radius.circular(40.0)),
+                              child: FadeInImage(
+                                image: NetworkImage(_avatar),
+                                placeholder: AssetImage(
+                                    'assets/images/unknown-avatar.jpg'),
+                              ),
                             ),
+                            height: 60.0,
+                            width: 60.0,
                           ),
-                          height: 60.0,
-                          width: 60.0,
                         ),
                         Padding(
                           padding: EdgeInsets.only(left: 10),
@@ -596,15 +599,14 @@ class _UnityPage extends State<UnityPage> {
       await Navigator.push(context, SlideRightRoute(page: MyCards()));
     }
   }
+  _switchScene()async{
+    if(isFavourite){
+      resumeControllerTheme();
+    }else{
+      pauseControllerTheme();
+    }
+  }
   _onFavourite()async{
-//    resumeControllerTheme();
-//    return;
-//    if(isFavourite){
-//      resumeControllerTheme();
-//    }else{
-//      pauseControllerTheme();
-//    }
-//    return;
     if(onFavouriteRequest) return;
     try{
       if(isFavourite){
