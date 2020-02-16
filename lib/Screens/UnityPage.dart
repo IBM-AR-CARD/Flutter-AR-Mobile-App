@@ -4,6 +4,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_app/Models/GlobalData.dart';
 import 'package:flutter_app/Request/request.dart';
+import 'package:flutter_app/Screens/BlackScreen.dart';
 import 'package:flutter_app/Screens/Login.dart';
 import '../Screens/MyCards.dart';
 import '../Screens/ScanQR.dart';
@@ -58,7 +59,12 @@ class _UnityPage extends State<UnityPage> {
     initSpeechState();
     initFlutterTTS();
   }
-
+  initSchedule(){
+    SchedulerBinding.instance.addPostFrameCallback((_) async{
+      updateGender();
+      setMessage("changeCharacter", globalData.scanData.model);
+    });
+  }
 
   initFlutterTTS() async {
     flutterTts.setCompletionHandler(() {
@@ -322,9 +328,8 @@ class _UnityPage extends State<UnityPage> {
 
   @override
   void dispose() {
-    _timer.cancel();
     super.dispose();
-//    globalData.unityWidgetController = null;
+    globalData.unityWidgetController = null;
   }
 
   updateGender() {
@@ -581,7 +586,7 @@ class _UnityPage extends State<UnityPage> {
     if (!globalData.hasLogin){
       globalData.wantLogin = true;
       _tracked = false;
-      globalData.stopAllController(callback: [pauseControllerTheme]);
+      globalData.stopAllController();
       await Navigator.push(
           context,
           FadeRoute(
@@ -647,10 +652,9 @@ class _UnityPage extends State<UnityPage> {
   }
   navigateToScan() async {
     _tracked = false;
-    globalData.resumeQRViewController();
-    await Navigator.push(context, FadeRoute(page: ScanQR()));
-    updateGender();
-    setState(() {});
+    await globalData.resumeQRViewController();
+    await Navigator.push(context, FadeRoute(page: BlackScreen('ScanQR')));
+//    Navigator.pop(context, 'ScanQR');
   }
   navigateToSetting()async{
     _tracked = false;
@@ -663,15 +667,11 @@ class _UnityPage extends State<UnityPage> {
             page: Login(),
           ));
     }else{
-      globalData.stopAllController();
+      await globalData.stopAllController();
       await Navigator.push(context, SlideLeftRoute(page: Settings()));
-//      await Future.delayed(Duration(seconds: 1));
-      updateGender();
-      setMessage("changeCharacter", globalData.scanData.model);
+      await Navigator.push(context, FadeRoute(page: BlackScreen('Unity')));
+//      Navigator.pop(context, 'Unity');
     }
-//    setState(() {
-//
-//    });
   }
 
   flipHint() {

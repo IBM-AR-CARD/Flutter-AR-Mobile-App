@@ -41,10 +41,8 @@ class _Settings extends State<Settings> {
   final _firstNameController = TextEditingController();
   final _lastNameController = TextEditingController();
   String _firstName;
-
   int _gender = PERFER_NOT_TO_SAY;
   String _lastName;
-
   String _userName;
   UserData userData;
   String _model;
@@ -708,7 +706,6 @@ class _Settings extends State<Settings> {
 
   Future<bool> _onLeaving() async {
     if(!hasChangedContent()){
-      GlobalData.globalData.resumeControllerState();
       return true;
     }
     final bool =

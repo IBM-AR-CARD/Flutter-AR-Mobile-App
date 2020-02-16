@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:ui';
 import 'package:flutter_app/Request/request.dart';
+import 'package:flutter_app/Screens/BlackScreen.dart';
 import 'package:flutter_app/Screens/Login.dart';
 import 'package:flutter_app/Screens/UnityPage.dart';
 import 'package:http/http.dart' as http;
@@ -176,7 +177,7 @@ class _ScanQR extends State<ScanQR> {
                                           globalData.resumeUnityController();
                                             await Navigator.push(
                                             context,
-                                            FadeRoute(page: UnityPage()),
+                                            FadeRoute(page: BlackScreen("Unity")),
                                           );
                                           }
                                       ),
@@ -278,7 +279,7 @@ class _ScanQR extends State<ScanQR> {
         globalData.resumeUnityController();
         await Navigator.push(
             context,
-            FadeRoute(page: UnityPage()));
+            FadeRoute(page: BlackScreen('Unity')));
       }
     });
   }
