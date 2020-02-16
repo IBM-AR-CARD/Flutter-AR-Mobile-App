@@ -165,6 +165,7 @@ class _ScanQR extends State<ScanQR> {
                                         recognizer: TapGestureRecognizer()
                                           ..onTap = ()async{
                                           if(!globalData.hasData)return;
+                                          _find = true;
                                           ProgressDialog pr;
                                           try {
                                             pr = new ProgressDialog(context, isDismissible: false);
@@ -173,7 +174,6 @@ class _ScanQR extends State<ScanQR> {
                                           }finally{
                                             pr.hide();
                                           }
-                                            _find = true;
                                           globalData.resumeUnityController();
                                             await Navigator.push(
                                             context,
@@ -267,19 +267,30 @@ class _ScanQR extends State<ScanQR> {
     this.controller = controller;
     globalData.qrViewController = controller;
     controller.scannedDataStream.listen((scanData) async {
+      if(!mounted){
+        return;
+      }
       if (!_find) {
         _find = true;
-        if(scanData.startsWith("${Config.baseURl}/profile/get")){
-          Vibration.vibrate(duration: 300);
-          await setScannedUserData(scanData);
-        }else {
-          await setDemoUserData();
+        print(1);
+        ProgressDialog pr;
+        try {
+          pr = new ProgressDialog(context, isDismissible: false);
+          pr.show();
+          if(scanData.startsWith("${Config.baseURl}/profile/get")){
+            Vibration.vibrate(duration: 300);
+            await setScannedUserData(scanData);
+          }else {
+            await setDemoUserData();
+          }
+        }finally{
+          pr.hide();
         }
-        _find = true;
         globalData.resumeUnityController();
         await Navigator.push(
-            context,
-            FadeRoute(page: BlackScreen('Unity')));
+          context,
+          FadeRoute(page: BlackScreen('Unity')),
+        );
       }
     });
   }
