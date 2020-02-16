@@ -268,19 +268,17 @@ class _UnityPage extends State<UnityPage> with WidgetsBindingObserver{
         resizeToAvoidBottomInset: false,
         body: WillPopScope(
         child:SafeArea(
-            child: SwipeDetector(
-              onSwipeLeft: navigateToSetting,
-              onSwipeRight: navigateToMyCards,
+//            child: SwipeDetector(
+//              onSwipeLeft: isCamera?navigateToSetting:(){},
+//              onSwipeRight: isCamera?navigateToMyCards:(){},
+
               child: Stack(
                 children: <Widget>[
                   BackdropFilter(
                     filter: ImageFilter.blur(
                         sigmaX: _hasExtend ? 0 : 5, sigmaY: _hasExtend ? 0 : 5),
                   ),
-                  UnityWidget(
-                      onUnityViewCreated: onUnityCreated,
-                      isARScene: true,
-                      onUnityMessage: onUnityMessage),
+
                   Positioned.fill(
                     child: AnimatedOpacity(
                         opacity: _hasExtend ? 1 : 0,
@@ -292,6 +290,10 @@ class _UnityPage extends State<UnityPage> with WidgetsBindingObserver{
                           ),
                         )),
                   ),
+                  UnityWidget(
+                      onUnityViewCreated: onUnityCreated,
+                      isARScene: true,
+                      onUnityMessage: onUnityMessage),
                   bubbleChatBoard(context),
                   AnimatedSwitcher(
                     duration: Duration(milliseconds: 500),
@@ -299,7 +301,7 @@ class _UnityPage extends State<UnityPage> with WidgetsBindingObserver{
                     child: _tracked || _hasExtend ? SizedBox.shrink() : flipHint(),
                   )
                 ],
-              ),
+//              ),
             )
     ),
           onWillPop: ()async{
@@ -616,7 +618,7 @@ class _UnityPage extends State<UnityPage> with WidgetsBindingObserver{
     }
   }
   _switchScene()async{
-    if(isCamera){
+    if(!isCamera){
       resumeControllerTheme();
     }else{
       pauseControllerTheme();
