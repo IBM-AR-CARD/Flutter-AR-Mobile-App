@@ -31,7 +31,7 @@ class MyApp extends StatelessWidget {
           bottomAppBarColor: Config.colorCustom,
       ),
       debugShowCheckedModeBanner: false,
-        home:ScanQR()
+        home:Login()
     );
   }
 }

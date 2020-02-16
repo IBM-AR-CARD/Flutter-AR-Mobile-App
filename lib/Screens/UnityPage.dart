@@ -31,7 +31,7 @@ class UnityPage extends StatefulWidget {
   _UnityPage createState() => _UnityPage();
 }
 
-class _UnityPage extends State<UnityPage> {
+class _UnityPage extends State<UnityPage> with WidgetsBindingObserver{
   GlobalData globalData;
   Timer _timer;
   String currentLocal;
@@ -51,9 +51,12 @@ class _UnityPage extends State<UnityPage> {
   bool onFavouriteRequest = false;
   bool _hasExtend = false;
   bool isFavourite = false;
+  bool onSetting = false;
+  bool isCamera = true;
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     globalData = GlobalData();
     flutterTts.setLanguage("en-US");
     initSpeechState();
@@ -84,7 +87,16 @@ class _UnityPage extends State<UnityPage> {
     setMessage('changeAnimator', "idle");
     setState(() {});
   }
-
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state)async {
+    super.didChangeAppLifecycleState(state);
+    print('state = $state');
+    if(state == AppLifecycleState.inactive){
+      _unityWidgetController.pause();
+    }else if(state == AppLifecycleState.resumed && !onSetting){
+      await Navigator.push(context, FadeRoute(page: BlackScreen('Unity')));
+    }
+  }
   initLocal() async {
     List<LocaleName> locales = await speech.locales();
     bool hasen_US = false;
@@ -330,6 +342,7 @@ class _UnityPage extends State<UnityPage> {
   void dispose() {
     super.dispose();
     globalData.unityWidgetController = null;
+    WidgetsBinding.instance.removeObserver(this);
   }
 
   updateGender() {
@@ -600,11 +613,12 @@ class _UnityPage extends State<UnityPage> {
     }
   }
   _switchScene()async{
-    if(isFavourite){
+    if(isCamera){
       resumeControllerTheme();
     }else{
       pauseControllerTheme();
     }
+    isCamera = !isCamera;
   }
   _onFavourite()async{
     if(onFavouriteRequest) return;
@@ -655,6 +669,7 @@ class _UnityPage extends State<UnityPage> {
   navigateToScan() async {
     _tracked = false;
     await globalData.resumeQRViewController();
+    WidgetsBinding.instance.removeObserver(this);
     await Navigator.push(context, FadeRoute(page: BlackScreen('ScanQR')));
 //    Navigator.pop(context, 'ScanQR');
   }
@@ -670,8 +685,13 @@ class _UnityPage extends State<UnityPage> {
           ));
     }else{
       await globalData.stopAllController();
-      await Navigator.push(context, SlideLeftRoute(page: Settings()));
-      await Navigator.push(context, FadeRoute(page: BlackScreen('Unity')));
+      onSetting = true;
+      final usedOutSide = await Navigator.push(context, SlideLeftRoute(page: Settings()));
+      onSetting = false;
+      if(usedOutSide){
+        WidgetsBinding.instance.removeObserver(this);
+        await Navigator.push(context, FadeRoute(page: BlackScreen('Unity')));
+      }
 //      Navigator.pop(context, 'Unity');
     }
   }

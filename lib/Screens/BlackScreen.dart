@@ -27,11 +27,12 @@ class _BlackScreen extends State<BlackScreen>{
   }
   navigateToPage()async{
     if(direction == "scanQR"){
+      await globalData.resumeQRViewController();
       await Navigator.push(context, FadeRoute(
         page: ScanQR(),
       ));
     }else if (direction == "Unity"){
-      globalData.resumeControllerState();
+      globalData.resumeUnityController();
       final value  = await Navigator.push(context, FadeRoute(
         page: UnityPage(),
       ));

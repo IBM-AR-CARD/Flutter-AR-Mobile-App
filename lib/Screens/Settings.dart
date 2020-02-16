@@ -34,7 +34,7 @@ class Settings extends StatefulWidget {
   _Settings createState() => _Settings();
 }
 
-class _Settings extends State<Settings> {
+class _Settings extends State<Settings> with WidgetsBindingObserver{
   final _descriptionController = TextEditingController();
   final _workExperiencesController = TextEditingController();
   final _educationController = TextEditingController();
@@ -49,6 +49,7 @@ class _Settings extends State<Settings> {
   File _imageFile;
   String _profile;
   GlobalData globalData;
+  bool usedOutSide = false;
   final storedData = SharedPreferences.getInstance();
   bool hasChangedContent(){
     if(_firstName == _firstNameController.text && _lastName == _lastNameController.text && _gender == userData.gender && _descriptionController.text == userData.description && _educationController.text == userData.education && _workExperiencesController.text == userData.experience && userData.model == _model){
@@ -77,6 +78,7 @@ class _Settings extends State<Settings> {
   @override
   void dispose() {
     super.dispose();
+    WidgetsBinding.instance.removeObserver(this);
     _descriptionController.dispose();
     _workExperiencesController.dispose();
     _educationController.dispose();
@@ -92,10 +94,12 @@ class _Settings extends State<Settings> {
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     initUserData();
     globalData = GlobalData();
   }
   Future<void> _pickImage()async{
+    usedOutSide = true;
     File selected = await ImagePicker.pickImage(source: ImageSource.gallery);
     _imageFile = selected??_imageFile;
     await _cropImage();
@@ -128,7 +132,15 @@ class _Settings extends State<Settings> {
 
     return result;
   }
-
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state)async {
+    super.didChangeAppLifecycleState(state);
+    print('state = $state');
+    if(state == AppLifecycleState.inactive){
+    }else if(state == AppLifecycleState.resumed){
+      usedOutSide = true;
+    }
+  }
   _upLoadImage(File image)async{
     Dio dio = new Dio();
     dio.options.connectTimeout = 5000; //5s
@@ -191,6 +203,7 @@ class _Settings extends State<Settings> {
     }
   }
   _onCamera()async{
+    usedOutSide = true;
     await _takePicture();
     setState(() {});
   }
@@ -574,7 +587,7 @@ class _Settings extends State<Settings> {
                       ),
                       onPressed: ()async{
                         if(await _onLeaving()){
-                        Navigator.of(context).pop(true);
+                          Navigator.pop(context,usedOutSide);
                         }
                       },
                     ),
@@ -596,7 +609,7 @@ class _Settings extends State<Settings> {
                       onPressed: () async{
                         await contentOnSave();
                         GlobalData().resumeControllerState();
-                        Navigator.of(context).pop(true);
+                        Navigator.pop(context,usedOutSide);
                       },
                     )
                   ],
@@ -606,13 +619,22 @@ class _Settings extends State<Settings> {
           ),
             onSwipeRight: ()async{
               if(await _onLeaving()){
-                Navigator.of(context).pop(true);
+                Navigator.pop(context,usedOutSide);
               }
             },
           ),
           ),
         ),
-        onWillPop: _onLeaving
+        onWillPop:()async{
+          final result = await _onLeaving();
+          if(result){
+            if(!usedOutSide){
+              globalData.resumeControllerState();
+            }
+            Navigator.pop(context,usedOutSide);
+          }
+          return false;
+        }
     );
   }
 
@@ -772,7 +794,7 @@ class _Settings extends State<Settings> {
                             )),
                       ),
                       onPressed: ()async{
-                        Navigator.of(context).pop(true);
+                        Navigator.pop(context,usedOutSide);
                       },
                     ),
                     FlatButton(
@@ -792,7 +814,7 @@ class _Settings extends State<Settings> {
                       ),
                       onPressed: () async{
                         await qr.savePng();
-                        Navigator.of(context).pop(true);
+                        Navigator.pop(context,usedOutSide);
                       },
                     )
                   ],
