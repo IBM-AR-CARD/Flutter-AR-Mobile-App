@@ -603,13 +603,16 @@ class _UnityPage extends State<UnityPage> with WidgetsBindingObserver{
       globalData.wantLogin = true;
       _tracked = false;
       globalData.stopAllController();
+      WidgetsBinding.instance.removeObserver(this);
       await Navigator.push(
           context,
           FadeRoute(
             page: Login(),
           ));
     }else{
+      WidgetsBinding.instance.removeObserver(this);
       await Navigator.push(context, SlideRightRoute(page: MyCards()));
+      WidgetsBinding.instance.addObserver(this);
     }
   }
   _switchScene()async{
@@ -678,6 +681,7 @@ class _UnityPage extends State<UnityPage> with WidgetsBindingObserver{
     if (!globalData.hasLogin){
       globalData.wantLogin = true;
       globalData.stopAllController();
+      WidgetsBinding.instance.removeObserver(this);
       await Navigator.push(
           context,
           FadeRoute(
@@ -691,6 +695,9 @@ class _UnityPage extends State<UnityPage> with WidgetsBindingObserver{
       if(usedOutSide){
         WidgetsBinding.instance.removeObserver(this);
         await Navigator.push(context, FadeRoute(page: BlackScreen('Unity')));
+      }else{
+        updateGender();
+        setMessage("changeCharacter", globalData.scanData.model);
       }
 //      Navigator.pop(context, 'Unity');
     }

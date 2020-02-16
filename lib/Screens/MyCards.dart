@@ -404,7 +404,33 @@ class _MyCards extends State<MyCards> with TickerProviderStateMixin {
       ),
     );
   }
-
+  showImageActionSheet(username)async{
+    showModalBottomSheet(
+        context: context,
+        builder: (BuildContext bc){
+          return Container(
+            child: new Wrap(
+              children: <Widget>[
+                new ListTile(
+                    leading: new Icon(Icons.favorite),
+                    title: new Text('Favourite'),
+                    onTap:()async{
+                      Navigator.pop(bc);
+                    }
+                ),
+                new ListTile(
+                  leading: new Icon(Icons.delete),
+                  title: new Text('Remove'),
+                  onTap:()async{
+                    Navigator.pop(bc);
+                  },
+                ),
+              ],
+            ),
+          );
+        }
+    );
+  }
   Widget _itemBuilder(BuildContext context, int index, list) {
 //    print(list);
     if(index==0){
@@ -431,7 +457,14 @@ class _MyCards extends State<MyCards> with TickerProviderStateMixin {
         color: Color.fromARGB(255, 74, 79, 100),
         borderRadius: new BorderRadius.all(const Radius.circular(15.0)),
       ),
-      child: Row(
+      child: GestureDetector(
+        onLongPress: ()async{
+          await showImageActionSheet(list[index]["username"]);
+        },
+        onTap:(){
+          print('tap');
+        },
+        child:Row(
         children: <Widget>[
           Padding(
             padding: EdgeInsets.only(left: 10),
@@ -496,6 +529,7 @@ class _MyCards extends State<MyCards> with TickerProviderStateMixin {
           )
         ],
       ),
+      )
     )
           ),
             Divider(
