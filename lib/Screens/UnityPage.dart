@@ -30,7 +30,7 @@ class UnityPage extends StatefulWidget {
   _UnityPage createState() => _UnityPage();
 }
 
-class _UnityPage extends State<UnityPage> {
+class _UnityPage extends State<UnityPage> with WidgetsBindingObserver{
   GlobalData globalData;
   Timer _timer;
   String currentLocal;
@@ -53,6 +53,7 @@ class _UnityPage extends State<UnityPage> {
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     globalData = GlobalData();
     flutterTts.setLanguage("en-US");
     initSpeechState();
@@ -78,7 +79,16 @@ class _UnityPage extends State<UnityPage> {
     setMessage('changeAnimator', "idle");
     setState(() {});
   }
-
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    super.didChangeAppLifecycleState(state);
+    print('state = $state');
+    if(state == AppLifecycleState.inactive){
+      _unityWidgetController.pause();
+    }else if(state == AppLifecycleState.resumed){
+      _unityWidgetController.resume();
+    }
+  }
   initLocal() async {
     List<LocaleName> locales = await speech.locales();
     bool hasen_US = false;
@@ -324,6 +334,7 @@ class _UnityPage extends State<UnityPage> {
   void dispose() {
     _timer.cancel();
     super.dispose();
+    WidgetsBinding.instance.removeObserver(this);
 //    globalData.unityWidgetController = null;
   }
 
