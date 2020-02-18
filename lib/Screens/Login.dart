@@ -299,6 +299,21 @@ class _Login extends State<Login> with TickerProviderStateMixin {
                           ),
                         ),
                       ),
+                      hasExpand?SizedBox.shrink():Align(
+                        alignment: Alignment.topLeft,
+                        child:IconButton(
+                          icon: Icon(
+                              Icons.arrow_back_ios
+                          ),
+                          iconSize: 36,
+                          color: Colors.white,
+                          onPressed: (){
+                            Navigator.pop(context);
+                          }
+
+                          ,
+                        ) ,
+                      ),
                       SlideTransition(
                         position: expandOffset,
                         child:ClipRRect(
