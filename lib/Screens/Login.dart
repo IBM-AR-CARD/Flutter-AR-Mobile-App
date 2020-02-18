@@ -373,7 +373,6 @@ class _Login extends State<Login> with TickerProviderStateMixin {
                   ),
                 ),
               onWillPop: () async {
-                globalData.resumeControllerState();
                 return true;
               },
         )
@@ -577,7 +576,6 @@ class _Login extends State<Login> with TickerProviderStateMixin {
         return;
       }else if(!globalData.hasLogin){
         await Future.delayed(Duration(seconds:1));
-        globalData.resumeQRViewController();
         Navigator.pop(context);
         return;
       }else{
@@ -647,7 +645,6 @@ class _Login extends State<Login> with TickerProviderStateMixin {
         SharedPreferences sharedPreferences =await SharedPreferences.getInstance();
         await sharedPreferences.setBool('hasLogin',true);
         pr.hide();
-        globalData.resumeControllerState();
         Navigator.pop(context);
       }
     }catch(err){

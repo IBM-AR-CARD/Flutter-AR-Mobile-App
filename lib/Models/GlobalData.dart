@@ -52,70 +52,55 @@ class GlobalData {
     _qrViewController = value;
   }
 
-  resumeUnityController({List<Function> callback})async{
-    if(_qrViewController != null){
-      _qrViewController.pauseCamera();
-    }
-    if(_unityWidgetController != null){
-      await _unityWidgetController.resume();
-//      _unityWidgetController.postMessage(
-//        'Main Camera',
-//        'switchSence',
-//        'ARScene',
-//      );
-    }
-    _currentState = CameraState.UnityViewOpen;
-    for(Function function in callback??[]){
-      function();
-    }
-  }
-  resumeQRViewController({List<Function> callback}) async{
-    if (_unityWidgetController != null) {
-//      _unityWidgetController.postMessage(
-//        'Main Camera',
-//        'switchSence',
-//        'CharScene',
-//      );
-      await _unityWidgetController.pause();
-    }
-    if (_qrViewController != null) {
-      _qrViewController.resumeCamera();
-    }
-    _currentState = CameraState.QRViewOpen;
-    for(Function function in callback??[]){
-      function();
-    }
-  }
-  stopAllController({List<Function> callback})async{
-    print('stopAllController');
-    if (_qrViewController != null) {
-      _qrViewController.pauseCamera();
-    }
-    if (_unityWidgetController != null) {
-//      _unityWidgetController.postMessage(
-//        'Main Camera',
-//        'switchSence',
-//        'CharScene',
-//      );
-      await _unityWidgetController.pause();
-    }
-
-//    _currentState = CameraState.Closed;
-  }
-
-  resumeControllerState(){
-    switch(_currentState) {
-//      case CameraState.Closed:
-//        stopAllController();
+//  resumeUnityController({List<Function> callback})async{
+//    if(_qrViewController != null){
+//      _qrViewController.pauseCamera();
+//    }
+//    if(_unityWidgetController != null){
+//      await _unityWidgetController.resume();
+////      _unityWidgetController.postMessage(
+////        'Main Camera',
+////        'switchSence',
+////        'ARScene',
+////      );
+//    }
+//    _currentState = CameraState.UnityViewOpen;
+//    for(Function function in callback??[]){
+//      function();
+//    }
+//  }
+//  resumeQRViewController({List<Function> callback}) async{
+//    if (_unityWidgetController != null) {
+//      await _unityWidgetController.pause();
+//    }
+//    if (_qrViewController != null) {
+//      _qrViewController.resumeCamera();
+//    }
+//    _currentState = CameraState.QRViewOpen;
+//    for(Function function in callback??[]){
+//      function();
+//    }
+//  }
+//  stopAllController({List<Function> callback})async{
+//    print('stopAllController');
+//    if (_qrViewController != null) {
+//      _qrViewController.pauseCamera();
+//    }
+//    if (_unityWidgetController != null) {
+//      await _unityWidgetController.pause();
+//    }
+//  }
+//
+//  resumeControllerState(){
+//    switch(_currentState) {
+//      case CameraState.QRViewOpen:
+//        resumeQRViewController();
 //        break;
-      case CameraState.QRViewOpen:
-        resumeQRViewController();
-        break;
-      case CameraState.UnityViewOpen:
-        resumeUnityController();
-        break;
-    }
-  }
+//      case CameraState.UnityViewOpen:
+//        resumeUnityController();
+//        break;
+//    }
+//  }
 
     set unityWidgetController(UnityWidgetController value) {
       _unityWidgetController = value;

@@ -304,7 +304,6 @@ class _MyCards extends State<MyCards> with TickerProviderStateMixin {
           ],
         ),
         onWillPop: () async {
-          await globalData.resumeControllerState();
           setState(() {
             leave = true;
           });

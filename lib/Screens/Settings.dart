@@ -270,9 +270,6 @@ class _Settings extends State<Settings> with WidgetsBindingObserver{
                             iconSize: 30,
                             onPressed: ()async{
                               if(await _onLeaving()){
-                                if(!usedOutSide){
-                                  globalData.resumeControllerState();
-                                }
                                 Navigator.pop(context,usedOutSide);
                               }
                             }
@@ -590,9 +587,6 @@ class _Settings extends State<Settings> with WidgetsBindingObserver{
                       ),
                       onPressed: ()async{
                         if(await _onLeaving()){
-                          if(!usedOutSide){
-                            globalData.resumeControllerState();
-                          }
                           Navigator.pop(context,usedOutSide);
                         }
                       },
@@ -614,7 +608,6 @@ class _Settings extends State<Settings> with WidgetsBindingObserver{
                       ),
                       onPressed: () async{
                         await contentOnSave();
-                        GlobalData().resumeControllerState();
                         Navigator.pop(context,usedOutSide);
                       },
                     )
@@ -634,9 +627,6 @@ class _Settings extends State<Settings> with WidgetsBindingObserver{
         onWillPop:()async{
           final result = await _onLeaving();
           if(result){
-            if(!usedOutSide){
-              globalData.resumeControllerState();
-            }
             Navigator.pop(context,usedOutSide);
           }
           return false;
@@ -758,9 +748,6 @@ class _Settings extends State<Settings> with WidgetsBindingObserver{
           ),
         ) ??
         false;
-    if(bool){
-      await GlobalData.globalData.resumeControllerState();
-    }
     return bool;
   }
   _showQR(){
@@ -800,9 +787,6 @@ class _Settings extends State<Settings> with WidgetsBindingObserver{
                             )),
                       ),
                       onPressed: ()async{
-                        if(!usedOutSide){
-                          globalData.resumeControllerState();
-                        }
                         Navigator.pop(context,usedOutSide);
                       },
                     ),
@@ -823,9 +807,6 @@ class _Settings extends State<Settings> with WidgetsBindingObserver{
                       ),
                       onPressed: () async{
                         await qr.savePng();
-                        if(!usedOutSide){
-                          globalData.resumeControllerState();
-                        }
                         Navigator.pop(context,usedOutSide);
                       },
                     )

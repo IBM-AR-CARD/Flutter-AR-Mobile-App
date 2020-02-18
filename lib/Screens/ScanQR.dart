@@ -322,12 +322,13 @@ class _ScanQR extends State<ScanQR> {
     if(!globalData.hasData)return;
     if (!globalData.hasLogin){
       globalData.wantLogin = true;
-      globalData.stopAllController();
+      controller.pauseCamera();
       await Navigator.push(
           context,
           FadeRoute(
             page: Login(),
           ));
+      controller.resumeCamera();
     }else{
       controller.pauseCamera();
       await Navigator.push(
@@ -341,16 +342,16 @@ class _ScanQR extends State<ScanQR> {
   navigateToMyCards()async{
     if(!globalData.hasData)return;
       if (!globalData.hasLogin){
-        globalData.stopAllController();
         globalData.wantLogin = true;
         SharedPreferences preferences = await SharedPreferences.getInstance();
         await preferences.setBool('wantLogin', true);
+        controller.pauseCamera();
         await Navigator.push(
             context,
             FadeRoute(
               page: Login(),
             ));
-
+        controller.resumeCamera();
       }else {
         await Navigator.push(
           context,

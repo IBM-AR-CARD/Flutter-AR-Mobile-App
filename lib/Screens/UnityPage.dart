@@ -72,10 +72,10 @@ class _UnityPage extends State<UnityPage> with WidgetsBindingObserver{
         PermissionGroup.storage
       ]);
       await Navigator.pushNamed(context, '/Login');
-      await globalData.resumeQRViewController();
+      await _unityWidgetController.pause();
       await Navigator.pushNamed(context, '/ScanQR');
 //      await Navigator.push(context, FadeRoute(page:ScanQR()));
-      await globalData.resumeUnityController();
+      await _unityWidgetController.resume();
       updateGender();
       setMessage("changeCharacter", globalData.scanData.model);
     });
@@ -612,14 +612,14 @@ class _UnityPage extends State<UnityPage> with WidgetsBindingObserver{
     if (!globalData.hasLogin){
       globalData.wantLogin = true;
       _tracked = false;
-      globalData.stopAllController();
+      await _unityWidgetController.pause();
       WidgetsBinding.instance.removeObserver(this);
       await Navigator.push(
           context,
           FadeRoute(
             page: Login(),
           ));
-      globalData.resumeUnityController();
+      await _unityWidgetController.resume();
     }else{
       WidgetsBinding.instance.removeObserver(this);
       await Navigator.push(context, SlideRightRoute(page: MyCards()));
@@ -692,18 +692,18 @@ class _UnityPage extends State<UnityPage> with WidgetsBindingObserver{
     _tracked = false;
     if (!globalData.hasLogin){
       globalData.wantLogin = true;
-      globalData.stopAllController();
+      await _unityWidgetController.pause();
       WidgetsBinding.instance.removeObserver(this);
       await Navigator.push(
           context,
           FadeRoute(
             page: Login(),
           ));
-      globalData.resumeUnityController();
+      await _unityWidgetController.resume();
     }else{
-      globalData.stopAllController();
+      await _unityWidgetController.pause();
       await Navigator.push(context, SlideLeftRoute(page: Settings()));
-      globalData.resumeUnityController();
+      await _unityWidgetController.resume();
       updateGender();
       setMessage("changeCharacter", globalData.scanData.model);
 //      Navigator.pop(context, 'Unity');
