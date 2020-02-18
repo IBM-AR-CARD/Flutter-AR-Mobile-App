@@ -5,6 +5,7 @@ import 'package:flutter_app/Screens/Login.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_app/Screens/MyCards.dart';
 import 'package:flutter_app/Screens/ScanQR.dart';
+import 'package:flutter_app/Screens/Settings.dart';
 import 'package:flutter_app/Screens/UnityPage.dart';
 import 'Models/Config.dart';
 void main() async {
@@ -17,21 +18,22 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-//      initialRoute: '/',
-//      routes: {
-//        '/': (context) => Login(),
-//        '/UnityPage' : (context) => UnityPage(),
-//        '/ScanQR':(context) => ScanQR(),
-//        '/MyCards':(context) => MyCards(),
-//        '/BlackScreen':(context) =>BlackScreen(),
-//      },
+      initialRoute: '/',
+      routes: {
+        '/': (context) => UnityPage(),
+        '/UnityPage' : (context) => UnityPage(),
+        '/ScanQR':(context) => ScanQR(),
+        '/MyCards':(context) => MyCards(),
+        '/Login':(context) => Login(),
+        '/Settings':(context) => Settings(),
+      },
       title: 'Flutter Demo',
       theme: ThemeData(
         primarySwatch: Config.colorCustom,
           bottomAppBarColor: Config.colorCustom,
       ),
       debugShowCheckedModeBanner: false,
-        home:Login()
+//        home:UnityPage()
     );
   }
 }

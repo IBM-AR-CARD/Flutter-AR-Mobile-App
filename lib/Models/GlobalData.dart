@@ -136,10 +136,10 @@ class GlobalData {
       _hasLogin = value;
     }
     clearData(){
-      _hasData = false;
       _hasLogin = false;
       userData = null;
       scanData = null;
+      wantLogin = false;
     }
     UserData get scanData => _scanData;
 

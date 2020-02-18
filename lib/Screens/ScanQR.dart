@@ -1,9 +1,7 @@
 import 'dart:convert';
 import 'dart:ui';
 import 'package:flutter_app/Request/request.dart';
-import 'package:flutter_app/Screens/BlackScreen.dart';
 import 'package:flutter_app/Screens/Login.dart';
-import 'package:flutter_app/Screens/UnityPage.dart';
 import 'package:http/http.dart' as http;
 import 'package:retry/retry.dart';
 import 'dart:io';
@@ -42,64 +40,16 @@ class _ScanQR extends State<ScanQR> {
   void initState() {
     super.initState();
     globalData = GlobalData();
-    if(globalData.hasLogin){
-      fetchUserData = fetchPost();
-    }else{
-      fetchUserData = fetchNoneUserData();
+    if(!globalData.hasLogin){
+      globalData.hasData = true;
     }
-
-  }
-  fetchNoneUserData()async{
-    globalData.hasData = true;
-  }
-  fetchPostedData(response) async {
-    if (response.statusCode == 200) {
-      userData = UserData.toUserData(response.body);
-      SharedPreferences storeValue = await SharedPreferences.getInstance();
-      storeValue.setString("UserData", response.body);
-      setState(() {
-        globalData.userData = userData;
-        globalData.hasData = true;
-      });
-    }else{
-      await showDialog(
-          context: context,
-          builder: (BuildContext context) {
-            // return object of type Dialog
-            return AlertDialog(
-              title: new Text('login fail please try again'),
-              content: new Text( 'Network error' ),
-              actions: <Widget>[
-                // usually buttons at the bottom of the dialog
-                new FlatButton(
-                  child: new Text("Close"),
-                  onPressed: () {
-                    Navigator.pop(context);
-                  },
-                ),
-              ],
-            );
-          });
-    }
-  }
-  Future<void> fetchPost() async {
-    Map<String, String> map = {
-      "_id":globalData.id,
-    };
-    String value = JsonEncoder().convert(map);
-    final retry = RetryOptions(maxAttempts: 6);
-    final response = await retry.retry(
-      // Make a GET request
-          () => http.post('${Config.baseURl}/profile/get?_id=${globalData.id}',headers: {"Content-Type": "application/json"}, body: value),
-      // Retry on SocketException or TimeoutException
-      retryIf: (e) => e is SocketException || e is TimeoutException,
-    );
-    return await fetchPostedData(response);
   }
   @override
   Widget build(BuildContext context) {
+    print(context.toString());
     double _width = MediaQuery.of(context).size.width;
     double _height = MediaQuery.of(context).size.height;
+    var _context = context;
     return Scaffold(
       resizeToAvoidBottomInset: false,
       body: WillPopScope(
@@ -166,19 +116,7 @@ class _ScanQR extends State<ScanQR> {
                                           ..onTap = ()async{
                                           if(!globalData.hasData)return;
                                           _find = true;
-                                          ProgressDialog pr;
-                                          try {
-                                            pr = new ProgressDialog(context, isDismissible: false);
-                                            pr.show();
-                                            await setDemoUserData();
-                                          }finally{
-                                            pr.hide();
-                                          }
-                                          globalData.resumeUnityController();
-                                            await Navigator.push(
-                                            context,
-                                            FadeRoute(page: BlackScreen("Unity")),
-                                          );
+                                          await navigateBack();
                                           }
                                       ),
                                       TextSpan(
@@ -236,18 +174,6 @@ class _ScanQR extends State<ScanQR> {
                       ),
                     )
                 ),
-                Center(
-                  child: FutureBuilder<void>(
-                    future: fetchUserData,
-                    builder: (context, snapshot) {
-                      if (snapshot.connectionState == ConnectionState.done) {
-                        return SizedBox.shrink();
-                      } else {
-                        return CircularProgressIndicator();
-                      }
-                    },
-                  ),
-                ),
               ],
             ),
 
@@ -261,6 +187,22 @@ class _ScanQR extends State<ScanQR> {
         FloatingActionButtonLocation.centerDocked,
         floatingActionButton: bottomRow()
     );
+  }
+  navigateBack()async{
+    ProgressDialog pr = new ProgressDialog(context, isDismissible: false);
+    try {
+      pr.show();
+      await setDemoUserData();
+      pr.hide();
+      print('prhide');
+      controller.dispose();
+      Navigator.pop(context);
+      return;
+    }catch(err){
+      pr.hide();
+      print('err');
+      print(err);
+    }
   }
 
   void _onQRViewCreated(QRViewController controller) {
@@ -281,21 +223,18 @@ class _ScanQR extends State<ScanQR> {
             Vibration.vibrate(duration: 300);
             await setScannedUserData(scanData);
           }else {
+            Vibration.vibrate(duration: 300);
             await setDemoUserData();
           }
         }finally{
           pr.hide();
         }
-        globalData.resumeUnityController();
-        await Navigator.push(
-          context,
-          FadeRoute(page: BlackScreen('Unity')),
-        );
+        Navigator.pop(context);
       }
     });
   }
   setDemoUserData()async{
-    setScannedUserData('${Config.baseURl}/profile/get?username=jonmcnamara');
+    await setScannedUserData('${Config.baseURl}/profile/get?username=jonmcnamara');
   }
   setScannedUserData(scanData)async{
     ProgressDialog pr = new ProgressDialog(context, isDismissible: false);
@@ -380,7 +319,7 @@ class _ScanQR extends State<ScanQR> {
             ]));
   }
   navigateToSetting()async{
-    if (!globalData.hasData) return;
+    if(!globalData.hasData)return;
     if (!globalData.hasLogin){
       globalData.wantLogin = true;
       globalData.stopAllController();
@@ -390,15 +329,17 @@ class _ScanQR extends State<ScanQR> {
             page: Login(),
           ));
     }else{
+      controller.pauseCamera();
       await Navigator.push(
           context,
           SlideLeftRoute(
             page: Settings(),
           ));
+      controller.resumeCamera();
     }
   }
   navigateToMyCards()async{
-      if (!globalData.hasData) return;
+    if(!globalData.hasData)return;
       if (!globalData.hasLogin){
         globalData.stopAllController();
         globalData.wantLogin = true;
@@ -409,6 +350,7 @@ class _ScanQR extends State<ScanQR> {
             FadeRoute(
               page: Login(),
             ));
+
       }else {
         await Navigator.push(
           context,

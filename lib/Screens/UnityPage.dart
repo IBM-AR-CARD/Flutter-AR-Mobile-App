@@ -4,7 +4,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_app/Models/GlobalData.dart';
 import 'package:flutter_app/Request/request.dart';
-import 'package:flutter_app/Screens/BlackScreen.dart';
 import 'package:flutter_app/Screens/Login.dart';
 import '../Screens/MyCards.dart';
 import '../Screens/ScanQR.dart';
@@ -22,6 +21,7 @@ import 'package:flutter/foundation.dart';
 import '../Models/UserData.dart';
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:swipedetector/swipedetector.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:flutter/scheduler.dart';
 class UnityPage extends StatefulWidget {
   UnityPage({Key key, this.title}) : super(key: key);
@@ -61,9 +61,21 @@ class _UnityPage extends State<UnityPage> with WidgetsBindingObserver{
     flutterTts.setLanguage("en-US");
     initSpeechState();
     initFlutterTTS();
+    initSchedule();
   }
   initSchedule(){
     SchedulerBinding.instance.addPostFrameCallback((_) async{
+//      await Navigator.push(context, FadeRoute(page: Login()));
+      await PermissionHandler().requestPermissions([
+        PermissionGroup.camera,
+        PermissionGroup.microphone,
+        PermissionGroup.storage
+      ]);
+      await Navigator.pushNamed(context, '/Login');
+      await globalData.resumeQRViewController();
+      await Navigator.pushNamed(context, '/ScanQR');
+//      await Navigator.push(context, FadeRoute(page:ScanQR()));
+      await globalData.resumeUnityController();
       updateGender();
       setMessage("changeCharacter", globalData.scanData.model);
     });
@@ -93,8 +105,8 @@ class _UnityPage extends State<UnityPage> with WidgetsBindingObserver{
     print('state = $state');
     if(state == AppLifecycleState.inactive){
       _unityWidgetController.pause();
-    }else if(state == AppLifecycleState.resumed && !onSetting){
-      await Navigator.push(context, FadeRoute(page: BlackScreen('Unity')));
+    }else if(state == AppLifecycleState.resumed){
+      _unityWidgetController.resume();
     }
   }
   initLocal() async {
@@ -262,10 +274,7 @@ class _UnityPage extends State<UnityPage> with WidgetsBindingObserver{
 
   @override
   Widget build(BuildContext context) {
-    final _width = MediaQuery.of(context).size.width;
-    final _height = MediaQuery.of(context).size.height;
     return Scaffold(
-        resizeToAvoidBottomInset: false,
         body: WillPopScope(
         child:SafeArea(
 //            child: SwipeDetector(
@@ -354,7 +363,6 @@ class _UnityPage extends State<UnityPage> with WidgetsBindingObserver{
       flutterTts.setVoice('en-gb-x-gba-network');
     }
     setMessage("changeCharacter", globalData.scanData.model);
-    setState(() {});
   }
 
   Widget bubbleChatBoard(context) {
@@ -611,6 +619,7 @@ class _UnityPage extends State<UnityPage> with WidgetsBindingObserver{
           FadeRoute(
             page: Login(),
           ));
+      globalData.resumeUnityController();
     }else{
       WidgetsBinding.instance.removeObserver(this);
       await Navigator.push(context, SlideRightRoute(page: MyCards()));
@@ -673,9 +682,10 @@ class _UnityPage extends State<UnityPage> with WidgetsBindingObserver{
   }
   navigateToScan() async {
     _tracked = false;
-    await globalData.resumeQRViewController();
+    await _unityWidgetController.pause();
     WidgetsBinding.instance.removeObserver(this);
-    await Navigator.push(context, FadeRoute(page: BlackScreen('ScanQR')));
+    await Navigator.push(context, FadeRoute(page: ScanQR()));
+    await _unityWidgetController.resume();
 //    Navigator.pop(context, 'ScanQR');
   }
   navigateToSetting()async{
@@ -689,18 +699,13 @@ class _UnityPage extends State<UnityPage> with WidgetsBindingObserver{
           FadeRoute(
             page: Login(),
           ));
+      globalData.resumeUnityController();
     }else{
-      await globalData.stopAllController();
-      onSetting = true;
-      final usedOutSide = await Navigator.push(context, SlideLeftRoute(page: Settings()));
-      onSetting = false;
-      if(usedOutSide){
-        WidgetsBinding.instance.removeObserver(this);
-        await Navigator.push(context, FadeRoute(page: BlackScreen('Unity')));
-      }else{
-        updateGender();
-        setMessage("changeCharacter", globalData.scanData.model);
-      }
+      globalData.stopAllController();
+      await Navigator.push(context, SlideLeftRoute(page: Settings()));
+      globalData.resumeUnityController();
+      updateGender();
+      setMessage("changeCharacter", globalData.scanData.model);
 //      Navigator.pop(context, 'Unity');
     }
   }

@@ -7,8 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'dart:math';
 import 'package:flutter_app/Models/GlobalData.dart';
-import 'package:flutter_app/Models/SlideRoute.dart';
-import 'package:flutter_app/Screens/ScanQR.dart';
+import 'package:flutter_app/Models/UserData.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:progress_dialog/progress_dialog.dart';
 import 'package:vibration/vibration.dart';
@@ -17,6 +16,7 @@ import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:vector_math/vector_math_64.dart' as math;
 import 'package:flutter/scheduler.dart';
+import 'package:retry/retry.dart';
 class Login extends StatefulWidget {
   @override
   State createState() => _Login();
@@ -55,6 +55,7 @@ class _Login extends State<Login> with TickerProviderStateMixin {
   String registerText = 'Register now to sync your scan history and\nfavourites, also creating your own AR card!';
   final ERROR_COLOR =  Colors.pink;
   final NORMAL_COLOR = Color.fromARGB(130, 31, 34, 52);
+  GlobalData globalData = GlobalData();
   bool loginValid = true;
   bool registerValid = true;
   bool hasExpand = true;
@@ -371,7 +372,10 @@ class _Login extends State<Login> with TickerProviderStateMixin {
                     ],
                   ),
                 ),
-              onWillPop: () async => Future.value(false),
+              onWillPop: () async {
+                globalData.resumeControllerState();
+                return true;
+              },
         )
         )
       );
@@ -565,14 +569,8 @@ class _Login extends State<Login> with TickerProviderStateMixin {
   }
   initRememberState() {
     SchedulerBinding.instance.addPostFrameCallback((_) async{
-      await PermissionHandler().requestPermissions([
-        PermissionGroup.camera,
-        PermissionGroup.microphone,
-        PermissionGroup.storage
-      ]);
       SharedPreferences preferences = await SharedPreferences.getInstance();
       bool value = preferences.getBool('remember')??false;
-      GlobalData globalData = GlobalData();
       globalData.hasLogin = preferences.getBool('hasLogin')??false;
       if(globalData.wantLogin){
         await toDetailLayout();
@@ -580,7 +578,7 @@ class _Login extends State<Login> with TickerProviderStateMixin {
       }else if(!globalData.hasLogin){
         await Future.delayed(Duration(seconds:1));
         globalData.resumeQRViewController();
-        Navigator.pushReplacement(context, FadeRoute(page: ScanQR()));
+        Navigator.pop(context);
         return;
       }else{
         await restoreDetail();
@@ -644,12 +642,13 @@ class _Login extends State<Login> with TickerProviderStateMixin {
         GlobalData globalData = GlobalData();
         globalData.token = Msg['token'];
         globalData.id = Msg['_id'];
+        await fetchPost();
         globalData.hasLogin = true;
         SharedPreferences sharedPreferences =await SharedPreferences.getInstance();
         await sharedPreferences.setBool('hasLogin',true);
         pr.hide();
-        globalData.resumeQRViewController();
-        Navigator.pushReplacement(context, FadeRoute(page: ScanQR()));
+        globalData.resumeControllerState();
+        Navigator.pop(context);
       }
     }catch(err){
       vibrateLoginText();
@@ -733,5 +732,50 @@ class _Login extends State<Login> with TickerProviderStateMixin {
     SharedPreferences preferences = await SharedPreferences.getInstance();
     loginEMAIL.text = preferences.getString('E-MAIL');
     loginPassword.text = preferences.getString('PASSWORD');
+  }
+  fetchPostedData(response) async {
+    if (response.statusCode == 200) {
+      UserData userData = UserData.toUserData(response.body);
+      SharedPreferences storeValue = await SharedPreferences.getInstance();
+      print('body');
+      print(response.body);
+      storeValue.setString("UserData", response.body);
+      globalData.userData = userData;
+      globalData.hasData = true;
+    }else{
+      throw Exception('login fail please try again');
+//      await showDialog(
+//          context: context,
+//          builder: (BuildContext context) {
+//            // return object of type Dialog
+//            return AlertDialog(
+//              title: new Text('login fail please try again'),
+//              content: new Text( 'Network error' ),
+//              actions: <Widget>[
+//                // usually buttons at the bottom of the dialog
+//                new FlatButton(
+//                  child: new Text("Close"),
+//                  onPressed: () {
+//                    Navigator.pop(context);
+//                  },
+//                ),
+//              ],
+//            );
+//          });
+    }
+  }
+  Future<void> fetchPost() async {
+    Map<String, String> map = {
+      "_id":globalData.id,
+    };
+    String value = JsonEncoder().convert(map);
+    final retry = RetryOptions(maxAttempts: 6);
+    final response = await retry.retry(
+      // Make a GET request
+          () => http.post('${Config.baseURl}/profile/get?_id=${globalData.id}',headers: {"Content-Type": "application/json"}, body: value),
+      // Retry on SocketException or TimeoutException
+      retryIf: (e) => e is SocketException || e is TimeoutException,
+    );
+    return await fetchPostedData(response);
   }
 }
