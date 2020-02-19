@@ -4,6 +4,7 @@ import 'package:flutter_app/Screens/BlackScreen.dart';
 import 'package:flutter_app/Screens/Login.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_app/Screens/MyCards.dart';
+import 'package:flutter_app/Screens/PersonDetail.dart';
 import 'package:flutter_app/Screens/ScanQR.dart';
 import 'package:flutter_app/Screens/Settings.dart';
 import 'package:flutter_app/Screens/UnityPage.dart';
@@ -18,7 +19,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      initialRoute: '/',
+      initialRoute: '/PersonDetail',
       routes: {
         '/': (context) => UnityPage(),
         '/UnityPage' : (context) => UnityPage(),
@@ -26,6 +27,7 @@ class MyApp extends StatelessWidget {
         '/MyCards':(context) => MyCards(),
         '/Login':(context) => Login(),
         '/Settings':(context) => Settings(),
+        '/PersonDetail':(context)=>PersonDetail('123')
       },
       title: 'Flutter Demo',
       theme: ThemeData(
