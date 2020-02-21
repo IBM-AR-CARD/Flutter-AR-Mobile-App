@@ -110,12 +110,11 @@ class UserData{
     return json.convert(map);
   }
   static UserData toUserData(String userJson){
+
     UserData user;
       var decoder = JsonDecoder();
       Map<String, dynamic> json;
       json = decoder.convert(userJson);
-      print('favourite data ${json['isFav']??'NO FAVOURITE'}');
-      print('favourite data is bool ${json['isFav'] is bool}');
       user = UserData(
           json['_id'],json['firstname'], json['lastname'], json['profile']??"",json['username'],
           description: json['description'] ?? "",
@@ -125,6 +124,19 @@ class UserData{
           model: json['model']??"",
       );
       user.isFavourite = json['isFav']??false;
+    return user;
+  }
+  static UserData mapToUserData(Map userMap){
+    Map<String,dynamic>json = userMap;
+    UserData user = UserData(
+      json['_id'],json['firstname'], json['lastname'], json['profile']??"",json['username'],
+      description: json['description'] ?? "",
+      experience: json['experience'] ?? "",
+      education: json['education'] ?? "",
+      gender : json['gender']??0,
+      model: json['model']??"",
+    );
+    user.isFavourite = json['isFav']??false;
     return user;
   }
 }

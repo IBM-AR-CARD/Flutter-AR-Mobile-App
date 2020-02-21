@@ -19,7 +19,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      initialRoute: '/PersonDetail',
+      initialRoute: '/',
       routes: {
         '/': (context) => UnityPage(),
         '/UnityPage' : (context) => UnityPage(),
@@ -27,7 +27,6 @@ class MyApp extends StatelessWidget {
         '/MyCards':(context) => MyCards(),
         '/Login':(context) => Login(),
         '/Settings':(context) => Settings(),
-        '/PersonDetail':(context)=>PersonDetail('123')
       },
       title: 'Flutter Demo',
       theme: ThemeData(

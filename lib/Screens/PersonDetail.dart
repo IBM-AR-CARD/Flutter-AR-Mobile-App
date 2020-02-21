@@ -1,28 +1,33 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_app/Models/GlobalData.dart';
+import 'package:flutter_app/Models/UserData.dart';
 
 class PersonDetail extends StatefulWidget {
-  final _id;
-
-  PersonDetail(this._id);
+  UserData userData;
+  changeData(userData){
+    this.userData = userData;
+  }
+  PersonDetail(this.userData);
 
   @override
   State createState() {
-    return _PersonDetail(_id);
+    return _PersonDetail(userData);
   }
 }
 
 class _PersonDetail extends State<PersonDetail> {
-  final _id;
-
-  _PersonDetail(this._id);
-
+  UserData userData;
+  _PersonDetail(this.userData);
+  GlobalData globalData;
   ScrollController _scrollController;
   bool hasDisplayed = false;
 
   @override
   void initState() {
     super.initState();
+    print(userData.userName);
+    globalData = GlobalData();
     _scrollController = ScrollController();
     initControllerState();
   }
@@ -30,18 +35,21 @@ class _PersonDetail extends State<PersonDetail> {
   initControllerState() {
     _scrollController.addListener(() {
       print(_scrollController.offset);
-      if (!hasDisplayed && _scrollController.offset > 200) {
+      if (!hasDisplayed && _scrollController.offset > 345) {
         hasDisplayed = true;
         setState(() {});
-      } else if (hasDisplayed && _scrollController.offset < 200) {
+      } else if (hasDisplayed && _scrollController.offset < 345) {
         hasDisplayed = false;
         setState(() {});
       }
     });
   }
-
+  double _width;
+  double _height;
   @override
   Widget build(BuildContext context) {
+    _width = MediaQuery.of(context).size.width;
+    _height = MediaQuery.of(context).size.height;
     return Scaffold(
       backgroundColor: Color.fromARGB(255, 31, 34, 52),
       body: CustomScrollView(
@@ -49,13 +57,10 @@ class _PersonDetail extends State<PersonDetail> {
         slivers: <Widget>[
           SliverAppBar(
       titleSpacing:0,
-//            bottom: PreferredSize(
-//              preferredSize: Size(20.0, 40.0),
-//              child: Text(''),
-//            ),
                 leading: Padding(
                   padding: EdgeInsets.only(top: 0),
                   child: IconButton(
+                    onPressed: () => Navigator.pop(context),
                     iconSize: 30,
                     icon: Icon(
                       Icons.arrow_back_ios,
@@ -63,64 +68,7 @@ class _PersonDetail extends State<PersonDetail> {
                     ),
                   ),
                 ),
-                actions: <Widget>[
-                  hasDisplayed
-                      ? Padding(
-                          padding: const EdgeInsets.only(top: 0, right: 15),
-                          child: ClipRRect(
-                            borderRadius: new BorderRadius.all(
-                                const Radius.circular(40.0)),
-                            child: FadeInImage(
-                              width: 50,
-                              height: 50,
-                              image: NetworkImage(
-                                  "https://api.jikipedia.com/upload/bd6a29fa1b5cb48d6dd93ded3f8ba864_75.png"),
-                              placeholder: AssetImage(
-                                'assets/images/unknown-avatar.jpg',
-                              ),
-                            ),
-                          ),
-                        )
-                      : SizedBox.shrink(),
-                  hasDisplayed
-                      ? Padding(
-                          padding: const EdgeInsets.only(top: 0, right: 0),
-                          child: Container(
-                            height: 10,
-                            width: 70,
-                            margin:
-                                EdgeInsets.only(top: 12,bottom: 12),
-                            decoration: new BoxDecoration(
-                              color: Color.fromARGB(255, 0, 123, 181),
-                              border:
-                                  Border.all(color: Colors.black, width: 0.0),
-                              borderRadius: new BorderRadius.all(
-                                  Radius.circular(40)),
-                            ),
-                            child: Center(
-                            child: Text(
-                                'View AR',
-                              style: TextStyle(
-                                fontSize: 14,
-                                fontWeight: FontWeight.bold
-                              ),
-                            ),
-    ),
-                          ))
-                      : SizedBox.shrink(),
-                  hasDisplayed
-                      ? Padding(
-                      padding: const EdgeInsets.only(top: 0, right: 10),
-                      child: IconButton(
-                        iconSize: 35,
-                        onPressed: (){},
-                        icon: Icon(
-                          Icons.star_border
-                        ),
-                      )
-                  )
-                      : SizedBox.shrink()
-                ],
+                actions: listOfActions(),
                 title: Padding(
                   padding: EdgeInsets.only(top: 0),
                   child: Text(
@@ -128,31 +76,346 @@ class _PersonDetail extends State<PersonDetail> {
                     style: TextStyle(fontSize: 30),
                   ),
                 ),
-                expandedHeight: 250.0,
+                expandedHeight: 400.0,
                 floating: false,
                 pinned: true,
+                backgroundColor:  Color.fromARGB(255, 41, 43, 66),
                 flexibleSpace: FlexibleSpaceBar(
                     background: Stack(
                   children: <Widget>[
-                    Positioned.fill(
-                      child: Image.network(
-                        'https://img.huimin111.com/uploads/201911/28/13/mlayu5u5t3g.jpg',
-                        fit: BoxFit.cover,
+                    Align(
+                      alignment: Alignment.topCenter,
+                      child: Container(
+                        height: 150,
+                        width: _width,
+                        decoration: BoxDecoration(
+                            gradient: LinearGradient(
+                                begin: Alignment.topCenter,
+                                end: Alignment.bottomCenter,
+                                stops: [
+                                  0.3,
+                                  1
+                                ],
+                                colors: [
+                                  Color.fromARGB(255, 69, 67, 89),
+                                  Color.fromARGB(255, 55, 51, 75)
+                                ])),
+//                        color: Color.fromARGB(255, 41, 43, 66),
+                      )
+                    ),
+                    Positioned(
+                      top: 110,
+                      left: 30,
+                      child:ClipRRect(
+                        borderRadius:  BorderRadius.circular(40.0),
+                        child: FadeInImage(
+                          width: 80,
+                          height: 80,
+                          fit: BoxFit.fill,
+                          image: NetworkImage(
+                              userData.profile),
+                          placeholder: AssetImage(
+                            'assets/images/unknown-avatar.jpg',
+                          ),
+                        ),
+                      ),
+                    ),
+                    Positioned(
+                      top: 160,
+                      right: 80,
+                      child:Container(
+                        height: 30,
+                        width: 70,
+                        decoration: new BoxDecoration(
+                          color: Color.fromARGB(255, 0, 123, 181),
+                          borderRadius: new BorderRadius.all(
+                              Radius.circular(9)),
+                        ),
+                        child: Center(
+                          child: Text(
+                            'View AR',
+                            style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 14,
+                                fontWeight: FontWeight.bold
+                            ),
+                          ),
+                        ),
+                      ) ,
+                    ),
+                    Positioned(
+                      top: 150,
+                      right: 10,
+                      child:IconButton(
+                        iconSize: 35,
+                        onPressed: (){},
+                        icon: Icon(
+                            Icons.star_border,
+                          color: Colors.white,
+                        ),
+                      )
+                    ),
+                    Align(
+                      alignment: Alignment.bottomCenter,
+                      child: Container(
+                        width: _width*0.9,
+                        height: 190,
+//                        color: Colors.cyanAccent,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: <Widget>[
+                            Text(
+                              "${userData.firstName} ${userData.lastName}",
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 30,
+                                fontWeight: FontWeight.bold
+                              ),
+                            ),
+                            Divider(
+                              height: 5,
+                            ),
+                            Text(
+                              "@${userData.userName}",
+                              style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 16,
+                              ),
+                            ),
+                            Divider(),
+                            Text(
+                              userData.description,
+                              overflow: TextOverflow.ellipsis,
+                              maxLines: 4,
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 18,
+                              ),
+                            ),
+                            Divider(
+                              height: 30,
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                   ],
                 )),
               ),
-          SliverFillRemaining(
+        SliverList(
+          delegate: SliverChildListDelegate([
+            Container(
+              height: 40,
+              color: Color.fromARGB(255, 51, 53, 77),
+              child: Row(
+                mainAxisAlignment:MainAxisAlignment.spaceBetween,
+                children: <Widget>[
+                  Padding(
+                    padding: EdgeInsets.only(left: 20),
+                    child:Text(
+                      'My Contacts',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 16,
+//                                fontWeight: FontWeight.bold
+                      ),
+                    ) ,
+                  ),
+                  Row(
+                    children: <Widget>[
+                      IconButton(
+                        icon: Icon(
+                          Icons.phone,
+                          color: Colors.white,
+                        ),
+                        color: Colors.white,
+                      ),
+                      IconButton(
+                        icon: Icon(Icons.message,
+                          color: Colors.white,),
+                        color: Colors.white,
+                      ),
+                      IconButton(
+                        icon: Icon(Icons.public,color: Colors.white,),
+                        color: Colors.white,
+                      ),
+                      IconButton(
+                        icon: Icon(Icons.email,color: Colors.white,),
+                        color: Colors.white,
+                      )
+                    ],
+                  )
+                ],
+              ),
+            ),
+            Container(
+              margin: EdgeInsets.only(left:16,right:16),
+              width: _width*0.8,
               child: Column(
-            children: <Widget>[
-              Row(
-                children: <Widget>[],
-              )
-            ],
-          ))
-        ],
-      ),
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[]..addAll(getExperience())..addAll(getEducation())..add(
+                  Divider(
+                    height: 400,
+                  )
+                ),
+              ),
+            ) ,
+          ])
+        )
+    ]
+    )
     );
+//        ),
+//          SliverFillRemaining(
+//            hasScrollBody: true,
+//              child:Expanded(
+//              child: Column(
+//                  children: <Widget>,
+//      ),
+//    );
+  }
+  listOfActions(){
+    return [
+      hasDisplayed
+          ? Padding(
+        padding: const EdgeInsets.only(top: 0, right: 15),
+        child: Container(
+          margin:
+          EdgeInsets.only(top: 8,bottom: 8),
+        child: ClipRRect(
+          borderRadius:  BorderRadius.circular(16.0),
+            child: FadeInImage(
+              width: 40,
+              height: 40,
+              fit: BoxFit.fill,
+              image: NetworkImage(
+                  userData.profile),
+              placeholder: AssetImage(
+                'assets/images/unknown-avatar.jpg',
+              ),
+            ),
+          ),
+        ),
+      )
+          : SizedBox.shrink(),
+      hasDisplayed
+          ? Padding(
+          padding: const EdgeInsets.only(top: 0, right: 0),
+          child: Container(
+            height: 10,
+            width: 70,
+            margin:
+            EdgeInsets.only(top: 12,bottom: 12),
+            decoration: new BoxDecoration(
+              color: Color.fromARGB(255, 0, 123, 181),
+              border:
+              Border.all(color: Colors.black, width: 0.0),
+              borderRadius: new BorderRadius.all(
+                  Radius.circular(40)),
+            ),
+            child: Center(
+              child: Text(
+                'View AR',
+                style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.bold
+                ),
+              ),
+            ),
+          ))
+          : SizedBox.shrink(),
+      hasDisplayed
+          ? Padding(
+          padding: const EdgeInsets.only(top: 0, right: 10),
+          child: IconButton(
+            iconSize: 35,
+            onPressed: (){},
+            icon: Icon(
+                Icons.star_border
+            ),
+          )
+      )
+          : SizedBox.shrink()
+    ];
+  }
+  List<Widget> getExperience(){
+    if(userData.experience == null || userData.experience == ""){
+      return [];
+    }
+    return [
+      Divider(
+        height: 20,
+      ),
+      Text(
+        "Experience",
+        textAlign: TextAlign.start,
+        overflow: TextOverflow.ellipsis,
+        style: TextStyle(
+          fontWeight: FontWeight.bold,
+          color: Colors.white,
+          fontSize: 45,
+        ),
+      ),
+      Divider(
+        height: 20,
+      ),
+      Text(
+        "John has a diverse background that includes consultancy, performance, service & product delivery, all underpinned by a passion for innovation. Most recently his work leading the Innovation Centre technologist team has allowed him to combine these interests in order to maximise the potential of new technology while solving real problems.",
+        textAlign: TextAlign.start,
+//                            overflow: TextOverflow.ellipsis,
+        style: TextStyle(
+//                              fontWeight: FontWeight.bold,
+          color: Colors.white,
+          fontSize: 15,
+        ),
+      ),
+      Divider(
+        height: 20,
+      ),
+      Divider(
+        color: Colors.white.withOpacity(0.3),
+        thickness: 1,
+        height: 20,
+      ),
+    ];
+  }
+  List<Widget> getEducation(){
+    if(userData.education == null || userData.education == ""){
+      return [];
+    }
+    return [Divider(
+      height: 20,
+    ),
+      Text(
+        "Education",
+        textAlign: TextAlign.start,
+        overflow: TextOverflow.ellipsis,
+        style: TextStyle(
+          fontWeight: FontWeight.bold,
+          color: Colors.white,
+          fontSize: 45,
+        ),
+      ),
+      Divider(
+        height: 20,
+      ),
+      Text(
+        "I have studied at University of Humberside, on Field Of Study in Information Systems. And received a 2:1 Grade",
+        textAlign: TextAlign.start,
+//                            overflow: TextOverflow.ellipsis,
+        style: TextStyle(
+//                              fontWeight: FontWeight.bold,
+          color: Colors.white,
+          fontSize: 15,
+        ),
+      ),
+      Divider(
+        height: 20,
+      ),
+      Divider(
+        color: Colors.white.withOpacity(0.3),
+        thickness: 1,
+        height: 20,
+      ),];
   }
 }

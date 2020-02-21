@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_app/Models/SlideRoute.dart';
+import 'package:flutter_app/Models/UserData.dart';
 import 'package:flutter_app/Request/request.dart';
+import 'package:flutter_app/Screens/PersonDetail.dart';
+import 'package:progress_dialog/progress_dialog.dart';
 import 'dart:async';
 import 'package:swipedetector/swipedetector.dart';
 //import 'package:pull_to_refresh/pull_to_refresh.dart';
@@ -32,6 +36,7 @@ class _MyCards extends State<MyCards> with TickerProviderStateMixin {
   Future<List> post;
   int _status = 0;
   String searchResult = '';
+  bool onRequest = false;
   List<String> _stringList = [
     "Favourite",
     "History",
@@ -458,9 +463,11 @@ class _MyCards extends State<MyCards> with TickerProviderStateMixin {
       ),
       child: GestureDetector(
         onLongPress: ()async{
+          print(list[index]["username"]);
           await showImageActionSheet(list[index]["username"]);
         },
-        onTap:(){
+        onTap:()async{
+          await fetchTapUserData(list[index]["username"]);
           print('tap');
         },
         child:Row(
@@ -561,5 +568,53 @@ class _MyCards extends State<MyCards> with TickerProviderStateMixin {
     _searchController.dispose();
     controller1.dispose();
     controller2.dispose();
+  }
+  fetchTapUserData(id)async{
+    if(onRequest)return;
+    onRequest = true;
+    ProgressDialog pr = new ProgressDialog(context, isDismissible: false);
+    try{
+      pr.show();
+      final response = await RequestCards.getUserData(id);
+      pr.hide();
+      if(response.statusCode == 200){
+        UserData userData = UserData.mapToUserData(response.data);
+        print("mapped ${userData.userName}");
+        PersonDetail personDetail = new PersonDetail(userData)..changeData(userData);
+        await Navigator.push(context, new FadeRoute(page: personDetail));
+        onRequest = false;
+        setState(() {
+
+        });
+      }else{
+        throw Exception();
+      }
+    }catch(err){
+      print(err);
+      pr.hide();
+      await showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            // return object of type Dialog
+            return AlertDialog(
+              title: new Text("Network Error"),
+              content: new Text("please contact admin"),
+              actions: <Widget>[
+                // usually buttons at the bottom of the dialog
+                new FlatButton(
+                  child: new Text("Close"),
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                ),
+              ],
+            );
+          });
+    }finally{
+      onRequest = false;
+      setState(() {
+
+      });
+    }
   }
 }

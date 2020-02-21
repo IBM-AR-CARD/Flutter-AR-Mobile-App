@@ -98,4 +98,8 @@ class RequestCards{
     print(response.data);
     return response;
   }
+  static Future<Response> getUserData(name)async{
+    final response = await HttpUtils.post('${Config.baseURl}/profile/get?username=$name');
+    return response;
+  }
 }
