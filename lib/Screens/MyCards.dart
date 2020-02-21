@@ -572,6 +572,9 @@ class _MyCards extends State<MyCards> with TickerProviderStateMixin {
   fetchTapUserData(id)async{
     if(onRequest)return;
     onRequest = true;
+    setState(() {
+      leave = true;
+    });
     ProgressDialog pr = new ProgressDialog(context, isDismissible: false);
     try{
       pr.show();
@@ -581,11 +584,16 @@ class _MyCards extends State<MyCards> with TickerProviderStateMixin {
         UserData userData = UserData.mapToUserData(response.data);
         print("mapped ${userData.userName}");
         PersonDetail personDetail = new PersonDetail(userData)..changeData(userData);
-        await Navigator.push(context, new FadeRoute(page: personDetail));
-        onRequest = false;
-        setState(() {
-
-        });
+        final isPop = await Navigator.push(context, new FadeRoute(page: personDetail));
+        if(isPop == "pop"){
+          onRequest = false;
+          Navigator.pop(context);
+        }else{
+          onRequest = false;
+          setState(() {
+            leave = false;
+          });
+        }
       }else{
         throw Exception();
       }

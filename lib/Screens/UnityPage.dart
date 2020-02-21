@@ -71,9 +71,9 @@ class _UnityPage extends State<UnityPage> with WidgetsBindingObserver{
         PermissionGroup.microphone,
         PermissionGroup.storage
       ]);
-      await Navigator.pushNamed(context, '/Login');
+      await Navigator.push(context, FadeRoute(page: Login()));
       await _unityWidgetController.pause();
-      await Navigator.pushNamed(context, '/ScanQR');
+      await Navigator.push(context, FadeRoute(page: ScanQR()));
 //      await Navigator.push(context, FadeRoute(page:ScanQR()));
       await _unityWidgetController.resume();
       updateGender();
@@ -624,6 +624,9 @@ class _UnityPage extends State<UnityPage> with WidgetsBindingObserver{
       WidgetsBinding.instance.removeObserver(this);
       await Navigator.push(context, SlideRightRoute(page: MyCards()));
       WidgetsBinding.instance.addObserver(this);
+      setState(() {
+
+      });
     }
   }
   _switchScene()async{

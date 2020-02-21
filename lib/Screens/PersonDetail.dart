@@ -22,7 +22,6 @@ class _PersonDetail extends State<PersonDetail> {
   GlobalData globalData;
   ScrollController _scrollController;
   bool hasDisplayed = false;
-
   @override
   void initState() {
     super.initState();
@@ -60,7 +59,7 @@ class _PersonDetail extends State<PersonDetail> {
                 leading: Padding(
                   padding: EdgeInsets.only(top: 0),
                   child: IconButton(
-                    onPressed: () => Navigator.pop(context),
+                    onPressed: () => Navigator.pop(context,false),
                     iconSize: 30,
                     icon: Icon(
                       Icons.arrow_back_ios,
@@ -123,25 +122,28 @@ class _PersonDetail extends State<PersonDetail> {
                     Positioned(
                       top: 160,
                       right: 80,
-                      child:Container(
-                        height: 30,
-                        width: 70,
-                        decoration: new BoxDecoration(
-                          color: Color.fromARGB(255, 0, 123, 181),
-                          borderRadius: new BorderRadius.all(
-                              Radius.circular(9)),
-                        ),
-                        child: Center(
-                          child: Text(
-                            'View AR',
-                            style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 14,
-                                fontWeight: FontWeight.bold
+                      child:InkWell(
+                        onTap: onViewAR,
+                        child: Container(
+                          height: 30,
+                          width: 70,
+                          decoration: new BoxDecoration(
+                            color: Color.fromARGB(255, 0, 123, 181),
+                            borderRadius: new BorderRadius.all(
+                                Radius.circular(9)),
+                          ),
+                          child: Center(
+                            child: Text(
+                              'View AR',
+                              style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.bold
+                              ),
                             ),
                           ),
-                        ),
-                      ) ,
+                        ) ,
+                      )
                     ),
                     Positioned(
                       top: 150,
@@ -158,7 +160,7 @@ class _PersonDetail extends State<PersonDetail> {
                     Align(
                       alignment: Alignment.bottomCenter,
                       child: Container(
-                        width: _width*0.9,
+                        width: _width*0.85,
                         height: 190,
 //                        color: Colors.cyanAccent,
                         child: Column(
@@ -249,7 +251,7 @@ class _PersonDetail extends State<PersonDetail> {
               ),
             ),
             Container(
-              margin: EdgeInsets.only(left:16,right:16),
+              margin: EdgeInsets.only(left:_width*0.15*0.5,right:_width*0.15*0.5),
               width: _width*0.8,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -301,7 +303,9 @@ class _PersonDetail extends State<PersonDetail> {
       hasDisplayed
           ? Padding(
           padding: const EdgeInsets.only(top: 0, right: 0),
-          child: Container(
+          child: InkWell(
+          onTap: onViewAR,
+          child:Container(
             height: 10,
             width: 70,
             margin:
@@ -322,6 +326,7 @@ class _PersonDetail extends State<PersonDetail> {
                 ),
               ),
             ),
+          ) ,
           ))
           : SizedBox.shrink(),
       hasDisplayed
@@ -360,7 +365,7 @@ class _PersonDetail extends State<PersonDetail> {
         height: 20,
       ),
       Text(
-        "John has a diverse background that includes consultancy, performance, service & product delivery, all underpinned by a passion for innovation. Most recently his work leading the Innovation Centre technologist team has allowed him to combine these interests in order to maximise the potential of new technology while solving real problems.",
+        userData.experience,
         textAlign: TextAlign.start,
 //                            overflow: TextOverflow.ellipsis,
         style: TextStyle(
@@ -400,7 +405,7 @@ class _PersonDetail extends State<PersonDetail> {
         height: 20,
       ),
       Text(
-        "I have studied at University of Humberside, on Field Of Study in Information Systems. And received a 2:1 Grade",
+        userData.education,
         textAlign: TextAlign.start,
 //                            overflow: TextOverflow.ellipsis,
         style: TextStyle(
@@ -417,5 +422,9 @@ class _PersonDetail extends State<PersonDetail> {
         thickness: 1,
         height: 20,
       ),];
+  }
+  onViewAR(){
+    globalData.scanData = this.userData;
+    Navigator.pop(context,"pop");
   }
 }
