@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_app/Models/GlobalData.dart';
 import 'package:flutter_app/Models/UserData.dart';
+import 'package:flutter_app/Request/request.dart';
 
 class PersonDetail extends StatefulWidget {
   UserData userData;
@@ -22,6 +23,7 @@ class _PersonDetail extends State<PersonDetail> {
   GlobalData globalData;
   ScrollController _scrollController;
   bool hasDisplayed = false;
+  bool onFavouriteRequest = false;
   @override
   void initState() {
     super.initState();
@@ -150,10 +152,12 @@ class _PersonDetail extends State<PersonDetail> {
                       right: 10,
                       child:IconButton(
                         iconSize: 35,
-                        onPressed: (){},
+                        onPressed: (){
+                          _onFavourite();
+                        },
                         icon: Icon(
-                            Icons.star_border,
-                          color: Colors.white,
+                          Icons.star_border,
+                          color: userData.isFavourite?Colors.greenAccent:Colors.white,
                         ),
                       )
                     ),
@@ -334,9 +338,12 @@ class _PersonDetail extends State<PersonDetail> {
           padding: const EdgeInsets.only(top: 0, right: 10),
           child: IconButton(
             iconSize: 35,
-            onPressed: (){},
+            onPressed: (){
+              _onFavourite();
+            },
             icon: Icon(
-                Icons.star_border
+                Icons.star_border,
+              color: userData.isFavourite?Colors.greenAccent:Colors.white,
             ),
           )
       )
@@ -426,5 +433,49 @@ class _PersonDetail extends State<PersonDetail> {
   onViewAR(){
     globalData.scanData = this.userData;
     Navigator.pop(context,"pop");
+  }
+  _onFavourite()async{
+    if(onFavouriteRequest) return;
+    try{
+      if(userData.isFavourite){
+        final response = await RequestCards.favouriteRemove(userData.id);
+        if(response.statusCode == 200){
+          userData.isFavourite = false;
+        }else{
+          throw Exception();
+        }
+      }else{
+        final response = await RequestCards.favouriteAdd(userData.id);
+        if(response.statusCode == 200){
+          userData.isFavourite = true;
+        }else{
+          throw Exception();
+        }
+      }
+    }catch(err){
+      await showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            // return object of type Dialog
+            return AlertDialog(
+              title: new Text("Network Error"),
+              content: new Text("please contact admin"),
+              actions: <Widget>[
+                // usually buttons at the bottom of the dialog
+                new FlatButton(
+                  child: new Text("Close"),
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                ),
+              ],
+            );
+          });
+    }finally{
+      onFavouriteRequest = false;
+      setState(() {
+
+      });
+    }
   }
 }

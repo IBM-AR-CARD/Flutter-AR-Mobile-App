@@ -685,8 +685,8 @@ class _UnityPage extends State<UnityPage> with WidgetsBindingObserver{
   }
   navigateToScan() async {
     _tracked = false;
-    await _unityWidgetController.pause();
     WidgetsBinding.instance.removeObserver(this);
+    await _unityWidgetController.pause();
     await Navigator.push(context, FadeRoute(page: ScanQR()));
     await _unityWidgetController.resume();
 //    Navigator.pop(context, 'ScanQR');
