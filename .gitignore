@@ -10,6 +10,7 @@
 .svn/
 .gradle/
 local.properties
+.flutter-plugins-dependencies
 
 # IntelliJ related
 *.iml
