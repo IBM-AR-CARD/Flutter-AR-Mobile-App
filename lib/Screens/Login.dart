@@ -7,7 +7,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'dart:math';
 import 'package:flutter_app/Models/GlobalData.dart';
+import 'package:flutter_app/Models/SlideRoute.dart';
 import 'package:flutter_app/Models/UserData.dart';
+import 'package:flutter_app/Screens/UnityPage.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:progress_dialog/progress_dialog.dart';
 import 'package:vibration/vibration.dart';
@@ -583,6 +585,11 @@ class _Login extends State<Login> with TickerProviderStateMixin {
   }
   initRememberState() {
     SchedulerBinding.instance.addPostFrameCallback((_) async{
+      await PermissionHandler().requestPermissions([
+        PermissionGroup.camera,
+        PermissionGroup.microphone,
+        PermissionGroup.storage
+      ]);
       SharedPreferences preferences = await SharedPreferences.getInstance();
       bool value = preferences.getBool('remember')??false;
       globalData.hasLogin = preferences.getBool('hasLogin')??false;
@@ -591,8 +598,12 @@ class _Login extends State<Login> with TickerProviderStateMixin {
         return;
       }else if(!globalData.hasLogin){
         await Future.delayed(Duration(seconds:1));
-        Navigator.pop(context);
-        return;
+        if(globalData.firstTime){
+          globalData.firstTime =false;
+          Navigator.pushReplacement(context, FadeRoute(page:UnityPage()));
+        }else{
+          Navigator.pop(context);
+        }
       }else{
         await restoreDetail();
         await Future.delayed(Duration(seconds:1));
@@ -660,7 +671,13 @@ class _Login extends State<Login> with TickerProviderStateMixin {
         SharedPreferences sharedPreferences =await SharedPreferences.getInstance();
         await sharedPreferences.setBool('hasLogin',true);
         pr.hide();
-        Navigator.pop(context);
+        if(globalData.firstTime){
+          globalData.firstTime =false;
+          Navigator.pushReplacement(context, FadeRoute(page:UnityPage()));
+        }else{
+          Navigator.pop(context);
+          return;
+        }
       }
     }catch(err){
       vibrateLoginText();

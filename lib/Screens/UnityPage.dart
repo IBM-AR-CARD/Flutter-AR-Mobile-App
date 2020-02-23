@@ -66,12 +66,12 @@ class _UnityPage extends State<UnityPage> with WidgetsBindingObserver{
   initSchedule(){
     SchedulerBinding.instance.addPostFrameCallback((_) async{
 //      await Navigator.push(context, FadeRoute(page: Login()));
-      await PermissionHandler().requestPermissions([
-        PermissionGroup.camera,
-        PermissionGroup.microphone,
-        PermissionGroup.storage
-      ]);
-      await Navigator.push(context, FadeRoute(page: Login()));
+//      await PermissionHandler().requestPermissions([
+//        PermissionGroup.camera,
+//        PermissionGroup.microphone,
+//        PermissionGroup.storage
+//      ]);
+//      await Navigator.push(context, FadeRoute(page: Login()));
       await _unityWidgetController.pause();
       await Navigator.push(context, FadeRoute(page: ScanQR()));
 //      await Navigator.push(context, FadeRoute(page:ScanQR()));

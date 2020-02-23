@@ -22,6 +22,13 @@ class GlobalData {
   set currentState(CameraState value) {
     _currentState = value;
   }
+  bool _firstTime = false;
+
+  bool get firstTime => _firstTime;
+
+  set firstTime(bool value) {
+    _firstTime = value;
+  }
 
   String get token => _token;
   bool _wantLogin = false;
