@@ -22,7 +22,7 @@ class GlobalData {
   set currentState(CameraState value) {
     _currentState = value;
   }
-  bool _firstTime = true;
+  bool _firstTime = false;
 
   bool get firstTime => _firstTime;
 

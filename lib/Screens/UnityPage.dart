@@ -20,7 +20,7 @@ import 'package:icon_shadow/icon_shadow.dart';
 import 'package:flutter/foundation.dart';
 import '../Models/UserData.dart';
 import 'package:auto_size_text/auto_size_text.dart';
-import 'package:swipedetector/swipedetector.dart';
+//import 'package:swipedetector/swipedetector.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:flutter/scheduler.dart';
 class UnityPage extends StatefulWidget {
@@ -33,7 +33,6 @@ class UnityPage extends StatefulWidget {
 
 class _UnityPage extends State<UnityPage> with WidgetsBindingObserver{
   GlobalData globalData;
-  Timer _timer;
   String currentLocal;
   final double CHAT_ORIGIN_HEIGHT = 150;
   final double CHAT_EXTEND_HEIGHT = 550;
@@ -56,26 +55,21 @@ class _UnityPage extends State<UnityPage> with WidgetsBindingObserver{
   @override
   void initState() {
     super.initState();
-    PermissionHandler().requestPermissions([
-      PermissionGroup.camera,
-      PermissionGroup.microphone,
-      PermissionGroup.storage
-    ]);
+    initSchedule();
     WidgetsBinding.instance.addObserver(this);
     globalData = GlobalData();
     flutterTts.setLanguage("en-US");
     initSpeechState();
     initFlutterTTS();
-    initSchedule();
   }
   initSchedule(){
     SchedulerBinding.instance.addPostFrameCallback((_) async{
+      await Future.delayed(Duration(seconds: 1));
       await _unityWidgetController.pause();
       await Navigator.push(context, FadeRoute(page: Login()));
       await Navigator.push(context, FadeRoute(page: ScanQR()));
       await _unityWidgetController.resume();
       updateGender();
-      setMessage("changeCharacter", globalData.scanData.model);
     });
   }
 

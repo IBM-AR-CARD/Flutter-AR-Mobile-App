@@ -116,7 +116,9 @@ class _ScanQR extends State<ScanQR> {
                                           if(!globalData.hasData)return;
                                           _find = true;
                                           await setDemoUserData();
-                                          Navigator.pop(context);
+                                          print('pop');
+                                          Navigator.popUntil(context, ModalRoute.withName('/'));
+//                                          Navigator.pop(context);
                                           }
                                       ),
                                       TextSpan(
@@ -213,7 +215,7 @@ class _ScanQR extends State<ScanQR> {
         }finally{
           pr.hide();
         }
-        Navigator.pop(context);
+        Navigator.popUntil(context, ModalRoute.withName('/'));
       }
     });
   }
@@ -222,7 +224,6 @@ class _ScanQR extends State<ScanQR> {
   }
   setScannedUserData(scanData)async{
     ProgressDialog pr = new ProgressDialog(context, isDismissible: false);
-    pr.show();
     try{
       print('request');
       String id;
@@ -232,7 +233,9 @@ class _ScanQR extends State<ScanQR> {
           "_id":globalData.userData.id
         });
       }
+      pr.show();
       final response = await http.post(scanData, headers: {"Content-Type": "application/json"},body:id ).timeout(Duration(seconds: 5));
+      pr.hide();
       if(response.statusCode == 200){
         UserData userData = UserData.toUserData(response.body);
         globalData.scanData = userData;
@@ -248,7 +251,7 @@ class _ScanQR extends State<ScanQR> {
       }else{
         throw new Exception();
       }
-    }catch(err){
+    }catch(err) {
       pr.hide();
       print(err);
       await showDialog(
@@ -271,9 +274,6 @@ class _ScanQR extends State<ScanQR> {
             );
           });
       _find = false;
-    }finally{
-      print('final');
-      pr.hide();
     }
   }
   Widget bottomRow() {

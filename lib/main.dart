@@ -19,22 +19,22 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-//      initialRoute: '/',
-//      routes: {
-//        '/': (context) => UnityPage(),
+      initialRoute: '/',
+      routes: {
+        '/': (context) => UnityPage(),
 //        '/UnityPage' : (context) => UnityPage(),
-//        '/ScanQR':(context) => ScanQR(),
-//        '/MyCards':(context) => MyCards(),
-//        '/Login':(context) => Login(),
-//        '/Settings':(context) => Settings(),
-//      },
+        '/ScanQR':(context) => ScanQR(),
+        '/MyCards':(context) => MyCards(),
+        '/Login':(context) => Login(),
+        '/Settings':(context) => Settings(),
+      },
       title: 'Flutter Demo',
       theme: ThemeData(
         primarySwatch: Config.colorCustom,
           bottomAppBarColor: Config.colorCustom,
       ),
       debugShowCheckedModeBanner: false,
-        home:UnityPage()
+//        home:UnityPage()
     );
   }
 }
