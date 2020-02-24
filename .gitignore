@@ -11,6 +11,7 @@
 .gradle/
 local.properties
 .flutter-plugins-dependencies
+pubspec.lock
 
 # IntelliJ related
 *.iml
