@@ -24,8 +24,9 @@ import 'package:auto_size_text/auto_size_text.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:flutter/scheduler.dart';
 class UnityPage extends StatefulWidget {
-  UnityPage({Key key, this.title}) : super(key: key);
+  UnityPage({Key key, this.title,this.doNotInit=false}) : super(key: key);
   final String title;
+  final bool doNotInit;
 
   @override
   _UnityPage createState() => _UnityPage();
@@ -64,6 +65,10 @@ class _UnityPage extends State<UnityPage> with WidgetsBindingObserver{
   }
   initSchedule(){
     SchedulerBinding.instance.addPostFrameCallback((_) async{
+      if(widget.doNotInit){
+        updateGender();
+        return;
+      }
       await Future.delayed(Duration(seconds: 1));
       await _unityWidgetController.pause();
       await Navigator.push(context, FadeRoute(page: Login()));
@@ -182,6 +187,12 @@ class _UnityPage extends State<UnityPage> with WidgetsBindingObserver{
   }
 
   void startListening() {
+//    Navigator.popUntil(context, (route){
+//      print('this route ${route.settings.name}');
+//      return true;
+//    });
+//    await Future.delayed(Duration(seconds: 1));
+//    await Navigator.push(context, FadeRoute(page: UnityPage()));
     if (!globalData.hasData) return;
     lastWords = "";
     speech.listen(
@@ -681,6 +692,7 @@ class _UnityPage extends State<UnityPage> with WidgetsBindingObserver{
     await _unityWidgetController.pause();
     await Navigator.push(context, FadeRoute(page: ScanQR()));
     await _unityWidgetController.resume();
+    refreshPage();
 //    Navigator.pop(context, 'ScanQR');
   }
   navigateToSetting()async{
@@ -699,10 +711,14 @@ class _UnityPage extends State<UnityPage> with WidgetsBindingObserver{
       await _unityWidgetController.pause();
       await Navigator.push(context, SlideLeftRoute(page: Settings()));
       await _unityWidgetController.resume();
+      refreshPage();
       updateGender();
       setMessage("changeCharacter", globalData.scanData.model);
 //      Navigator.pop(context, 'Unity');
     }
+  }
+  refreshPage(){
+    Navigator.push(context, FadeRoute(page: UnityPage(doNotInit: true,)));
   }
 
   flipHint() {

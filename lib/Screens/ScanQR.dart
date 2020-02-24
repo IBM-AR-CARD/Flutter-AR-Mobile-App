@@ -113,12 +113,13 @@ class _ScanQR extends State<ScanQR> {
                                         ),
                                         recognizer: TapGestureRecognizer()
                                           ..onTap = ()async{
+                                          print('this is scan route context $context');
                                           if(!globalData.hasData)return;
                                           _find = true;
-                                          await setDemoUserData();
+                                          await setScannedUserData('${Config.baseURl}/profile/get?username=jonmcnamara');
                                           print('pop');
-                                          Navigator.popUntil(context, ModalRoute.withName('/'));
-//                                          Navigator.pop(context);
+                                          Navigator.pop(context);
+                                          Navigator.pop(context);
                                           }
                                       ),
                                       TextSpan(
@@ -210,17 +211,16 @@ class _ScanQR extends State<ScanQR> {
             await setScannedUserData(scanData);
           }else {
             Vibration.vibrate(duration: 300);
-            await setDemoUserData();
+            await setScannedUserData('${Config.baseURl}/profile/get?username=jonmcnamara');
           }
         }finally{
           pr.hide();
         }
-        Navigator.popUntil(context, ModalRoute.withName('/'));
+        Navigator.pop(context);
+        Navigator.pop(context);
+//        Navigator.popUntil(context, ModalRoute.withName('/'));
       }
     });
-  }
-  setDemoUserData()async{
-    await setScannedUserData('${Config.baseURl}/profile/get?username=jonmcnamara');
   }
   setScannedUserData(scanData)async{
     ProgressDialog pr = new ProgressDialog(context, isDismissible: false);
@@ -236,6 +236,7 @@ class _ScanQR extends State<ScanQR> {
       pr.show();
       final response = await http.post(scanData, headers: {"Content-Type": "application/json"},body:id ).timeout(Duration(seconds: 5));
       pr.hide();
+      print('request finished');
       if(response.statusCode == 200){
         UserData userData = UserData.toUserData(response.body);
         globalData.scanData = userData;
