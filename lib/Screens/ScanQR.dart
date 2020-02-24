@@ -49,7 +49,6 @@ class _ScanQR extends State<ScanQR> {
     print(context.toString());
     double _width = MediaQuery.of(context).size.width;
     double _height = MediaQuery.of(context).size.height;
-    var _context = context;
     return Scaffold(
       resizeToAvoidBottomInset: false,
       body: WillPopScope(
@@ -116,7 +115,8 @@ class _ScanQR extends State<ScanQR> {
                                           ..onTap = ()async{
                                           if(!globalData.hasData)return;
                                           _find = true;
-                                          await navigateBack();
+                                          await setDemoUserData();
+                                          Navigator.pop(context);
                                           }
                                       ),
                                       TextSpan(
@@ -187,22 +187,6 @@ class _ScanQR extends State<ScanQR> {
         FloatingActionButtonLocation.centerDocked,
         floatingActionButton: bottomRow()
     );
-  }
-  navigateBack()async{
-    ProgressDialog pr = new ProgressDialog(context, isDismissible: false);
-    try {
-      pr.show();
-      await setDemoUserData();
-      pr.hide();
-      print('prhide');
-      controller.dispose();
-      Navigator.pop(context);
-      return;
-    }catch(err){
-      pr.hide();
-      print('err');
-      print(err);
-    }
   }
 
   void _onQRViewCreated(QRViewController controller) {
