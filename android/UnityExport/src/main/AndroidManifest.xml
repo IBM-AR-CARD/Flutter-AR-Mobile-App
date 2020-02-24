@@ -5,7 +5,7 @@
     
     <meta-data android:name="unity.splash-mode" android:value="0" />
     <meta-data android:name="unity.splash-enable" android:value="True" />
-    <meta-data android:name="unity.build-id" android:value="00a311c6-a075-4717-9083-c88ca56d9ecf" />
+    <meta-data android:name="unity.build-id" android:value="439e6d07-1a79-4e6f-ad7b-08e438bb3437" />
   </application>
   <uses-feature android:glEsVersion="0x00020000" />
   <uses-permission android:name="android.permission.INTERNET" />

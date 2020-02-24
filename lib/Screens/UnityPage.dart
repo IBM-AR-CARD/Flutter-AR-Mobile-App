@@ -72,12 +72,12 @@ class _UnityPage extends State<UnityPage> with WidgetsBindingObserver{
 //        PermissionGroup.storage
 //      ]);
 //      await Navigator.push(context, FadeRoute(page: Login()));
-      await _unityWidgetController.pause();
-      await Navigator.push(context, FadeRoute(page: ScanQR()));
+//      await _unityWidgetController.pause();
+//      await Navigator.push(context, FadeRoute(page: ScanQR()));
 //      await Navigator.push(context, FadeRoute(page:ScanQR()));
-      await _unityWidgetController.resume();
-      updateGender();
-      setMessage("changeCharacter", globalData.scanData.model);
+//      await _unityWidgetController.resume();
+//      updateGender();
+//      setMessage("changeCharacter", globalData.scanData.model);
     });
   }
 
