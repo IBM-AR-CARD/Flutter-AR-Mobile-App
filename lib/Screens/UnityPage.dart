@@ -56,6 +56,11 @@ class _UnityPage extends State<UnityPage> with WidgetsBindingObserver{
   @override
   void initState() {
     super.initState();
+    PermissionHandler().requestPermissions([
+      PermissionGroup.camera,
+      PermissionGroup.microphone,
+      PermissionGroup.storage
+    ]);
     WidgetsBinding.instance.addObserver(this);
     globalData = GlobalData();
     flutterTts.setLanguage("en-US");
@@ -65,16 +70,9 @@ class _UnityPage extends State<UnityPage> with WidgetsBindingObserver{
   }
   initSchedule(){
     SchedulerBinding.instance.addPostFrameCallback((_) async{
-//      await Navigator.push(context, FadeRoute(page: Login()));
-//      await PermissionHandler().requestPermissions([
-//        PermissionGroup.camera,
-//        PermissionGroup.microphone,
-//        PermissionGroup.storage
-//      ]);
-//      await Navigator.push(context, FadeRoute(page: Login()));
       await _unityWidgetController.pause();
+      await Navigator.push(context, FadeRoute(page: Login()));
       await Navigator.push(context, FadeRoute(page: ScanQR()));
-//      await Navigator.push(context, FadeRoute(page:ScanQR()));
       await _unityWidgetController.resume();
       updateGender();
       setMessage("changeCharacter", globalData.scanData.model);
