@@ -104,6 +104,7 @@ class _UnityPage extends State<UnityPage> with WidgetsBindingObserver{
       _unityWidgetController.pause();
     }else if(state == AppLifecycleState.resumed){
       _unityWidgetController.resume();
+      refreshPage();
     }
   }
   initLocal() async {
