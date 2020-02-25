@@ -326,7 +326,9 @@ class _MyCards extends State<MyCards> with TickerProviderStateMixin {
           child: RefreshIndicator(
             onRefresh: _handleHistoryRefresh,
             child: FutureBuilder(
-              builder: _buildFuture,
+              builder: (context,snapshot){
+                return _buildFuture(context,snapshot,"history");
+              },
               future: _futureBuilderHistory,
             ),
           )),
@@ -336,7 +338,9 @@ class _MyCards extends State<MyCards> with TickerProviderStateMixin {
               child: RefreshIndicator(
                 onRefresh: _handleFavouriteRefresh,
                 child: FutureBuilder(
-                  builder: _buildFuture,
+                  builder: (context,snapshot){
+                    return _buildFuture(context,snapshot,"favourite");
+                  },
                   future: _futureBuilderFavourite,
                 ),
               )),
@@ -361,7 +365,7 @@ class _MyCards extends State<MyCards> with TickerProviderStateMixin {
     return response.data;
   }
 
-  Widget _buildFuture(BuildContext context, AsyncSnapshot snapshot) {
+  Widget _buildFuture(BuildContext context, AsyncSnapshot snapshot,type) {
     switch (snapshot.connectionState) {
       case ConnectionState.none:
         print('request not yet started');
@@ -377,7 +381,7 @@ class _MyCards extends State<MyCards> with TickerProviderStateMixin {
       case ConnectionState.done:
 //        print("done");
         if (snapshot.hasError) return errorPopup(snapshot);
-        return _createListView(context, snapshot);
+        return _createListView(context, snapshot,type);
       default:
         return Text('request not yet started');
     }
@@ -397,10 +401,10 @@ class _MyCards extends State<MyCards> with TickerProviderStateMixin {
     );
   }
 
-  Widget _createListView(BuildContext context, AsyncSnapshot snapshot) {
+  Widget _createListView(BuildContext context, AsyncSnapshot snapshot,type) {
     var list = snapshot.data["list"];
     return ListView.separated(
-      itemBuilder: (context, index) => _itemBuilder(context, index, list),
+      itemBuilder: (context, index) => _itemBuilder(context, index, list,type),
       itemCount: list.length+2,
 
       separatorBuilder: (context, index) => Divider(
@@ -408,7 +412,8 @@ class _MyCards extends State<MyCards> with TickerProviderStateMixin {
       ),
     );
   }
-  showImageActionSheet(username)async{
+  showImageActionSheet(list,index,type)async{
+    if(type == "history"){
     showModalBottomSheet(
         context: context,
         builder: (BuildContext bc){
@@ -416,9 +421,14 @@ class _MyCards extends State<MyCards> with TickerProviderStateMixin {
             child: new Wrap(
               children: <Widget>[
                 new ListTile(
-                    leading: new Icon(Icons.favorite),
-                    title: new Text('Favourite'),
+                    leading: new Icon(list[index]["isFav"]?Icons.favorite_border: Icons.favorite),
+                    title: new Text(list[index]["isFav"]?'Remove Favourite': 'Favourite'),
                     onTap:()async{
+                      if(list[index]["isFav"]){
+                        favouriteRemove(list,index,type);
+                      }else{
+                        favouriteAdd(list,index,type);
+                      }
                       Navigator.pop(bc);
                     }
                 ),
@@ -426,6 +436,7 @@ class _MyCards extends State<MyCards> with TickerProviderStateMixin {
                   leading: new Icon(Icons.delete),
                   title: new Text('Remove'),
                   onTap:()async{
+                    await historyRemove(list,index);
                     Navigator.pop(bc);
                   },
                 ),
@@ -434,8 +445,146 @@ class _MyCards extends State<MyCards> with TickerProviderStateMixin {
           );
         }
     );
+    }else{
+      showModalBottomSheet(
+          context: context,
+          builder: (BuildContext bc){
+            return Container(
+              child: new Wrap(
+                children: <Widget>[
+                  new ListTile(
+                      leading: new Icon(Icons.favorite),
+                      title: new Text('Remove Favourite'),
+                      onTap:()async{
+                        await favouriteRemove(list,index,type);
+                        Navigator.pop(bc);
+                      }
+                  ),
+//                  new ListTile(
+//                    leading: new Icon(Icons.delete),
+//                    title: new Text('Remove'),
+//                    onTap:()async{
+//                      await historyRemove(list,index);
+//                      Navigator.pop(bc);
+//                    },
+//                  ),
+                ],
+              ),
+            );
+          }
+      );
+    }
+
   }
-  Widget _itemBuilder(BuildContext context, int index, list) {
+  historyRemove(list,index)async{
+//    ProgressDialog pr = new ProgressDialog(context, isDismissible: false);
+    try{
+//      pr.show();
+      final response = await RequestCards.historyRemove(list[index]["userid"]);
+//      pr.hide();
+      if(response.statusCode == 200){
+        _handleAllRefresh();
+      }else{
+        throw Exception();
+      }
+    }catch(err){
+//      pr.hide();
+      print(err);
+      await showDialog(
+          context: context,
+          builder: (BuildContext context) {
+        // return object of type Dialog
+        return AlertDialog(
+          title: new Text("Network Error"),
+          content: new Text("please contact admin"),
+          actions: <Widget>[
+            // usually buttons at the bottom of the dialog
+            new FlatButton(
+              child: new Text("Close"),
+              onPressed: () {
+                Navigator.pop(context);
+              },
+            ),
+          ],
+        );
+      });
+    }
+  }
+  favouriteRemove(list,index,type)async{
+//    ProgressDialog pr = new ProgressDialog(context, isDismissible: false);
+    try{
+//      pr.show();
+      final response = await RequestCards.favouriteRemove(list[index]["userid"]);
+//      pr.hide();
+      if(response.statusCode == 200){
+        _handleAllRefresh();
+        setState(() {
+
+        });
+      }else{
+        throw Exception();
+      }
+    }catch(err){
+//      pr.hide();
+      print(err);
+      await showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            // return object of type Dialog
+            return AlertDialog(
+              title: new Text("Network Error"),
+              content: new Text("please contact admin"),
+              actions: <Widget>[
+                // usually buttons at the bottom of the dialog
+                new FlatButton(
+                  child: new Text("Close"),
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                ),
+              ],
+            );
+          });
+    }
+  }
+  favouriteAdd(list,index,type)async{
+//    ProgressDialog pr = new ProgressDialog(context, isDismissible: false);
+    try{
+//      pr.show();
+      final response = await RequestCards.favouriteAdd(list[index]["userid"]);
+//      pr.hide();
+      if(response.statusCode == 200){
+        _handleAllRefresh();
+        setState(() {
+
+        });
+      }else{
+        throw Exception();
+      }
+    }catch(err){
+//      pr.hide();
+      print(err);
+      await showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            // return object of type Dialog
+            return AlertDialog(
+              title: new Text("Network Error"),
+              content: new Text("please contact admin"),
+              actions: <Widget>[
+                // usually buttons at the bottom of the dialog
+                new FlatButton(
+                  child: new Text("Close"),
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                ),
+              ],
+            );
+          });
+    }
+  }
+  Widget _itemBuilder(BuildContext context, int index, list,type) {
 //    print(list);
     if(index==0){
       return Divider(
@@ -464,7 +613,7 @@ class _MyCards extends State<MyCards> with TickerProviderStateMixin {
       child: GestureDetector(
         onLongPress: ()async{
           print(list[index]["username"]);
-          await showImageActionSheet(list[index]["username"]);
+          await showImageActionSheet(list,index,type);
         },
         onTap:()async{
           await fetchTapUserData(list[index]["username"]);
@@ -575,11 +724,11 @@ class _MyCards extends State<MyCards> with TickerProviderStateMixin {
     setState(() {
       leave = true;
     });
-    ProgressDialog pr = new ProgressDialog(context, isDismissible: false);
+//    ProgressDialog pr = new ProgressDialog(context, isDismissible: false);
     try{
-      pr.show();
+//      pr.show();
       final response = await RequestCards.getUserData(id);
-      pr.hide();
+//      pr.hide();
       if(response.statusCode == 200){
         UserData userData = UserData.mapToUserData(response.data);
         print("mapped ${userData.userName}");
@@ -593,13 +742,14 @@ class _MyCards extends State<MyCards> with TickerProviderStateMixin {
           setState(() {
             leave = false;
           });
+          _handleAllRefresh();
         }
       }else{
         throw Exception();
       }
     }catch(err){
       print(err);
-      pr.hide();
+//      pr.hide();
       await showDialog(
           context: context,
           builder: (BuildContext context) {
