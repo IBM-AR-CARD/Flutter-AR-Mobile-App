@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_app/Models/GlobalData.dart';
 import 'package:flutter_app/Models/UserData.dart';
 import 'package:flutter_app/Request/request.dart';
-
+import 'package:url_launcher/url_launcher.dart';
 class PersonDetail extends StatefulWidget {
   UserData userData;
   changeData(userData){
@@ -35,7 +35,6 @@ class _PersonDetail extends State<PersonDetail> {
 
   initControllerState() {
     _scrollController.addListener(() {
-      print(_scrollController.offset);
       if (!hasDisplayed && _scrollController.offset > 345) {
         hasDisplayed = true;
         setState(() {});
@@ -230,6 +229,16 @@ class _PersonDetail extends State<PersonDetail> {
                   Row(
                     children: <Widget>[
                       IconButton(
+                        onPressed: ()async{
+                          final number = "07482207000";
+                          final phoneUrl = 'tel:$number';
+                          if (await canLaunch(phoneUrl)) {
+                          await launch(phoneUrl);
+                          } else {
+                            print('Could not launch $phoneUrl');
+//                          throw 'Could not launch $phoneUrl';
+                          }
+                        },
                         icon: Icon(
                           Icons.phone,
                           color: Colors.white,
@@ -240,14 +249,43 @@ class _PersonDetail extends State<PersonDetail> {
                         icon: Icon(Icons.message,
                           color: Colors.white,),
                         color: Colors.white,
+                        onPressed: ()async{
+                          final number = "07482207000";
+                          final smsUrl = 'sms:$number';
+                          if (await canLaunch(smsUrl)) {
+                            await launch(smsUrl);
+                          } else {
+                            print('Could not launch $smsUrl');
+//                          throw 'Could not launch $phoneUrl';
+                          }
+                        },
                       ),
                       IconButton(
                         icon: Icon(Icons.public,color: Colors.white,),
                         color: Colors.white,
+                        onPressed: ()async{
+                          final Url = 'https://www.bilibili.com/bangumi/play/ss3408';
+                          if (await canLaunch(Url)) {
+                            await launch(Url);
+                          } else {
+                            print('Could not launch $Url');
+//                          throw 'Could not launch $phoneUrl';
+                          }
+                        },
                       ),
                       IconButton(
                         icon: Icon(Icons.email,color: Colors.white,),
                         color: Colors.white,
+                        onPressed: ()async{
+                          final email = 'zcabhaf@ucl.ac.uk';
+                          final Url = 'mailto:$email';
+                          if (await canLaunch(Url)) {
+                            await launch(Url);
+                          } else {
+                            print('Could not launch $Url');
+//                          throw 'Could not launch $phoneUrl';
+                          }
+                        },
                       )
                     ],
                   )

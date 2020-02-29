@@ -733,10 +733,11 @@ class _MyCards extends State<MyCards> with TickerProviderStateMixin {
         UserData userData = UserData.mapToUserData(response.data);
         print("mapped ${userData.userName}");
         PersonDetail personDetail = new PersonDetail(userData)..changeData(userData);
+        RequestCards.historyAdd(userData.id);
         final isPop = await Navigator.push(context, new FadeRoute(page: personDetail));
         if(isPop == "pop"){
           onRequest = false;
-          Navigator.pop(context);
+          Navigator.pop(context,userData);
         }else{
           onRequest = false;
           setState(() {

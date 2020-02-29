@@ -338,10 +338,14 @@ class _ScanQR extends State<ScanQR> {
             ));
         controller.resumeCamera();
       }else {
-        await Navigator.push(
+        final data = await Navigator.push(
           context,
           SlideRightRoute(page: MyCards()),
         );
+        if(data is UserData){
+          globalData.scanData = data;
+          Navigator.pop(context);
+        }
       }
   }
   @override

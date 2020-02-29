@@ -22,6 +22,7 @@ import '../Models/UserData.dart';
 import 'package:auto_size_text/auto_size_text.dart';
 //import 'package:swipedetector/swipedetector.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter/scheduler.dart';
 class UnityPage extends StatefulWidget {
   UnityPage({Key key, this.title,this.doNotInit=false}) : super(key: key);
@@ -628,6 +629,7 @@ class _UnityPage extends State<UnityPage> with WidgetsBindingObserver{
       WidgetsBinding.instance.removeObserver(this);
       await Navigator.push(context, SlideRightRoute(page: MyCards()));
       WidgetsBinding.instance.addObserver(this);
+      updateGender();
       setState(() {
 
       });
@@ -719,6 +721,7 @@ class _UnityPage extends State<UnityPage> with WidgetsBindingObserver{
     }
   }
   refreshPage(){
+    WidgetsBinding.instance.removeObserver(this);
     Navigator.push(context, FadeRoute(page: UnityPage(doNotInit: true,)));
   }
 
