@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:ui';
+import 'package:flutter_app/Models/ImageScannerWidget.dart';
 import 'package:flutter_app/Request/request.dart';
 import 'package:flutter_app/Screens/Login.dart';
 import 'package:http/http.dart' as http;
@@ -28,7 +29,7 @@ class ScanQR extends StatefulWidget {
   _ScanQR createState() => _ScanQR();
 }
 
-class _ScanQR extends State<ScanQR> {
+class _ScanQR extends State<ScanQR> with SingleTickerProviderStateMixin{
   final GlobalKey qrKey = GlobalKey(debugLabel: 'QR');
   var qrText = "";
   QRViewController controller;
@@ -36,17 +37,31 @@ class _ScanQR extends State<ScanQR> {
   GlobalData globalData;
   var fetchUserData;
   UserData userData;
+  AnimationController _animationController;
+  bool _animationStopped = false;
+  Animation<double> scaleAnimation;
   @override
   void initState() {
     super.initState();
+    _animationController = new AnimationController(
+        duration: new Duration(seconds: 2), vsync: this);
+    scaleAnimation = new Tween(
+      begin: 0.0,
+      end: 1.0,
+    ).animate(new CurvedAnimation(
+        parent: _animationController,
+        curve: Curves.easeInOut
+    ));
     globalData = GlobalData();
     if(!globalData.hasLogin){
       globalData.hasData = true;
     }
+    _animationController.repeat(reverse: true);
+//    _animationController.forward();
+//    animateScanAnimation(false);
   }
   @override
   Widget build(BuildContext context) {
-    print(context.toString());
     double _width = MediaQuery.of(context).size.width;
     double _height = MediaQuery.of(context).size.height;
     return Scaffold(
@@ -176,6 +191,11 @@ class _ScanQR extends State<ScanQR> {
                         ),
                       ),
                     )
+                ),
+                ImageScannerAnimation(
+                  false,
+                  _width*0.8,
+                  animation: scaleAnimation,
                 ),
               ],
             ),
@@ -353,5 +373,7 @@ class _ScanQR extends State<ScanQR> {
     super.dispose();
     controller?.dispose();
     globalData.qrViewController = null;
+    _animationController.dispose();
+
   }
 }
