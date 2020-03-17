@@ -102,4 +102,8 @@ class RequestCards{
     final response = await HttpUtils.post('${Config.baseURl}/profile/get?username=$name');
     return response;
   }
+  static Future<Response> logOutAll()async{
+    final response = await HttpUtils.post('${Config.baseURl}/user/logout-all',header:  {"Authorization":"Bearer ${globalData.token}"});
+    return response;
+  }
 }

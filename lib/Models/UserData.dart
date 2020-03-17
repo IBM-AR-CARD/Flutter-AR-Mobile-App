@@ -6,30 +6,22 @@ class UserData{
   static final MALE = 2;
   String _lastName;
   String _firstName;
-  String _description;
-  String _experience;
-  String _education;
+  String description;
+  String experience;
+  String education;
   String _profile;
-  int _gender;
+  int gender;
   String _userName;
   String _id;
-  String _model;
+  String model;
   bool _isFavourite = false;
+  String phoneNumber;
+  String website;
+  String email;
 
-  UserData( this._id,this._firstName,this._lastName, this._profile,this._userName,{String description, String experience,
-      String education,int gender,String model}){
-    _gender=gender;
-    _description=description;
-    _experience=experience;
-    _education=education;
-    _model = model;
-  }
+  UserData( this._id,this._firstName,this._lastName, this._profile,this._userName,{this.description, this.experience,
+      this.education,this.gender,this.model,this.phoneNumber,this.website,this.email});
 
-  String get model => _model;
-
-  set model(String value) {
-    _model = value;
-  }
 
   String get id => _id;
 
@@ -37,11 +29,6 @@ class UserData{
     _id = value;
   }
 
-  int get gender => _gender;
-
-  set gender(int value) {
-    _gender = value;
-  }
 
   String get userName => _userName;
 
@@ -62,23 +49,6 @@ class UserData{
     _isFavourite = value;
   }
 
-  String get education => _education;
-
-  set education(String value) {
-    _education = value;
-  }
-
-  String get experience => _experience;
-
-  set experience(String value) {
-    _experience = value;
-  }
-
-  String get description => _description;
-
-  set description(String value) {
-    _description = value;
-  }
 
   String get firstName => _firstName;
 
@@ -97,13 +67,15 @@ class UserData{
       'firstname':_firstName,
       'lastname':_lastName,
       'username':_userName,
-      'description':_description,
-      'experience':_experience,
-      'education':_education,
-      'gender':_gender,
+      'description':description,
+      'experience':experience,
+      'education':education,
+      'gender':gender,
       'profile':_profile,
-      'model':_model,
-      'isFav':_isFavourite
+      'model':model,
+      'isFav':_isFavourite,
+      "phone":phoneNumber,
+      "website":website,
     };
     _profile = _profile??"";
     var json = JsonEncoder();
@@ -122,6 +94,9 @@ class UserData{
           education: json['education'] ?? "",
           gender : json['gender']??0,
           model: json['model']??"",
+          phoneNumber:json['phone']??"",
+          website: json['website']??"",
+          email: json['email']??""
       );
       user.isFavourite = json['isFav']??false;
     return user;
@@ -135,6 +110,9 @@ class UserData{
       education: json['education'] ?? "",
       gender : json['gender']??0,
       model: json['model']??"",
+      phoneNumber:json['phone']??"",
+      website: json['website']??"",
+      email: json['email']??""
     );
     user.isFavourite = json['isFav']??false;
     return user;

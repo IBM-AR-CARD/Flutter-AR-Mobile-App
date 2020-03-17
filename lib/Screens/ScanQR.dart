@@ -38,7 +38,6 @@ class _ScanQR extends State<ScanQR> with SingleTickerProviderStateMixin{
   var fetchUserData;
   UserData userData;
   AnimationController _animationController;
-  bool _animationStopped = false;
   Animation<double> scaleAnimation;
   @override
   void initState() {
@@ -128,13 +127,18 @@ class _ScanQR extends State<ScanQR> with SingleTickerProviderStateMixin{
                                         ),
                                         recognizer: TapGestureRecognizer()
                                           ..onTap = ()async{
-                                          print('this is scan route context $context');
-                                          if(!globalData.hasData)return;
-                                          _find = true;
-                                          await setScannedUserData('${Config.baseURl}/profile/get?username=jonmcnamara');
-                                          print('pop');
-                                          Navigator.pop(context);
-                                          Navigator.pop(context);
+                                            print('this is scan route context $context');
+                                            if(!globalData.hasData)return;
+                                            _find = true;
+                                            await setScannedUserData('${Config.baseURl}/profile/get?username=jonmcnamara');
+                                            print('pop');
+//                                            Navigator.popUntil(context,ModalRoute.withName('/'));
+                                            Navigator.popUntil(context,(route){
+                                              print(route.settings.name);
+                                              return ModalRoute.withName('/')(route);
+                                            });
+//                                            Navigator.pop(context);
+//                                            Navigator.pop(context);
                                           }
                                       ),
                                       TextSpan(
@@ -221,11 +225,6 @@ class _ScanQR extends State<ScanQR> with SingleTickerProviderStateMixin{
       }
       if (!_find) {
         _find = true;
-        print(1);
-        ProgressDialog pr;
-        try {
-          pr = new ProgressDialog(context, isDismissible: false);
-          pr.show();
           if(scanData.startsWith("${Config.baseURl}/profile/get")){
             Vibration.vibrate(duration: 300);
             await setScannedUserData(scanData);
@@ -233,11 +232,13 @@ class _ScanQR extends State<ScanQR> with SingleTickerProviderStateMixin{
             Vibration.vibrate(duration: 300);
             await setScannedUserData('${Config.baseURl}/profile/get?username=jonmcnamara');
           }
-        }finally{
-          pr.hide();
-        }
-        Navigator.pop(context);
-        Navigator.pop(context);
+//        Navigator.pop(context);
+//        Navigator.pop(context);
+//        Navigator.popUntil(context,ModalRoute.withName('/'));
+        Navigator.popUntil(context,(route){
+          print(route.settings.name);
+          return ModalRoute.withName('/')(route);
+        });
 //        Navigator.popUntil(context, ModalRoute.withName('/'));
       }
     });
@@ -288,7 +289,6 @@ class _ScanQR extends State<ScanQR> with SingleTickerProviderStateMixin{
                   child: new Text("Close"),
                   onPressed: () {
                     Navigator.pop(context);
-                    pr.hide();
                   },
                 ),
               ],
@@ -370,10 +370,8 @@ class _ScanQR extends State<ScanQR> with SingleTickerProviderStateMixin{
   }
   @override
   void dispose() {
-    super.dispose();
     controller?.dispose();
-    globalData.qrViewController = null;
     _animationController.dispose();
-
+    super.dispose();
   }
 }

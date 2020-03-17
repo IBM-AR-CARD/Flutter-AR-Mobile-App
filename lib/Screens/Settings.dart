@@ -5,6 +5,7 @@ import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter_app/Models/Config.dart';
 import 'package:flutter_app/Models/SaveQR.dart';
 import 'package:flutter_app/Models/SlideRoute.dart';
+import 'package:flutter_app/Request/request.dart';
 import 'package:flutter_app/Screens/Login.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:swipedetector/swipedetector.dart';
@@ -40,7 +41,11 @@ class _Settings extends State<Settings> with WidgetsBindingObserver{
   final _educationController = TextEditingController();
   final _firstNameController = TextEditingController();
   final _lastNameController = TextEditingController();
+  final _phoneController = TextEditingController();
+  final _websiteController = TextEditingController();
   String _firstName;
+  String _phoneNumber;
+  String _website;
   int _gender = PERFER_NOT_TO_SAY;
   String _lastName;
   String _userName;
@@ -57,7 +62,7 @@ class _Settings extends State<Settings> with WidgetsBindingObserver{
     }
     return true;
   }
-  initUserData() async {
+  initUserData()  {
     userData = widget.globalData.userData;
     _profile = (userData.profile)??"";
     _firstName = userData.firstName;
@@ -65,8 +70,11 @@ class _Settings extends State<Settings> with WidgetsBindingObserver{
     _userName = userData.userName;
     _gender = userData.gender;
     _model = userData.model;
+    _phoneNumber = userData.phoneNumber;
+    _website = userData.website;
 
-
+    _phoneController.text = _phoneNumber;
+    _websiteController.text = _website;
     _descriptionController.text = userData.description;
     _educationController.text = userData.education;
     _workExperiencesController.text = userData.experience;
@@ -84,6 +92,8 @@ class _Settings extends State<Settings> with WidgetsBindingObserver{
     _educationController.dispose();
     _firstNameController.dispose();
     _lastNameController.dispose();
+    _phoneController.dispose();
+    _websiteController.dispose();
   }
 
   ProgressDialog pr;
@@ -432,6 +442,28 @@ class _Settings extends State<Settings> with WidgetsBindingObserver{
                       Padding(
                         padding: EdgeInsets.only(top: 40),
                         child: ProfileTextEditor(
+                            Text(
+                              'Phone Number',
+                              style: TextStyle(fontSize: 24, color: Colors.white),
+                            ),
+                            ProfileTextEditor.TEXTBOX,
+                            _websiteController,
+                            hint: 'Number will be visible for others to contact'),
+                      ),
+                      Padding(
+                        padding: EdgeInsets.only(top: 40),
+                        child: ProfileTextEditor(
+                            Text(
+                              'Website',
+                              style: TextStyle(fontSize: 24, color: Colors.white),
+                            ),
+                            ProfileTextEditor.TEXTBOX,
+                            _phoneController,
+                            hint: 'Linkedin/Facebook/Github/Pornhub or others'),
+                      ),
+                      Padding(
+                        padding: EdgeInsets.only(top: 40),
+                        child: ProfileTextEditor(
                           Text(
                             'Model',
                             style: TextStyle(fontSize: 30, color: Colors.white),
@@ -536,6 +568,7 @@ class _Settings extends State<Settings> with WidgetsBindingObserver{
                       Padding(
                           padding: EdgeInsets.only(top: 25),
                           child: FlatButton(
+                              onPressed: onLogOut,
                               child: Container(
                                 decoration: BoxDecoration(
                                   color: Color.fromARGB(255, 61, 63, 83),
@@ -546,16 +579,16 @@ class _Settings extends State<Settings> with WidgetsBindingObserver{
                                 height: 40,
                                 child: Center(
                                     child: Text(
-                                      'Open',
+                                      'Logout',
                                       style: TextStyle(color: Colors.white, fontSize: 15),
                                     )),
                               ))),
                       Padding(
                         padding: EdgeInsets.only(top: 6, bottom: 80),
                         child: FlatButton(
-                          onPressed: onLogOut,
+                          onPressed: onLogOutAll,
                           child: Text(
-                            'Logout LinkedIn',
+                            'Logout All',
                             style: TextStyle(color: Colors.white, fontSize: 12),
                           ),
                         ),
@@ -640,6 +673,8 @@ class _Settings extends State<Settings> with WidgetsBindingObserver{
     }
 
     widget.globalData.userData = userData;
+    userData.website = _websiteController.text;
+    userData.phoneNumber = _phoneController.text;
     userData.experience = _workExperiencesController.text;
     userData.gender = _gender;
     userData.education = _educationController.text;
@@ -686,9 +721,6 @@ class _Settings extends State<Settings> with WidgetsBindingObserver{
     }
   }
 
-  contentOnExit() {
-    return;
-  }
   onLogOut()async{
     if(await showDialog(
       context: context,
@@ -699,7 +731,6 @@ class _Settings extends State<Settings> with WidgetsBindingObserver{
           new FlatButton(
               child: new Text("Log out"),
               onPressed: () {
-                contentOnExit();
                 Navigator.of(context).pop(true);
               }),
           new FlatButton(
@@ -721,7 +752,38 @@ class _Settings extends State<Settings> with WidgetsBindingObserver{
       Navigator.pushReplacement(context, FadeRoute(page: Login()));
     }
   }
-
+  onLogOutAll()async{
+    if(await showDialog(
+      context: context,
+      builder: (context) => new AlertDialog(
+        title: new Text('Are you sure?'),
+        content: new Text('Do you want log out of all devices?'),
+        actions: <Widget>[
+          new FlatButton(
+              child: new Text("Log out"),
+              onPressed: () {
+                Navigator.of(context).pop(true);
+              }),
+          new FlatButton(
+              child: new Text("Cancel"),
+              onPressed: () {
+                Navigator.of(context).pop(false);
+              }),
+        ],
+      ),
+    ) ??
+        false){
+      await RequestCards.logOutAll();
+      globalData.clearData();
+      SharedPreferences preferences = await SharedPreferences.getInstance();
+      await preferences.setString('E-MAIL','');
+      await preferences.setString('PASSWORD', '');
+      await  preferences.setBool('hasLogin',false);
+      globalData.hasLogin = false;
+      globalData.wantLogin = true;
+      Navigator.pushReplacement(context, FadeRoute(page: Login()));
+    }
+  }
   Future<bool> _onLeaving() async {
     if(!hasChangedContent()){
       return true;
@@ -736,7 +798,6 @@ class _Settings extends State<Settings> with WidgetsBindingObserver{
               new FlatButton(
                   child: new Text("Discard"),
                   onPressed: () {
-                    contentOnExit();
                     Navigator.of(context).pop(true);
                   }),
               new FlatButton(

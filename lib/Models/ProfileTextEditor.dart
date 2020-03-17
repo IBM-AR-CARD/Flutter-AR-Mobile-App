@@ -51,10 +51,14 @@ class _ProfileTextEditor extends State<ProfileTextEditor> {
   Widget build(context) {
     int maxLines;
     int minLines = 4;
-    if(widget._hint != null && (widget._hint == 'your first name' || widget._hint == 'your Last name')){
+    if(widget._hint != null && (widget._hint == 'your first name' || widget._hint == 'your Last name' || widget._hint == 'Number will be visible for others to contact')){
       maxLines = 1;
       minLines = 1;
+    }else if (widget._hint != null && (widget._hint == 'Linkedin/Facebook/Github/Pornhub or others')){
+      maxLines = 2;
+      minLines = 1;
     }
+
     Widget box;
     if (widget._type == TEXTBOX) {
       box = new Padding(

@@ -230,7 +230,11 @@ class _PersonDetail extends State<PersonDetail> {
                     children: <Widget>[
                       IconButton(
                         onPressed: ()async{
-                          final number = "07482207000";
+
+                          final number = userData.phoneNumber;
+                          if(number == null || number==''){
+                            return;
+                          }
                           final phoneUrl = 'tel:$number';
                           if (await canLaunch(phoneUrl)) {
                           await launch(phoneUrl);
@@ -250,7 +254,10 @@ class _PersonDetail extends State<PersonDetail> {
                           color: Colors.white,),
                         color: Colors.white,
                         onPressed: ()async{
-                          final number = "07482207000";
+                          final number = userData.phoneNumber;
+                          if(number == null || number==''){
+                            return;
+                          }
                           final smsUrl = 'sms:$number';
                           if (await canLaunch(smsUrl)) {
                             await launch(smsUrl);
@@ -264,7 +271,10 @@ class _PersonDetail extends State<PersonDetail> {
                         icon: Icon(Icons.public,color: Colors.white,),
                         color: Colors.white,
                         onPressed: ()async{
-                          final Url = 'https://www.bilibili.com/bangumi/play/ss3408';
+                          final Url = userData.website;
+                          if(Url == null || Url==''){
+                            return;
+                          }
                           if (await canLaunch(Url)) {
                             await launch(Url);
                           } else {
@@ -277,7 +287,10 @@ class _PersonDetail extends State<PersonDetail> {
                         icon: Icon(Icons.email,color: Colors.white,),
                         color: Colors.white,
                         onPressed: ()async{
-                          final email = 'zcabhaf@ucl.ac.uk';
+                          final email = userData.email;
+                          if(email == null || email==''){
+                            return;
+                          }
                           final Url = 'mailto:$email';
                           if (await canLaunch(Url)) {
                             await launch(Url);
