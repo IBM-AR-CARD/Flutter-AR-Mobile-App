@@ -341,7 +341,7 @@ class _UnityPage extends State<UnityPage> with WidgetsBindingObserver{
     print('Received message from unity: ${message.toString()}');
     if (message == '#tracked#' && !_tracked) {
       _tracked = true;
-      talk("Nice to meet you, I am " +
+      if (!this.widget.doNotInit)  talk("Nice to meet you, I am " +
           globalData.scanData.firstName +
           ', please click the mic icon to ask any questions.');
     }
@@ -698,7 +698,7 @@ class _UnityPage extends State<UnityPage> with WidgetsBindingObserver{
     }));
 //    await Navigator.push(context, FadeRoute(page: ScanQR()));
     await _unityWidgetController.resume();
-    refreshPage();
+//    refreshPage();
 //    Navigator.pop(context, 'ScanQR');
   }
   navigateToSetting()async{
@@ -719,7 +719,7 @@ class _UnityPage extends State<UnityPage> with WidgetsBindingObserver{
       await _unityWidgetController.resume();
       refreshPage();
       updateGender();
-      setMessage("changeCharacter", globalData.scanData.model);
+//      setMessage("changeCharacter", globalData.scanData.model);
 //      Navigator.pop(context, 'Unity');
     }
   }
