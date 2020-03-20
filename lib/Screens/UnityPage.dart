@@ -673,7 +673,7 @@ class _UnityPage extends State<UnityPage> with WidgetsBindingObserver{
   navigateToMyCards()async{
     if (!globalData.hasLogin){
       globalData.wantLogin = true;
-      globalData.tracked = false;
+//      globalData.tracked = false;
       await _unityWidgetController.pause();
       WidgetsBinding.instance.removeObserver(this);
       await Navigator.push(
@@ -760,7 +760,7 @@ class _UnityPage extends State<UnityPage> with WidgetsBindingObserver{
   }
   navigateToSetting()async{
     if (!globalData.hasLogin){
-      globalData.tracked = false;
+//      globalData.tracked = false;
       globalData.wantLogin = true;
       await _unityWidgetController.pause();
       WidgetsBinding.instance.removeObserver(this);
