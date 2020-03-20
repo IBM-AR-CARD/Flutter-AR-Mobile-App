@@ -772,6 +772,7 @@ class _UnityPage extends State<UnityPage> with WidgetsBindingObserver{
       await _unityWidgetController.resume();
     }else{
       await _unityWidgetController.pause();
+      WidgetsBinding.instance.removeObserver(this);
       await Navigator.push(context, SlideLeftRoute(page: Settings()));
       await _unityWidgetController.resume();
       refreshPage();
