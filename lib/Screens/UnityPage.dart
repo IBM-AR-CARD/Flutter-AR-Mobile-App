@@ -184,13 +184,13 @@ class _UnityPage extends State<UnityPage> with WidgetsBindingObserver{
       if(result.startsWith('**') && result.endsWith('**')){
         switch (result){
           case '**email**':
-            toEmail();
+            await toEmail();
             break;
           case '**phone**':
-            toPhone();
+            await toPhone();
             break;
           case '**website**':
-            toWebsite();
+            await toWebsite();
             break;
           default:
             await talk(result);
