@@ -140,13 +140,64 @@ class _UnityPage extends State<UnityPage> with WidgetsBindingObserver{
     bubbleScrollController.animateTo(0.0,
         duration: Duration(milliseconds: 200), curve: Curves.easeIn);
   }
-
+  toPhone()async{
+    final number = userData.phoneNumber;
+    if(number == null || number==''){
+      return;
+    }
+    final phoneUrl = 'tel:$number';
+    if (await canLaunch(phoneUrl)) {
+    await launch(phoneUrl);
+    } else {
+    print('Could not launch $phoneUrl');
+    }
+  }
+  toEmail()async{
+    final email = userData.email;
+    if(email == null || email==''){
+      return;
+    }
+    final Url = 'mailto:$email';
+    if (await canLaunch(Url)) {
+      await launch(Url);
+    } else {
+      print('Could not launch $Url');
+    }
+  }
+  toWebsite()async{
+    final Url = userData.website;
+    if(Url == null || Url==''){
+      return;
+    }
+    if (await canLaunch(Url)) {
+      await launch(Url);
+    } else {
+      print('Could not launch $Url');
+//                          throw 'Could not launch $phoneUrl';
+    }
+  }
   speak() async {
 //    UserData userData = GlobalData().scanData;
 //    String text = lastWords.toLowerCase();
     final result = await getVoiceContent();
     if(result!= null && result != ''){
-      await talk(result);
+      if(result.startsWith('**') && result.endsWith('**')){
+        switch (result){
+          case '**email**':
+            toEmail();
+            break;
+          case '**phone**':
+            toPhone();
+            break;
+          case '**website**':
+            toWebsite();
+            break;
+          default:
+            await talk(result);
+        }
+      }else{
+        await talk(result);
+      }
     }
   }
   Future<String> getVoiceContent()async{
