@@ -149,6 +149,7 @@ class _UnityPage extends State<UnityPage> with WidgetsBindingObserver{
     final phoneUrl = 'tel:$number';
     if (await canLaunch(phoneUrl)) {
     await launch(phoneUrl);
+    refreshPage();
     } else {
     print('Could not launch $phoneUrl');
     }
@@ -162,6 +163,7 @@ class _UnityPage extends State<UnityPage> with WidgetsBindingObserver{
     final Url = 'mailto:$email';
     if (await canLaunch(Url)) {
       await launch(Url);
+      refreshPage();
     } else {
       print('Could not launch $Url');
     }
@@ -174,6 +176,7 @@ class _UnityPage extends State<UnityPage> with WidgetsBindingObserver{
     }
     if (await canLaunch(Url)) {
       await launch(Url);
+      refreshPage();
     } else {
       print('Could not launch $Url');
 //                          throw 'Could not launch $phoneUrl';
