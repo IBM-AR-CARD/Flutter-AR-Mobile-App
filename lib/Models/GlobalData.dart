@@ -23,6 +23,7 @@ class GlobalData {
   set currentState(CameraState value) {
     _currentState = value;
   }
+  bool tracked = false;
   bool _firstTime = false;
   List<BubblePair> bubbleMap = new List();
   bool get firstTime => _firstTime;

@@ -47,7 +47,6 @@ class _UnityPage extends State<UnityPage> with WidgetsBindingObserver{
   var fetchUserData;
   final SpeechToText speech = SpeechToText();
   final FlutterTts flutterTts = FlutterTts();
-  bool _tracked = false;
   UserData userData;
   bool onFavouriteRequest = false;
   bool _hasExtend = false;
@@ -370,7 +369,7 @@ class _UnityPage extends State<UnityPage> with WidgetsBindingObserver{
                   AnimatedSwitcher(
                     duration: Duration(milliseconds: 500),
 //                  opacity:_tracked || _hasExtend ? 0 : 1 ,
-                    child: _tracked || _hasExtend ? SizedBox.shrink() : flipHint(),
+                    child: globalData.tracked || _hasExtend ? SizedBox.shrink() : flipHint(),
                   )
                 ],
 //              ),
@@ -397,8 +396,8 @@ class _UnityPage extends State<UnityPage> with WidgetsBindingObserver{
 
   void onUnityMessage(controller, message) {
     print('Received message from unity: ${message.toString()}');
-    if (message == '#tracked#' && !_tracked) {
-      _tracked = true;
+    if (message == '#tracked#' && !globalData.tracked) {
+      globalData.tracked = true;
       if (!this.widget.doNotInit)  talk("Nice to meet you, I am " +
           globalData.scanData.firstName +
           ', please click the mic icon to ask any questions.');
@@ -674,7 +673,7 @@ class _UnityPage extends State<UnityPage> with WidgetsBindingObserver{
   navigateToMyCards()async{
     if (!globalData.hasLogin){
       globalData.wantLogin = true;
-      _tracked = false;
+      globalData.tracked = false;
       await _unityWidgetController.pause();
       WidgetsBinding.instance.removeObserver(this);
       await Navigator.push(
@@ -748,7 +747,7 @@ class _UnityPage extends State<UnityPage> with WidgetsBindingObserver{
     }
   }
   navigateToScan() async {
-    _tracked = false;
+    globalData.tracked = false;
     WidgetsBinding.instance.removeObserver(this);
     await _unityWidgetController.pause();
     await Navigator.push(context, MaterialPageRoute(builder:(context){
@@ -760,7 +759,7 @@ class _UnityPage extends State<UnityPage> with WidgetsBindingObserver{
 //    Navigator.pop(context, 'ScanQR');
   }
   navigateToSetting()async{
-    _tracked = false;
+    globalData.tracked = false;
     if (!globalData.hasLogin){
       globalData.wantLogin = true;
       await _unityWidgetController.pause();
