@@ -141,7 +141,8 @@ class _UnityPage extends State<UnityPage> with WidgetsBindingObserver{
         duration: Duration(milliseconds: 200), curve: Curves.easeIn);
   }
   toPhone()async{
-    final number = userData.phoneNumber;
+    UserData scanData = GlobalData().scanData;
+    final number = scanData.phoneNumber;
     if(number == null || number==''){
       return;
     }
@@ -153,7 +154,8 @@ class _UnityPage extends State<UnityPage> with WidgetsBindingObserver{
     }
   }
   toEmail()async{
-    final email = userData.email;
+    UserData scanData = GlobalData().scanData;
+    final email = scanData.email;
     if(email == null || email==''){
       return;
     }
@@ -165,7 +167,8 @@ class _UnityPage extends State<UnityPage> with WidgetsBindingObserver{
     }
   }
   toWebsite()async{
-    final Url = userData.website;
+    UserData scanData = GlobalData().scanData;
+    final Url = scanData.website;
     if(Url == null || Url==''){
       return;
     }
