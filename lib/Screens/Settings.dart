@@ -447,7 +447,7 @@ class _Settings extends State<Settings> with WidgetsBindingObserver{
                               style: TextStyle(fontSize: 24, color: Colors.white),
                             ),
                             ProfileTextEditor.TEXTBOX,
-                            _websiteController,
+                            _phoneController,
                             hint: 'Number will be visible for others to contact'),
                       ),
                       Padding(
@@ -458,7 +458,7 @@ class _Settings extends State<Settings> with WidgetsBindingObserver{
                               style: TextStyle(fontSize: 24, color: Colors.white),
                             ),
                             ProfileTextEditor.TEXTBOX,
-                            _phoneController,
+                            _websiteController,
                             hint: 'Linkedin/Facebook/Github/Pornhub or others'),
                       ),
                       Padding(

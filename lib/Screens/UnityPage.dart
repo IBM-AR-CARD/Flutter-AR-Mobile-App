@@ -759,8 +759,8 @@ class _UnityPage extends State<UnityPage> with WidgetsBindingObserver{
 //    Navigator.pop(context, 'ScanQR');
   }
   navigateToSetting()async{
-    globalData.tracked = false;
     if (!globalData.hasLogin){
+      globalData.tracked = false;
       globalData.wantLogin = true;
       await _unityWidgetController.pause();
       WidgetsBinding.instance.removeObserver(this);
