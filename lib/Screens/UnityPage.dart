@@ -40,7 +40,7 @@ class _UnityPage extends State<UnityPage> with WidgetsBindingObserver{
   final double CHAT_EXTEND_HEIGHT = 550;
   UnityWidgetController _unityWidgetController;
   final ScrollController bubbleScrollController = ScrollController();
-  List<BubblePair> bubbleMap = new List();
+  List<BubblePair> bubbleMap;
   String lastWords = "";
   String lastStatus = "";
   bool _isTalking = false;
@@ -63,6 +63,7 @@ class _UnityPage extends State<UnityPage> with WidgetsBindingObserver{
     flutterTts.setLanguage("en-US");
     initSpeechState();
     initFlutterTTS();
+    bubbleMap = globalData.bubbleMap;
   }
   initSchedule(){
     SchedulerBinding.instance.addPostFrameCallback((_) async{

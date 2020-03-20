@@ -1,6 +1,7 @@
 import 'package:flutter_app/Models/UserData.dart';
 import 'package:flutter_unity_widget/flutter_unity_widget.dart';
 import 'package:qr_code_scanner/qr_code_scanner.dart';
+import '../Models/BubblePair.dart';
 enum CameraState{
   QRViewOpen,
   UnityViewOpen,
@@ -23,7 +24,7 @@ class GlobalData {
     _currentState = value;
   }
   bool _firstTime = false;
-
+  List<BubblePair> bubbleMap = new List();
   bool get firstTime => _firstTime;
 
   set firstTime(bool value) {
