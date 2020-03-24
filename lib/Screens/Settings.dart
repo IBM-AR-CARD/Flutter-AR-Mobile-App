@@ -343,17 +343,12 @@ class _Settings extends State<Settings> with WidgetsBindingObserver{
                                   ),
                                   Row(
                                     children: <Widget>[
-                                      SvgPicture.asset(
-                                        'assets/images/small_linkdin_logo.svg',
-                                        width: 20,
-                                        height: 20,
-                                      ),
                                       Padding(
-                                        padding: EdgeInsets.only(left: 5),
+                                        padding: EdgeInsets.only(left: 0),
                                         child: SizedBox(
                                           width: _width * 0.3,
                                           child: AutoSizeText(
-                                            _userName??"null",
+                                            "@$_userName",
                                             style: TextStyle(
                                               color: Colors.white,
                                             ),

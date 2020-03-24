@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_app/Models/GlobalData.dart';
 import 'package:flutter_app/Request/request.dart';
 import 'package:flutter_app/Screens/Login.dart';
+import 'package:flutter_app/Screens/PersonDetail.dart';
 import '../Screens/MyCards.dart';
 import '../Screens/ScanQR.dart';
 import '../Models/SlideRoute.dart';
@@ -20,12 +21,12 @@ import 'package:icon_shadow/icon_shadow.dart';
 import 'package:flutter/foundation.dart';
 import '../Models/UserData.dart';
 import 'package:auto_size_text/auto_size_text.dart';
-//import 'package:swipedetector/swipedetector.dart';
-import 'package:permission_handler/permission_handler.dart';
+//import 'package:swipedetector/swipedetector.dart';;
 import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter/scheduler.dart';
+
 class UnityPage extends StatefulWidget {
-  UnityPage({Key key, this.title,this.doNotInit=false}) : super(key: key);
+  UnityPage({Key key, this.title, this.doNotInit = false}) : super(key: key);
   final String title;
   final bool doNotInit;
 
@@ -33,7 +34,7 @@ class UnityPage extends StatefulWidget {
   _UnityPage createState() => _UnityPage();
 }
 
-class _UnityPage extends State<UnityPage> with WidgetsBindingObserver{
+class _UnityPage extends State<UnityPage> with WidgetsBindingObserver {
   GlobalData globalData;
   String currentLocal;
   final double CHAT_ORIGIN_HEIGHT = 150;
@@ -64,9 +65,10 @@ class _UnityPage extends State<UnityPage> with WidgetsBindingObserver{
     initFlutterTTS();
     bubbleMap = globalData.bubbleMap;
   }
-  initSchedule(){
-    SchedulerBinding.instance.addPostFrameCallback((_) async{
-      if(widget.doNotInit){
+
+  initSchedule() {
+    SchedulerBinding.instance.addPostFrameCallback((_) async {
+      if (widget.doNotInit) {
         updateGender();
         return;
       }
@@ -97,17 +99,19 @@ class _UnityPage extends State<UnityPage> with WidgetsBindingObserver{
     setMessage('changeAnimator', "idle");
     setState(() {});
   }
+
   @override
-  void didChangeAppLifecycleState(AppLifecycleState state)async {
+  void didChangeAppLifecycleState(AppLifecycleState state) async {
     super.didChangeAppLifecycleState(state);
     print('state = $state');
-    if(state == AppLifecycleState.inactive){
+    if (state == AppLifecycleState.inactive) {
       _unityWidgetController.pause();
-    }else if(state == AppLifecycleState.resumed){
+    } else if (state == AppLifecycleState.resumed) {
       _unityWidgetController.resume();
       refreshPage();
     }
   }
+
   initLocal() async {
     List<LocaleName> locales = await speech.locales();
     bool hasen_US = false;
@@ -127,8 +131,7 @@ class _UnityPage extends State<UnityPage> with WidgetsBindingObserver{
     bool hasSpeech = await speech.initialize(onStatus: statusListener);
     await initLocal();
     if (!mounted) return;
-    setState(() {
-    });
+    setState(() {});
   }
 
   talk(String text) async {
@@ -140,24 +143,26 @@ class _UnityPage extends State<UnityPage> with WidgetsBindingObserver{
     bubbleScrollController.animateTo(0.0,
         duration: Duration(milliseconds: 200), curve: Curves.easeIn);
   }
-  toPhone()async{
+
+  toPhone() async {
     UserData scanData = GlobalData().scanData;
     final number = scanData.phoneNumber;
-    if(number == null || number==''){
+    if (number == null || number == '') {
       return;
     }
     final phoneUrl = 'tel:$number';
     if (await canLaunch(phoneUrl)) {
-    await launch(phoneUrl);
-    refreshPage();
+      await launch(phoneUrl);
+      refreshPage();
     } else {
-    print('Could not launch $phoneUrl');
+      print('Could not launch $phoneUrl');
     }
   }
-  toEmail()async{
+
+  toEmail() async {
     UserData scanData = GlobalData().scanData;
     final email = scanData.email;
-    if(email == null || email==''){
+    if (email == null || email == '') {
       return;
     }
     final Url = 'mailto:$email';
@@ -168,10 +173,11 @@ class _UnityPage extends State<UnityPage> with WidgetsBindingObserver{
       print('Could not launch $Url');
     }
   }
-  toWebsite()async{
+
+  toWebsite() async {
     UserData scanData = GlobalData().scanData;
     final Url = scanData.website;
-    if(Url == null || Url==''){
+    if (Url == null || Url == '') {
       return;
     }
     if (await canLaunch(Url)) {
@@ -182,13 +188,14 @@ class _UnityPage extends State<UnityPage> with WidgetsBindingObserver{
 //                          throw 'Could not launch $phoneUrl';
     }
   }
+
   speak() async {
 //    UserData userData = GlobalData().scanData;
 //    String text = lastWords.toLowerCase();
     final result = await getVoiceContent();
-    if(result!= null && result != ''){
-      if(result.startsWith('**') && result.endsWith('**')){
-        switch (result){
+    if (result != null && result != '') {
+      if (result.startsWith('**') && result.endsWith('**')) {
+        switch (result) {
           case '**email**':
             await toEmail();
             break;
@@ -201,27 +208,29 @@ class _UnityPage extends State<UnityPage> with WidgetsBindingObserver{
           default:
             await talk(result);
         }
-      }else{
+      } else {
         await talk(result);
       }
     }
   }
-  Future<String> getVoiceContent()async{
+
+  Future<String> getVoiceContent() async {
     UserData scanData = GlobalData().scanData;
     UserData userData = GlobalData().userData;
     String text = lastWords.toLowerCase();
     JsonDecoder jsonDecoder = JsonDecoder();
-    try{
-      final response = await RequestCards.getWatsonContent(scanData.id, (userData?.userName)??"", text);
-      if(response.statusCode == 200){
+    try {
+      final response = await RequestCards.getWatsonContent(
+          scanData.id, (userData?.userName) ?? "", text);
+      if (response.statusCode == 200) {
         final result = (response.data);
         print(result);
         print(result['answer']);
         return result['answer'];
-      }else{
+      } else {
         throw Exception('');
       }
-    }catch(err){
+    } catch (err) {
       print(err);
       await showDialog(
           context: context,
@@ -338,51 +347,50 @@ class _UnityPage extends State<UnityPage> with WidgetsBindingObserver{
   Widget build(BuildContext context) {
     return Scaffold(
         body: WillPopScope(
-        child:SafeArea(
+          child: SafeArea(
 //            child: SwipeDetector(
 //              onSwipeLeft: isCamera?navigateToSetting:(){},
 //              onSwipeRight: isCamera?navigateToMyCards:(){},
 
               child: Stack(
-                children: <Widget>[
-                  BackdropFilter(
-                    filter: ImageFilter.blur(
-                        sigmaX: _hasExtend ? 0 : 5, sigmaY: _hasExtend ? 0 : 5),
-                  ),
-
-                  Positioned.fill(
-                    child: AnimatedOpacity(
-                        opacity: _hasExtend ? 1 : 0,
-                        duration: Duration(milliseconds: 500),
-                        child: BackdropFilter(
-                          filter: ImageFilter.blur(sigmaY: 20, sigmaX: 20),
-                          child: Container(
-                            color: Colors.black.withOpacity(0.3),
-                          ),
-                        )),
-                  ),
-                  UnityWidget(
-                      onUnityViewCreated: onUnityCreated,
-                      isARScene: true,
-                      onUnityMessage: onUnityMessage),
-                  bubbleChatBoard(context),
-                  AnimatedSwitcher(
+            children: <Widget>[
+              UnityWidget(
+                  onUnityViewCreated: onUnityCreated,
+                  isARScene: true,
+                  onUnityMessage: onUnityMessage),
+              BackdropFilter(
+                filter: ImageFilter.blur(
+                    sigmaX: _hasExtend ? 0 : 5, sigmaY: _hasExtend ? 0 : 5),
+              ),
+              Positioned.fill(
+                child: AnimatedOpacity(
+                    opacity: _hasExtend ? 1 : 0,
                     duration: Duration(milliseconds: 500),
+                    child: BackdropFilter(
+                      filter: ImageFilter.blur(sigmaY: 20, sigmaX: 20),
+                      child: Container(
+                        color: Colors.black.withOpacity(0.3),
+                      ),
+                    )),
+              ),
+              bubbleChatBoard(context),
+              AnimatedSwitcher(
+                duration: Duration(milliseconds: 500),
 //                  opacity:_tracked || _hasExtend ? 0 : 1 ,
-                    child: globalData.tracked || _hasExtend ? SizedBox.shrink() : flipHint(),
-                  )
-                ],
+                child: globalData.tracked || _hasExtend
+                    ? SizedBox.shrink()
+                    : flipHint(),
+              )
+            ],
 //              ),
-            )
-    ),
-          onWillPop: ()async{
-          navigateToScan();
-          return false;
+          )),
+          onWillPop: () async {
+            navigateToScan();
+            return false;
           },
         ),
         floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-        floatingActionButton: bottomRow()
-    );
+        floatingActionButton: bottomRow());
   }
 
   void setMessage(String function, String msg) {
@@ -398,9 +406,10 @@ class _UnityPage extends State<UnityPage> with WidgetsBindingObserver{
     print('Received message from unity: ${message.toString()}');
     if (message == '#tracked#' && !globalData.tracked) {
       globalData.tracked = true;
-      if (!this.widget.doNotInit)  talk("Nice to meet you, I am " +
-          globalData.scanData.firstName +
-          ', please click the mic icon to ask any questions.');
+      if (!this.widget.doNotInit)
+        talk("Nice to meet you, I am " +
+            globalData.scanData.firstName +
+            ', please click the mic icon to ask any questions.');
     }
     setState(() {});
   }
@@ -470,141 +479,173 @@ class _UnityPage extends State<UnityPage> with WidgetsBindingObserver{
       child: Column(
         children: <Widget>[
           Container(
-            decoration: BoxDecoration(
-              gradient: new LinearGradient(
-                begin: Alignment.bottomCenter,
-                end: Alignment.topCenter,
-                stops: [0, 1.0],
-                colors: [Colors.transparent, Color.fromARGB(230, 10, 10, 10)],
+              decoration: BoxDecoration(
+                gradient: new LinearGradient(
+                  begin: Alignment.bottomCenter,
+                  end: Alignment.topCenter,
+                  stops: [0.0, 1.0],
+                  colors: [Colors.transparent, Color.fromARGB(230, 10, 10, 10)],
+                ),
               ),
-            ),
-            height: _height * 0.15,
-            width: _width,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: <Widget>[
-                Align(
-                  alignment: Alignment.centerLeft,
-                  child: Padding(
-                    padding: EdgeInsets.only(left: 30),
-                    child: Row(
+              height: _height * 0.15,
+              width: _width,
+              child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: <Widget>[
-                        GestureDetector(
-                        onTap: _switchScene,
-                          child: SizedBox(
-                            child: ClipRRect(
-                              borderRadius: new BorderRadius.all(
-                                  const Radius.circular(40.0)),
-                              child: FadeInImage(
-                                image: NetworkImage(_avatar),
-                                placeholder: AssetImage(
-                                    'assets/images/unknown-avatar.jpg'),
-                              ),
+                        Align(
+                          alignment: Alignment.centerLeft,
+                          child: Padding(
+                            padding: EdgeInsets.only(left: 30),
+                            child: Row(
+                              children: <Widget>[
+                                GestureDetector(
+                                  onTap: toProfile,
+                                  child: SizedBox(
+                                    child: ClipRRect(
+                                      borderRadius: new BorderRadius.all(
+                                          const Radius.circular(40.0)),
+                                      child: FadeInImage(
+                                        image: NetworkImage(_avatar),
+                                        placeholder: AssetImage(
+                                            'assets/images/unknown-avatar.jpg'),
+                                      ),
+                                    ),
+                                    height: 60.0,
+                                    width: 60.0,
+                                  ),
+                                ),
+                                Padding(
+                                  padding: EdgeInsets.only(left: 10),
+                                  child: Column(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.center,
+                                      children: <Widget>[
+                                        SizedBox(
+                                          width: _width * 0.4,
+                                          child: AutoSizeText(
+                                            _firstName.toString() +
+                                                " " +
+                                                _lastName.toString(),
+                                            style: TextStyle(
+                                                color: Colors.white,
+                                                fontWeight: FontWeight.bold,
+                                                fontSize: 40),
+                                            minFontSize: 20,
+                                            maxFontSize: 25,
+                                            maxLines: 1,
+                                            overflow: TextOverflow.ellipsis,
+                                          ),
+                                        ),
+                                        SizedBox(
+                                          width: _width * 0.4,
+                                          child: AutoSizeText(
+                                            _username,
+                                            style: TextStyle(
+                                                color: Colors.white,
+                                                fontWeight: FontWeight.bold,
+                                                fontSize: 40),
+                                            minFontSize: 10,
+                                            maxFontSize: 15,
+                                            maxLines: 1,
+                                            overflow: TextOverflow.ellipsis,
+                                          ),
+                                        ),
+                                      ]),
+                                )
+                              ],
                             ),
-                            height: 60.0,
-                            width: 60.0,
                           ),
                         ),
                         Padding(
-                          padding: EdgeInsets.only(left: 10),
-                          child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              children: <Widget>[
-                                SizedBox(
-                                  width: _width * 0.4,
-                                  child: AutoSizeText(
-                                    _firstName.toString() +
-                                        " " +
-                                        _lastName.toString(),
-                                    style: TextStyle(
-                                        color: Colors.white,
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 40),
-                                    minFontSize: 20,
-                                    maxFontSize: 25,
-                                    maxLines: 1,
-                                    overflow: TextOverflow.ellipsis,
+                          padding: EdgeInsets.only(right: 0),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.end,
+//                      crossAxisAlignment:CrossAxisAlignment.end,
+                            children: <Widget>[
+                              globalData.hasLogin
+                                  ? IconButton(
+                                      splashColor: Colors.transparent,
+                                      highlightColor: Colors.transparent,
+                                      icon: IconShadowWidget(
+                                        Icon(
+                                          Icons.favorite,
+                                          size: 30,
+                                          color: isFavourite
+                                              ? Color.fromRGBO(15, 232, 149, 1)
+                                              : Colors.white,
+                                        ),
+                                        shadowColor:
+                                            Colors.greenAccent.shade200,
+                                        showShadow: isFavourite,
+                                      ),
+                                      onPressed: _onFavourite)
+                                  : SizedBox.shrink(),
+                              IconButton(
+                                splashColor: Colors.transparent,
+                                highlightColor: Colors.transparent,
+                                icon: IconShadowWidget(
+                                  Icon(
+                                    Icons.question_answer,
+                                    size: 30,
+                                    color: _hasExtend
+                                        ? Color.fromRGBO(15, 232, 149, 1)
+                                        : Colors.white,
                                   ),
+                                  shadowColor: Colors.greenAccent.shade200,
+                                  showShadow: _hasExtend,
                                 ),
-                                SizedBox(
-                                  width: _width * 0.4,
-                                  child: AutoSizeText(
-                                    _username,
-                                    style: TextStyle(
-                                        color: Colors.white,
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 40),
-                                    minFontSize: 10,
-                                    maxFontSize: 15,
-                                    maxLines: 1,
-                                    overflow: TextOverflow.ellipsis,
+                                onPressed: () {
+                                  setState(() {
+                                    _hasExtend = !_hasExtend;
+                                  });
+                                },
+                              ),
+                              IconButton(
+                                  splashColor: Colors.transparent,
+                                  highlightColor: Colors.transparent,
+                                  icon: Icon(
+                                    Icons.exit_to_app,
+                                    size: 30,
+                                    color: Colors.white,
                                   ),
-                                ),
-                              ]),
-                        )
+                                  onPressed: navigateToScan)
+                            ],
+                          ),
+                        ),
                       ],
                     ),
-                  ),
-                ),
-                Padding(
-                  padding: EdgeInsets.only(right: 0),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
-//                      crossAxisAlignment:CrossAxisAlignment.end,
-                    children: <Widget>[
-                      globalData.hasLogin ? IconButton(
-                        splashColor: Colors.transparent,
-                        highlightColor: Colors.transparent,
-                        icon: IconShadowWidget(
-                          Icon(
-                            Icons.favorite,
-                            size: 30,
-                            color: isFavourite
-                                ? Color.fromRGBO(15, 232, 149, 1)
-                                : Colors.white,
-                          ),
-                          shadowColor: Colors.greenAccent.shade200,
-                          showShadow: isFavourite,
+                    InkWell(
+                      onTap: _switchScene,
+                      child: AnimatedContainer(
+                        margin: EdgeInsets.only(left: 30, top: 10),
+                        duration: Duration(milliseconds: 500),
+                        height: 30,
+                        width: 70,
+                        decoration: new BoxDecoration(
+                          color: isCamera
+                              ? Colors.white
+                              : Colors.greenAccent.shade700,
+                          borderRadius:
+                              new BorderRadius.all(Radius.circular(40)),
                         ),
-                        onPressed: _onFavourite
-                      ):SizedBox.shrink(),
-                      IconButton(
-                        splashColor: Colors.transparent,
-                        highlightColor: Colors.transparent,
-                        icon: IconShadowWidget(
-                          Icon(
-                            Icons.question_answer,
-                            size: 30,
-                            color: _hasExtend
-                                ? Color.fromRGBO(15, 232, 149, 1)
-                                : Colors.white,
+                        child: Center(
+                          child: Text(
+                            'Scene',
+                            style: TextStyle(
+                                color: isCamera ? Colors.black : Colors.white,
+                                fontSize: 14,
+                                fontWeight: FontWeight.bold),
                           ),
-                          shadowColor: Colors.greenAccent.shade200,
-                          showShadow: _hasExtend,
                         ),
-                        onPressed: () {
-                          setState(() {
-                            _hasExtend = !_hasExtend;
-                          });
-                        },
                       ),
-                      IconButton(
-                          splashColor: Colors.transparent,
-                          highlightColor: Colors.transparent,
-                          icon: Icon(
-                            Icons.exit_to_app,
-                            size: 30,
-                            color: Colors.white,
-                          ),
-                          onPressed: navigateToScan
-                      )
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          ),
+                    )
+                  ])),
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
@@ -625,7 +666,7 @@ class _UnityPage extends State<UnityPage> with WidgetsBindingObserver{
                     curve: Curves.easeOut,
                     width: MediaQuery.of(context).size.width * 0.8,
                     height:
-                    _hasExtend ? CHAT_EXTEND_HEIGHT : CHAT_ORIGIN_HEIGHT,
+                        _hasExtend ? CHAT_EXTEND_HEIGHT : CHAT_ORIGIN_HEIGHT,
                     child: Opacity(
                         opacity: _hasExtend ? 0.9 : 0.3,
                         child: ListView.builder(
@@ -664,14 +705,17 @@ class _UnityPage extends State<UnityPage> with WidgetsBindingObserver{
       ),
     );
   }
-  pauseControllerTheme(){
+
+  pauseControllerTheme() {
     setMessage('switchSence', 'CharScene');
   }
-  resumeControllerTheme(){
+
+  resumeControllerTheme() {
     setMessage('switchSence', 'ARScene');
   }
-  navigateToMyCards()async{
-    if (!globalData.hasLogin){
+
+  navigateToMyCards() async {
+    if (!globalData.hasLogin) {
       globalData.wantLogin = true;
 //      globalData.tracked = false;
       await _unityWidgetController.pause();
@@ -682,45 +726,54 @@ class _UnityPage extends State<UnityPage> with WidgetsBindingObserver{
             page: Login(),
           ));
       await _unityWidgetController.resume();
-    }else{
+    } else {
       WidgetsBinding.instance.removeObserver(this);
       await Navigator.push(context, SlideRightRoute(page: MyCards()));
       WidgetsBinding.instance.addObserver(this);
       updateGender();
-      setState(() {
-
-      });
+      setState(() {});
     }
   }
-  _switchScene()async{
-    if(!isCamera){
+
+  toProfile() async {
+    WidgetsBinding.instance.removeObserver(this);
+    await Navigator.push(
+        context, new FadeRoute(page: PersonDetail(globalData.scanData)));
+    WidgetsBinding.instance.addObserver(this);
+  }
+
+  _switchScene() async {
+    if (!isCamera) {
       resumeControllerTheme();
-    }else{
+    } else {
       pauseControllerTheme();
     }
     isCamera = !isCamera;
   }
-  _onFavourite()async{
-    if(onFavouriteRequest) return;
-    try{
-      if(isFavourite){
-        final response = await RequestCards.favouriteRemove(globalData.scanData.id);
-        if(response.statusCode == 200){
+
+  _onFavourite() async {
+    if (onFavouriteRequest) return;
+    try {
+      if (isFavourite) {
+        final response =
+            await RequestCards.favouriteRemove(globalData.scanData.id);
+        if (response.statusCode == 200) {
           globalData.scanData.isFavourite = false;
           isFavourite = false;
-        }else{
+        } else {
           throw Exception();
         }
-      }else{
-        final response = await RequestCards.favouriteAdd(globalData.scanData.id);
-        if(response.statusCode == 200){
+      } else {
+        final response =
+            await RequestCards.favouriteAdd(globalData.scanData.id);
+        if (response.statusCode == 200) {
           globalData.scanData.isFavourite = true;
           isFavourite = true;
-        }else{
+        } else {
           throw Exception();
         }
       }
-    }catch(err){
+    } catch (err) {
       await showDialog(
           context: context,
           builder: (BuildContext context) {
@@ -739,18 +792,17 @@ class _UnityPage extends State<UnityPage> with WidgetsBindingObserver{
               ],
             );
           });
-    }finally{
+    } finally {
       onFavouriteRequest = false;
-      setState(() {
-
-      });
+      setState(() {});
     }
   }
+
   navigateToScan() async {
     globalData.tracked = false;
     WidgetsBinding.instance.removeObserver(this);
     await _unityWidgetController.pause();
-    await Navigator.push(context, MaterialPageRoute(builder:(context){
+    await Navigator.push(context, MaterialPageRoute(builder: (context) {
       return ScanQR();
     }));
 //    await Navigator.push(context, FadeRoute(page: ScanQR()));
@@ -758,8 +810,9 @@ class _UnityPage extends State<UnityPage> with WidgetsBindingObserver{
 //    refreshPage();
 //    Navigator.pop(context, 'ScanQR');
   }
-  navigateToSetting()async{
-    if (!globalData.hasLogin){
+
+  navigateToSetting() async {
+    if (!globalData.hasLogin) {
 //      globalData.tracked = false;
       globalData.wantLogin = true;
       await _unityWidgetController.pause();
@@ -770,7 +823,7 @@ class _UnityPage extends State<UnityPage> with WidgetsBindingObserver{
             page: Login(),
           ));
       await _unityWidgetController.resume();
-    }else{
+    } else {
       await _unityWidgetController.pause();
       WidgetsBinding.instance.removeObserver(this);
       await Navigator.push(context, SlideLeftRoute(page: Settings()));
@@ -781,9 +834,15 @@ class _UnityPage extends State<UnityPage> with WidgetsBindingObserver{
 //      Navigator.pop(context, 'Unity');
     }
   }
-  refreshPage(){
+
+  refreshPage() {
     WidgetsBinding.instance.removeObserver(this);
-    Navigator.push(context, FadeRoute(page: UnityPage(doNotInit: true,)));
+    Navigator.push(
+        context,
+        FadeRoute(
+            page: UnityPage(
+          doNotInit: true,
+        )));
   }
 
   flipHint() {
@@ -793,7 +852,7 @@ class _UnityPage extends State<UnityPage> with WidgetsBindingObserver{
           opacity: 0.8,
           child: Container(
             decoration: BoxDecoration(
-              color: Colors.white,
+              color: Colors.transparent,
               borderRadius: BorderRadius.all(const Radius.circular(50.0)),
             ),
             width: 280,
@@ -804,7 +863,7 @@ class _UnityPage extends State<UnityPage> with WidgetsBindingObserver{
                 Icon(
                   Icons.rotate_90_degrees_ccw,
                   size: 35,
-                  color: Colors.black,
+                  color: Colors.white,
                 ),
                 Padding(
                   child: Column(
@@ -813,7 +872,7 @@ class _UnityPage extends State<UnityPage> with WidgetsBindingObserver{
                     children: <Widget>[
                       Text(
                         'Flip you card and scan the\nimage to view the avatar',
-                        style: TextStyle(color: Colors.black, fontSize: 15),
+                        style: TextStyle(color: Colors.white, fontSize: 15),
                       ),
                     ],
                   ),

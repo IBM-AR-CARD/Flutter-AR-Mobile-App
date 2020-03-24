@@ -48,7 +48,7 @@ class SaveQR extends StatelessWidget{
           msg: 'image $imageName.png stored in ${directory.path}/',
           toastLength: Toast.LENGTH_SHORT,
 //          gravity: ToastGravity.CENTER,
-          timeInSecForIos: 1,
+          timeInSecForIosWeb: 1,
           fontSize: 16.0
       );
     } catch(e) {
@@ -57,7 +57,7 @@ class SaveQR extends StatelessWidget{
           msg: 'image stored fail',
           toastLength: Toast.LENGTH_SHORT,
 //          gravity: ToastGravity.CENTER,
-          timeInSecForIos: 1,
+          timeInSecForIosWeb: 1,
           fontSize: 16.0
       );
     }

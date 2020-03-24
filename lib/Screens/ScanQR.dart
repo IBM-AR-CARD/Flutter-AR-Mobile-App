@@ -20,6 +20,7 @@ import 'package:progress_dialog/progress_dialog.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../Models/Config.dart';
 import 'package:vibration/vibration.dart';
+
 class ScanQR extends StatefulWidget {
   ScanQR({Key key, this.title}) : super(key: key);
 
@@ -29,7 +30,7 @@ class ScanQR extends StatefulWidget {
   _ScanQR createState() => _ScanQR();
 }
 
-class _ScanQR extends State<ScanQR> with SingleTickerProviderStateMixin{
+class _ScanQR extends State<ScanQR> with SingleTickerProviderStateMixin {
   final GlobalKey qrKey = GlobalKey(debugLabel: 'QR');
   var qrText = "";
   QRViewController controller;
@@ -48,27 +49,26 @@ class _ScanQR extends State<ScanQR> with SingleTickerProviderStateMixin{
       begin: 0.0,
       end: 1.0,
     ).animate(new CurvedAnimation(
-        parent: _animationController,
-        curve: Curves.easeInOut
-    ));
+        parent: _animationController, curve: Curves.easeInOut));
     globalData = GlobalData();
-    if(!globalData.hasLogin){
+    if (!globalData.hasLogin) {
       globalData.hasData = true;
     }
     _animationController.repeat(reverse: true);
 //    _animationController.forward();
 //    animateScanAnimation(false);
   }
+
   @override
   Widget build(BuildContext context) {
     double _width = MediaQuery.of(context).size.width;
     double _height = MediaQuery.of(context).size.height;
     return Scaffold(
-      resizeToAvoidBottomInset: false,
-      body: WillPopScope(
-        child: SwipeDetector(
-          onSwipeLeft: navigateToSetting,
-          onSwipeRight: navigateToMyCards,
+        resizeToAvoidBottomInset: false,
+        body: WillPopScope(
+          child: SwipeDetector(
+            onSwipeLeft: navigateToSetting,
+            onSwipeRight: navigateToMyCards,
             child: Stack(
               children: <Widget>[
                 Container(
@@ -114,40 +114,41 @@ class _ScanQR extends State<ScanQR> with SingleTickerProviderStateMixin{
                                   style: TextStyle(
                                       color: Colors.white, fontSize: 25),
                                 ),
-                                Text.rich(
-                                  TextSpan(
-                                    text:'Doesn’t have a card? Try a ',
-                                    style: TextStyle(
-                                        color: Colors.white, fontSize: 15),
-                                    children: <TextSpan>[
-                                      TextSpan(
-                                        text: 'demo',
+                                Text.rich(TextSpan(
+                                        text: 'Doesn’t have a card? Try a ',
                                         style: TextStyle(
-                                          decoration:  TextDecoration.underline
-                                        ),
-                                        recognizer: TapGestureRecognizer()
-                                          ..onTap = ()async{
-                                            print('this is scan route context $context');
-                                            if(!globalData.hasData)return;
-                                            _find = true;
-                                            await setScannedUserData('${Config.baseURl}/profile/get?username=jonmcnamara');
-                                            print('pop');
-//                                            Navigator.popUntil(context,ModalRoute.withName('/'));
-                                            Navigator.popUntil(context,(route){
-                                              print(route.settings.name);
-                                              return ModalRoute.withName('/')(route);
-                                            });
-//                                            Navigator.pop(context);
-//                                            Navigator.pop(context);
-                                          }
-                                      ),
+                                            color: Colors.white, fontSize: 15),
+                                        children: <TextSpan>[
                                       TextSpan(
-                                          text: ' here.',
+                                          text: 'demo',
+                                          style: TextStyle(
+                                              decoration:
+                                                  TextDecoration.underline),
+                                          recognizer: TapGestureRecognizer()
+                                            ..onTap = () async {
+                                              print(
+                                                  'this is scan route context $context');
+                                              if (!globalData.hasData) return;
+                                              _find = true;
+                                              await setScannedUserData(
+                                                  '${Config.baseURl}/profile/get?username=jonmcnamara');
+                                              print('pop');
+//                                            Navigator.popUntil(context,ModalRoute.withName('/'));
+                                              Navigator.popUntil(context,
+                                                  (route) {
+                                                print(route.settings.name);
+                                                return ModalRoute.withName('/')(
+                                                    route);
+                                              });
+//                                            Navigator.pop(context);
+//                                            Navigator.pop(context);
+                                            }),
+                                      TextSpan(
+                                        text: ' here.',
                                       ),
-                                    ]
-                                  )
+                                    ])
 //                                  'Doesn’t have a card? Try a demo here.',
-                                ),
+                                    ),
                               ],
                             ),
                             padding: EdgeInsets.only(left: 10),
@@ -194,48 +195,44 @@ class _ScanQR extends State<ScanQR> with SingleTickerProviderStateMixin{
                           ],
                         ),
                       ),
-                    )
-                ),
+                    )),
                 ImageScannerAnimation(
                   false,
-                  _width*0.8,
+                  _width * 0.8,
                   animation: scaleAnimation,
                 ),
               ],
             ),
-
-        ),
+          ),
           onWillPop: () async {
             return false;
           },
-
-      ),
-        floatingActionButtonLocation:
-        FloatingActionButtonLocation.centerDocked,
-        floatingActionButton: bottomRow()
-    );
+        ),
+        floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+        floatingActionButton: bottomRow());
   }
 
   void _onQRViewCreated(QRViewController controller) {
     this.controller = controller;
     globalData.qrViewController = controller;
     controller.scannedDataStream.listen((scanData) async {
-      if(!mounted){
+      if (!mounted) {
         return;
       }
       if (!_find) {
         _find = true;
-          if(scanData.startsWith("${Config.baseURl}/profile/get")){
-            Vibration.vibrate(duration: 300);
-            await setScannedUserData(scanData);
-          }else {
-            Vibration.vibrate(duration: 300);
-            await setScannedUserData('${Config.baseURl}/profile/get?username=jonmcnamara');
-          }
+        if (scanData.startsWith("${Config.baseURl}/profile/get")) {
+          Vibration.vibrate(duration: 300);
+          await setScannedUserData(scanData);
+        } else {
+          Vibration.vibrate(duration: 300);
+          await setScannedUserData(
+              '${Config.baseURl}/profile/get?username=jonmcnamara');
+        }
 //        Navigator.pop(context);
 //        Navigator.pop(context);
 //        Navigator.popUntil(context,ModalRoute.withName('/'));
-        Navigator.popUntil(context,(route){
+        Navigator.popUntil(context, (route) {
           print(route.settings.name);
           return ModalRoute.withName('/')(route);
         });
@@ -243,37 +240,39 @@ class _ScanQR extends State<ScanQR> with SingleTickerProviderStateMixin{
       }
     });
   }
-  setScannedUserData(scanData)async{
+
+  setScannedUserData(scanData) async {
     ProgressDialog pr = new ProgressDialog(context, isDismissible: false);
-    try{
+    try {
       print('request');
       String id;
-      if(globalData.hasLogin){
+      if (globalData.hasLogin) {
         JsonEncoder jsonEncoder = JsonEncoder();
-        id = jsonEncoder.convert({
-          "_id":globalData.userData.id
-        });
+        id = jsonEncoder.convert({"_id": globalData.userData.id});
       }
       pr.show();
-      final response = await http.post(scanData, headers: {"Content-Type": "application/json"},body:id ).timeout(Duration(seconds: 5));
+      final response = await http
+          .post(scanData,
+              headers: {"Content-Type": "application/json"}, body: id)
+          .timeout(Duration(seconds: 5));
       pr.hide();
       print('request finished');
-      if(response.statusCode == 200){
+      if (response.statusCode == 200) {
         UserData userData = UserData.toUserData(response.body);
         globalData.scanData = userData;
-        if(globalData.hasLogin){
+        if (globalData.hasLogin) {
 //          final scanId = jsonEncoder.convert({
 //            "userid": userData.id
 //          });
           final responseAddHistory = await RequestCards.historyAdd(userData.id);
-          if(responseAddHistory.statusCode != 200){
+          if (responseAddHistory.statusCode != 200) {
             throw new Exception();
           }
         }
-      }else{
+      } else {
         throw new Exception();
       }
-    }catch(err) {
+    } catch (err) {
       pr.hide();
       print(err);
       await showDialog(
@@ -297,6 +296,7 @@ class _ScanQR extends State<ScanQR> with SingleTickerProviderStateMixin{
       _find = false;
     }
   }
+
   Widget bottomRow() {
     return new Padding(
         padding: const EdgeInsets.all(50.0),
@@ -323,9 +323,10 @@ class _ScanQR extends State<ScanQR> with SingleTickerProviderStateMixin{
               ),
             ]));
   }
-  navigateToSetting()async{
-    if(!globalData.hasData)return;
-    if (!globalData.hasLogin){
+
+  navigateToSetting() async {
+    if (!globalData.hasData) return;
+    if (!globalData.hasLogin) {
       globalData.wantLogin = true;
       controller.pauseCamera();
       await Navigator.push(
@@ -334,7 +335,7 @@ class _ScanQR extends State<ScanQR> with SingleTickerProviderStateMixin{
             page: Login(),
           ));
       controller.resumeCamera();
-    }else{
+    } else {
       controller.pauseCamera();
       await Navigator.push(
           context,
@@ -344,30 +345,35 @@ class _ScanQR extends State<ScanQR> with SingleTickerProviderStateMixin{
       controller.resumeCamera();
     }
   }
-  navigateToMyCards()async{
-    if(!globalData.hasData)return;
-      if (!globalData.hasLogin){
-        globalData.wantLogin = true;
-        SharedPreferences preferences = await SharedPreferences.getInstance();
-        await preferences.setBool('wantLogin', true);
-        controller.pauseCamera();
-        await Navigator.push(
-            context,
-            FadeRoute(
-              page: Login(),
-            ));
-        controller.resumeCamera();
-      }else {
-        final data = await Navigator.push(
+
+  navigateToMyCards() async {
+    if (!globalData.hasData) return;
+    if (!globalData.hasLogin) {
+      globalData.wantLogin = true;
+      SharedPreferences preferences = await SharedPreferences.getInstance();
+      await preferences.setBool('wantLogin', true);
+      controller.pauseCamera();
+      await Navigator.push(
           context,
-          SlideRightRoute(page: MyCards()),
-        );
-        if(data is UserData){
-          globalData.scanData = data;
-          Navigator.pop(context);
-        }
+          FadeRoute(
+            page: Login(),
+          ));
+      controller.resumeCamera();
+    } else {
+      final data = await Navigator.push(
+        context,
+        SlideRightRoute(page: MyCards()),
+      );
+      if (data is UserData) {
+        globalData.scanData = data;
+        Navigator.popUntil(context, (route) {
+          print(route.settings.name);
+          return ModalRoute.withName('/')(route);
+        });
       }
+    }
   }
+
   @override
   void dispose() {
     controller?.dispose();
