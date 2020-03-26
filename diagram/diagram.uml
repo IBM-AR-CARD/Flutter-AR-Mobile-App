@@ -1,0 +1,221 @@
+@startuml
+set namespaceSeparator ::
+
+class "flutter_app::main.dart::MyApp" {
+  +Widget build()
+}
+
+"flutter::src::widgets::framework.dart::StatelessWidget" <|-- "flutter_app::main.dart::MyApp"
+
+class "flutter_app::Models::BubblePair.dart::BubblePair" {
+  {static} +int FROM_ME
+  {static} +int FROM_OTHER
+  +int type
+  +String content
+}
+
+class "flutter_app::Models::Config.dart::Config" {
+  {static} +String baseURl
+  {static} +Map<int, Color> primaryColor
+  {static} +MaterialColor colorCustom
+}
+
+"flutter_app::Models::Config.dart::Config" o-- "flutter::src::material::colors.dart::MaterialColor"
+
+class "flutter_app::Models::GlobalData.dart::CameraState" {
+  +int index
+  {static} +List<CameraState> values
+  {static} +CameraState QRViewOpen
+  {static} +CameraState UnityViewOpen
+}
+
+"flutter_app::Models::GlobalData.dart::CameraState" o-- "flutter_app::Models::GlobalData.dart::CameraState"
+
+class "flutter_app::Models::GlobalData.dart::GlobalData" {
+  {static} +GlobalData globalData
+  +bool tracked
+  +List<BubblePair> bubbleMap
+  +bool hasData
+  +CameraState currentState
+  +bool firstTime
+  +String token
+  +bool wantLogin
+  +UnityWidgetController unityWidgetController
+  +QRViewController qrViewController
+  +String id
+  +bool hasLogin
+  +UserData scanData
+  +UserData userData
+  +dynamic clearData()
+}
+
+"flutter_app::Models::GlobalData.dart::GlobalData" o-- "flutter_app::Models::GlobalData.dart::GlobalData"
+"flutter_app::Models::GlobalData.dart::GlobalData" o-- "flutter_app::Models::GlobalData.dart::CameraState"
+"flutter_app::Models::GlobalData.dart::GlobalData" o-- "flutter_unity_widget::flutter_unity_widget.dart::UnityWidgetController"
+"flutter_app::Models::GlobalData.dart::GlobalData" o-- "qr_code_scanner::qr_code_scanner.dart::QRViewController"
+"flutter_app::Models::GlobalData.dart::GlobalData" o-- "flutter_app::Models::UserData.dart::UserData"
+
+class "flutter_app::Models::ImageScannerWidget.dart::ImageScannerAnimation" {
+  +bool stopped
+  +double width
+  +Color colorGreen
+  +Widget build()
+}
+
+"flutter_app::Models::ImageScannerWidget.dart::ImageScannerAnimation" o-- "dart::ui::Color"
+"flutter::src::widgets::transitions.dart::AnimatedWidget" <|-- "flutter_app::Models::ImageScannerWidget.dart::ImageScannerAnimation"
+
+class "flutter_app::Models::ProfileTextEditor.dart::ProfileTextEditor" {
+  {static} +int PERFER_NOT_TO_SAY
+  {static} +int FEMALE
+  {static} +int MALE
+  {static} +int DROPDOWN
+  {static} +int TEXTBOX
+  +String title
+  +_ProfileTextEditor createState()
+}
+
+"flutter::src::widgets::framework.dart::StatefulWidget" <|-- "flutter_app::Models::ProfileTextEditor.dart::ProfileTextEditor"
+
+class "flutter_app::Models::SaveQR.dart::SaveQR" {
+  +GlobalKey<State<StatefulWidget>> globalKey
+  +Widget build()
+  +dynamic getQR()
+  +Future savePng()
+}
+
+"flutter_app::Models::SaveQR.dart::SaveQR" o-- "flutter::src::widgets::framework.dart::GlobalKey<State<StatefulWidget>>"
+"flutter::src::widgets::framework.dart::StatelessWidget" <|-- "flutter_app::Models::SaveQR.dart::SaveQR"
+
+class "flutter_app::Models::SlideRoute.dart::SlideRightRoute" {
+  +Widget page
+}
+
+"flutter_app::Models::SlideRoute.dart::SlideRightRoute" o-- "flutter::src::widgets::framework.dart::Widget"
+"flutter::src::widgets::pages.dart::PageRouteBuilder<T>" <|-- "flutter_app::Models::SlideRoute.dart::SlideRightRoute"
+
+class "flutter_app::Models::SlideRoute.dart::SlideLeftRoute" {
+  +Widget page
+}
+
+"flutter_app::Models::SlideRoute.dart::SlideLeftRoute" o-- "flutter::src::widgets::framework.dart::Widget"
+"flutter::src::widgets::pages.dart::PageRouteBuilder<T>" <|-- "flutter_app::Models::SlideRoute.dart::SlideLeftRoute"
+
+class "flutter_app::Models::SlideRoute.dart::FadeRoute" {
+  +Widget page
+}
+
+"flutter_app::Models::SlideRoute.dart::FadeRoute" o-- "flutter::src::widgets::framework.dart::Widget"
+"flutter::src::widgets::pages.dart::PageRouteBuilder<T>" <|-- "flutter_app::Models::SlideRoute.dart::FadeRoute"
+
+class "flutter_app::Models::SlideRoute.dart::ScaleRotateRoute" {
+  +Widget page
+}
+
+"flutter_app::Models::SlideRoute.dart::ScaleRotateRoute" o-- "flutter::src::widgets::framework.dart::Widget"
+"flutter::src::widgets::pages.dart::PageRouteBuilder<T>" <|-- "flutter_app::Models::SlideRoute.dart::ScaleRotateRoute"
+
+class "flutter_app::Models::SlideRoute.dart::SlideTopRoute" {
+  +Widget page
+}
+
+"flutter_app::Models::SlideRoute.dart::SlideTopRoute" o-- "flutter::src::widgets::framework.dart::Widget"
+"flutter::src::widgets::pages.dart::PageRouteBuilder<T>" <|-- "flutter_app::Models::SlideRoute.dart::SlideTopRoute"
+
+class "flutter_app::Models::UserData.dart::UserData" {
+  {static} +int PERFER_NOT_TO_SAY
+  {static} +int FEMALE
+  {static} +int MALE
+  +String description
+  +String experience
+  +String education
+  +int gender
+  +String model
+  +String phoneNumber
+  +String website
+  +String email
+  +String id
+  +String userName
+  +String profile
+  +bool isFavourite
+  +String firstName
+  +String lastName
+  +String getJson()
+  {static} +UserData toUserData()
+  {static} +UserData mapToUserData()
+}
+
+class "flutter_app::Request::request.dart::HttpUtils" {
+  {static} +Future get()
+  {static} +Future post()
+}
+
+class "flutter_app::Request::request.dart::RequestCards" {
+  {static} +JsonEncoder jsonEncoder
+  {static} +GlobalData globalData
+  {static} +JsonDecoder jsonDecoder
+  {static} +String encodeJson()
+  {static} +Future favouriteAdd()
+  {static} +Future favouriteRemove()
+  {static} +Future historyAdd()
+  {static} +Future historyRemove()
+  {static} +Future getWatsonContent()
+  {static} +Future getUserData()
+  {static} +Future logOutAll()
+}
+
+"flutter_app::Request::request.dart::RequestCards" o-- "dart::convert::JsonEncoder"
+"flutter_app::Request::request.dart::RequestCards" o-- "flutter_app::Models::GlobalData.dart::GlobalData"
+"flutter_app::Request::request.dart::RequestCards" o-- "dart::convert::JsonDecoder"
+
+class "flutter_app::Screens::Login.dart::Login" {
+  +State createState()
+}
+
+"flutter::src::widgets::framework.dart::StatefulWidget" <|-- "flutter_app::Screens::Login.dart::Login"
+
+class "flutter_app::Screens::MyCards.dart::MyCards" {
+  +String title
+  +_MyCards createState()
+}
+
+"flutter::src::widgets::framework.dart::StatefulWidget" <|-- "flutter_app::Screens::MyCards.dart::MyCards"
+
+class "flutter_app::Screens::PersonDetail.dart::PersonDetail" {
+  +UserData userData
+  +dynamic changeData()
+  +State createState()
+}
+
+"flutter_app::Screens::PersonDetail.dart::PersonDetail" o-- "flutter_app::Models::UserData.dart::UserData"
+"flutter::src::widgets::framework.dart::StatefulWidget" <|-- "flutter_app::Screens::PersonDetail.dart::PersonDetail"
+
+class "flutter_app::Screens::ScanQR.dart::ScanQR" {
+  +String title
+  +_ScanQR createState()
+}
+
+"flutter::src::widgets::framework.dart::StatefulWidget" <|-- "flutter_app::Screens::ScanQR.dart::ScanQR"
+
+class "flutter_app::Screens::Settings.dart::Settings" {
+  {static} +int PERFER_NOT_TO_SAY
+  {static} +int FEMALE
+  {static} +int MALE
+  +String title
+  +GlobalData globalData
+  +_Settings createState()
+}
+
+"flutter_app::Screens::Settings.dart::Settings" o-- "flutter_app::Models::GlobalData.dart::GlobalData"
+"flutter::src::widgets::framework.dart::StatefulWidget" <|-- "flutter_app::Screens::Settings.dart::Settings"
+
+class "flutter_app::Screens::UnityPage.dart::UnityPage" {
+  +String title
+  +bool doNotInit
+  +_UnityPage createState()
+}
+
+"flutter::src::widgets::framework.dart::StatefulWidget" <|-- "flutter_app::Screens::UnityPage.dart::UnityPage"
+
+
+@enduml

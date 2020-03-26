@@ -57,7 +57,7 @@ class _Settings extends State<Settings> with WidgetsBindingObserver{
   bool usedOutSide = false;
   final storedData = SharedPreferences.getInstance();
   bool hasChangedContent(){
-    if(_firstName == _firstNameController.text && _lastName == _lastNameController.text && _gender == userData.gender && _descriptionController.text == userData.description && _educationController.text == userData.education && _workExperiencesController.text == userData.experience && userData.model == _model){
+    if(_firstName == _firstNameController.text && _lastName == _lastNameController.text && _gender == userData.gender && _descriptionController.text == userData.description && _educationController.text == userData.education && _workExperiencesController.text == userData.experience && userData.model == _model && userData.website  == _websiteController.text && userData.phoneNumber == _phoneController.text){
       return false;
     }
     return true;
@@ -465,7 +465,7 @@ class _Settings extends State<Settings> with WidgetsBindingObserver{
                           ),
                           ProfileTextEditor.DROPDOWN,
                           _descriptionController,
-                          dropContent: [ "TestMale", "Luffy", "FitFemale", "Jiraiya", "YodaRigged", "BusinessMale", "BusinessFemale", "SmartMale", "SmartFemale" ],
+                          dropContent: [ "ManInSuit", "BusinessWomanPFB", "TestMale", "Luffy", "FitFemale", "Jiraiya", "YodaRigged", "BusinessMale", "BusinessFemale", "SmartMale", "UnityChan", "SmartFemale" ],
                           currentSelect:_model,
                           dropOnChange: (value) {
                             _model=value;

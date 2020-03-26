@@ -358,11 +358,11 @@ class _UnityPage extends State<UnityPage> with WidgetsBindingObserver {
                   onUnityViewCreated: onUnityCreated,
                   isARScene: true,
                   onUnityMessage: onUnityMessage),
-              BackdropFilter(
+              _hasExtend?BackdropFilter(
                 filter: ImageFilter.blur(
                     sigmaX: _hasExtend ? 0 : 5, sigmaY: _hasExtend ? 0 : 5),
-              ),
-              Positioned.fill(
+              ):SizedBox.shrink(),
+              _hasExtend?Positioned.fill(
                 child: AnimatedOpacity(
                     opacity: _hasExtend ? 1 : 0,
                     duration: Duration(milliseconds: 500),
@@ -372,7 +372,7 @@ class _UnityPage extends State<UnityPage> with WidgetsBindingObserver {
                         color: Colors.black.withOpacity(0.3),
                       ),
                     )),
-              ),
+              ):SizedBox.shrink(),
               bubbleChatBoard(context),
               AnimatedSwitcher(
                 duration: Duration(milliseconds: 500),
@@ -380,7 +380,21 @@ class _UnityPage extends State<UnityPage> with WidgetsBindingObserver {
                 child: globalData.tracked || _hasExtend
                     ? SizedBox.shrink()
                     : flipHint(),
-              )
+              ),
+              globalData.initLogin?Positioned.fill(child: Container(
+                decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                        begin: Alignment.topCenter,
+                        end: Alignment.bottomCenter,
+                        stops: [
+                          0.3,
+                          1
+                        ],
+                        colors: [
+                          Color.fromARGB(255, 69, 67, 89),
+                          Color.fromARGB(255, 55, 51, 75)
+                        ])),
+              )):SizedBox.shrink()
             ],
 //              ),
           )),

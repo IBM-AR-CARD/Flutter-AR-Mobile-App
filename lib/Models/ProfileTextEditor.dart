@@ -85,11 +85,9 @@ class _ProfileTextEditor extends State<ProfileTextEditor> {
           child:ClipPath(
             clipper: ShapeBorderClipper(
                 shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.only(
-                      topLeft:  const  Radius.circular(4.0),
-                  topRight: const  Radius.circular(4.0))
-                    )
+                    borderRadius: BorderRadius.all(Radius.circular(4.0))
                 ),
+            ),
           child: Container(
             decoration: BoxDecoration(
                 color: Color.fromARGB(255, 61, 63, 83),

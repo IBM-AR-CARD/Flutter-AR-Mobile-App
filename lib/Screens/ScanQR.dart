@@ -164,7 +164,7 @@ class _ScanQR extends State<ScanQR> with SingleTickerProviderStateMixin {
                       opacity: 0.8,
                       child: Container(
                         decoration: BoxDecoration(
-                          color: Colors.white,
+                          color: Colors.transparent,
                           borderRadius:
                               BorderRadius.all(const Radius.circular(50.0)),
                         ),
@@ -176,7 +176,7 @@ class _ScanQR extends State<ScanQR> with SingleTickerProviderStateMixin {
                             Icon(
                               Icons.center_focus_weak,
                               size: 35,
-                              color: Colors.black,
+                              color: Colors.white,
                             ),
                             Padding(
                               child: Column(
@@ -186,7 +186,7 @@ class _ScanQR extends State<ScanQR> with SingleTickerProviderStateMixin {
                                   Text(
                                     'Point the camera to the QR\nCode on the business card',
                                     style: TextStyle(
-                                        color: Colors.black, fontSize: 15),
+                                        color: Colors.white, fontSize: 15),
                                   ),
                                 ],
                               ),
