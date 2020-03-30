@@ -369,6 +369,7 @@ class _ScanQR extends State<ScanQR> with SingleTickerProviderStateMixin {
           ));
       controller.resumeCamera();
     } else {
+      controller.pauseCamera();
       final data = await Navigator.push(
         context,
         SlideRightRoute(page: MyCards()),
@@ -379,6 +380,8 @@ class _ScanQR extends State<ScanQR> with SingleTickerProviderStateMixin {
           print(route.settings.name);
           return ModalRoute.withName('/')(route);
         });
+      } else {
+        controller.resumeCamera();
       }
     }
   }

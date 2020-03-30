@@ -9,6 +9,7 @@ import 'package:swipedetector/swipedetector.dart';
 //import 'package:pull_to_refresh/pull_to_refresh.dart';
 import '../Models/Config.dart';
 import '../Models/GlobalData.dart';
+import 'package:flutter_icons/flutter_icons.dart';
 
 class MyCards extends StatefulWidget {
   MyCards({Key key, this.title}) : super(key: key);
@@ -409,7 +410,53 @@ class _MyCards extends State<MyCards> with TickerProviderStateMixin {
   }
 
   Widget _createListView(BuildContext context, AsyncSnapshot snapshot, type) {
-    var list = snapshot.data["list"];
+    List list = snapshot.data["list"];
+    if (list.length == 0) {
+      if (type == 'history') {
+        return Container(
+            // margin: EdgeInsets.only(top: height * 0.2),
+            child: Align(
+                alignment: Alignment.center,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    Icon(Icons.history, size: 100, color: Colors.white),
+                    Divider(
+                      height: 20,
+                    ),
+                    Text(
+                      'No history yet',
+                      style: TextStyle(
+                          color: Colors.white,
+                          // fontWeight: FontWeight.bold,
+                          fontSize: 32),
+                    ),
+                  ],
+                )));
+      } else if (type == 'favourite') {
+        return Container(
+            // margin: EdgeInsets.only(top: height * 0.2),
+            child: Align(
+                alignment: Alignment.center,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    Icon(MaterialCommunityIcons.heart_broken,
+                        size: 100, color: Colors.white),
+                    Divider(
+                      height: 20,
+                    ),
+                    Text(
+                      'No favourites yet',
+                      style: TextStyle(
+                          color: Colors.white,
+                          // fontWeight: FontWeight.bold,
+                          fontSize: 32),
+                    ),
+                  ],
+                )));
+      }
+    }
     return ListView.separated(
       itemBuilder: (context, index) => _itemBuilder(context, index, list, type),
       itemCount: list.length + 2,
