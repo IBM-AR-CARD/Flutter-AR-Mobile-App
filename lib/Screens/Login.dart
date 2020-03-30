@@ -19,6 +19,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:vector_math/vector_math_64.dart' as math;
 import 'package:flutter/scheduler.dart';
 import 'package:retry/retry.dart';
+
 class Login extends StatefulWidget {
   @override
   State createState() => _Login();
@@ -53,23 +54,24 @@ class _Login extends State<Login> with TickerProviderStateMixin {
   FocusNode registerPasswordFocus = FocusNode();
   FocusNode registerPasswordConfirmFocus = FocusNode();
   FocusNode registerEmailFocus = FocusNode();
-  String loginText =  'Welcome back to IBM AR Card';
-  String registerText = 'Register now to sync your scan history and\nfavourites, also creating your own AR card!';
-  final ERROR_COLOR =  Colors.pink;
+  String loginText = 'Welcome back to IBM AR Card';
+  String registerText =
+      'Register now to sync your scan history and\nfavourites, also creating your own AR card!';
+  final ERROR_COLOR = Colors.pink;
   final NORMAL_COLOR = Color.fromARGB(130, 31, 34, 52);
   GlobalData globalData = GlobalData();
   bool loginValid = true;
   bool registerValid = true;
   bool hasExpand = true;
-  toDefaultText(){
-    registerValid  = true;
-    loginValid =  true;
-    loginText =  'Welcome back to IBM AR Card';
-    registerText = 'Register now to sync your scan history and\nfavourites, also creating your own AR card!';
-    setState(() {
-
-    });
+  toDefaultText() {
+    registerValid = true;
+    loginValid = true;
+    loginText = 'Welcome back to IBM AR Card';
+    registerText =
+        'Register now to sync your scan history and\nfavourites, also creating your own AR card!';
+    setState(() {});
   }
+
   initAnimation() {
     controller1 =
         AnimationController(vsync: this, duration: Duration(milliseconds: 400));
@@ -80,31 +82,34 @@ class _Login extends State<Login> with TickerProviderStateMixin {
     loginTextController = new AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 300),
-    )..addListener(()=>setState((){}));
+    )..addListener(() => setState(() {}));
     registerTextController = new AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 300),
-    )..addListener(()=>setState((){}));
+    )..addListener(() => setState(() {}));
     offset1 = Tween<Offset>(begin: Offset(1.0, 0.0), end: Offset(0.0, 0.0))
         .animate(
-        new CurvedAnimation(parent: controller1, curve: Curves.easeInOut));
+            new CurvedAnimation(parent: controller1, curve: Curves.easeInOut));
     offset2 = Tween<Offset>(begin: Offset(-1.0, 0.0), end: Offset(0.0, 0.0))
         .animate(
-        new CurvedAnimation(parent: controller2, curve: Curves.easeInOut));
-    expandOffset = Tween<Offset>(begin: Offset(0.0, 1.5), end: Offset(0.0, 0.25))
-        .animate(
-        new CurvedAnimation(parent: expandController, curve: Curves.easeInOut));
+            new CurvedAnimation(parent: controller2, curve: Curves.easeInOut));
+    expandOffset =
+        Tween<Offset>(begin: Offset(0.0, 1.5), end: Offset(0.0, 0.25)).animate(
+            new CurvedAnimation(
+                parent: expandController, curve: Curves.easeInOut));
     controller2.animateTo(1,
         duration: Duration(milliseconds: 50), curve: Curves.easeInOut);
   }
+
   math.Vector3 getTranslation(controller) {
     double progress = controller.value;
-    double offset = sin(progress * pi * 90)*3;
+    double offset = sin(progress * pi * 90) * 3;
     return math.Vector3(offset, 0.0, 0.0);
   }
+
   Widget getTextField(String name) {
     bool obscure = false;
-    if(name.endsWith("PASSWORD")){
+    if (name.endsWith("PASSWORD")) {
       obscure = true;
     }
     return Padding(
@@ -133,33 +138,34 @@ class _Login extends State<Login> with TickerProviderStateMixin {
               ),
             )));
   }
-  getOnSubmit(String name){
+
+  getOnSubmit(String name) {
     switch (name) {
       case 'registerUSERNAME':
-        return (value){
+        return (value) {
           FocusScope.of(context).requestFocus(registerEmailFocus);
         };
       case 'registerPASSWORD':
-        return (value){
+        return (value) {
           FocusScope.of(context).requestFocus(registerPasswordConfirmFocus);
         };
       case 'registerE-MAIL':
-        return (value){
+        return (value) {
           FocusScope.of(context).requestFocus(registerPasswordFocus);
         };
       case 'registerCONFIRM PASSWORD':
-        return (value){
-        };
+        return (value) {};
       case 'loginEMAIL':
-        return (value){
+        return (value) {
           FocusScope.of(context).requestFocus(loginPasswordFocus);
         };
       case 'loginPASSWORD':
-        return (value){};
+        return (value) {};
     }
-    return (value){};
+    return (value) {};
   }
-  TextInputAction getTextInputAction(String name){
+
+  TextInputAction getTextInputAction(String name) {
     switch (name) {
       case 'registerCONFIRM PASSWORD':
         return TextInputAction.done;
@@ -168,6 +174,7 @@ class _Login extends State<Login> with TickerProviderStateMixin {
     }
     return TextInputAction.next;
   }
+
   String gethintText(String name) {
     switch (name) {
       case 'registerUSERNAME':
@@ -201,234 +208,227 @@ class _Login extends State<Login> with TickerProviderStateMixin {
         return loginPasswordFocus;
     }
   }
-  TextEditingController getController(String name) {
-      switch (name) {
-        case 'registerUSERNAME':
-          return registerUserName;
-        case 'registerPASSWORD':
-          return registerPassword;
-        case 'registerE-MAIL':
-          return registerEmail;
-        case 'registerCONFIRM PASSWORD':
-          return registerPasswordConfirm;
-        case 'loginEMAIL':
-          return loginEMAIL;
-        case 'loginPASSWORD':
-          return loginPassword;
-      }
-    }
-  Icon getPrefixIcon(String name) {
-      switch (name) {
-        case 'loginEMAIL':
-          return Icon(
-            Icons.email,
-            size: 30,
-            color: Color.fromARGB(180, 41, 43, 66),
-          );
-        case 'loginPASSWORD':
-          return Icon(
-            Icons.lock,
-            size: 30,
-            color: Color.fromARGB(180, 41, 43, 66),
-          );
-        case 'registerCONFIRM PASSWORD':
-          return Icon(
-            Icons.lock,
-            size: 30,
-            color: Color.fromARGB(180, 41, 43, 66),
-          );
-        case 'registerE-MAIL':
-          return Icon(
-            Icons.email,
-            size: 30,
-            color: Color.fromARGB(180, 41, 43, 66),
-          );
-        case 'registerUSERNAME':
-          return Icon(
-            Icons.person,
-            size: 30,
-            color: Color.fromARGB(180, 41, 43, 66),
-          );
-        case 'registerPASSWORD':
-          return Icon(
-            Icons.lock,
-            size: 30,
-            color: Color.fromARGB(180, 41, 43, 66),
-          );
-      }
-    }
 
-    @override
+  TextEditingController getController(String name) {
+    switch (name) {
+      case 'registerUSERNAME':
+        return registerUserName;
+      case 'registerPASSWORD':
+        return registerPassword;
+      case 'registerE-MAIL':
+        return registerEmail;
+      case 'registerCONFIRM PASSWORD':
+        return registerPasswordConfirm;
+      case 'loginEMAIL':
+        return loginEMAIL;
+      case 'loginPASSWORD':
+        return loginPassword;
+    }
+  }
+
+  Icon getPrefixIcon(String name) {
+    switch (name) {
+      case 'loginEMAIL':
+        return Icon(
+          Icons.email,
+          size: 30,
+          color: Color.fromARGB(180, 41, 43, 66),
+        );
+      case 'loginPASSWORD':
+        return Icon(
+          Icons.lock,
+          size: 30,
+          color: Color.fromARGB(180, 41, 43, 66),
+        );
+      case 'registerCONFIRM PASSWORD':
+        return Icon(
+          Icons.lock,
+          size: 30,
+          color: Color.fromARGB(180, 41, 43, 66),
+        );
+      case 'registerE-MAIL':
+        return Icon(
+          Icons.email,
+          size: 30,
+          color: Color.fromARGB(180, 41, 43, 66),
+        );
+      case 'registerUSERNAME':
+        return Icon(
+          Icons.person,
+          size: 30,
+          color: Color.fromARGB(180, 41, 43, 66),
+        );
+      case 'registerPASSWORD':
+        return Icon(
+          Icons.lock,
+          size: 30,
+          color: Color.fromARGB(180, 41, 43, 66),
+        );
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
-      _width = MediaQuery
-          .of(context)
-          .size
-          .width;
-      _height = MediaQuery
-          .of(context)
-          .size
-          .height;
-      return Scaffold(
+    _width = MediaQuery.of(context).size.width;
+    _height = MediaQuery.of(context).size.height;
+    return Scaffold(
         backgroundColor: Color.fromARGB(255, 55, 51, 75),
         resizeToAvoidBottomInset: true,
         body: SingleChildScrollView(
-          child:WillPopScope(
-          child:Container(
-                  width: _width,
-                  height: _height,
-                  child: Stack(
-                    children: <Widget>[
-                      AnimatedContainer(
-                        duration: Duration(milliseconds: 500),
-                        height: hasExpand ? _height : _height*0.2 ,
-                        decoration: BoxDecoration(
-                            gradient: LinearGradient(
-                                begin: Alignment.topCenter,
-                                end: Alignment.bottomCenter,
-                                stops: [
-                                  0.3,
-                                  1
-                                ],
-                                colors: [
-                                  Color.fromARGB(255, 69, 67, 89),
-                                  Color.fromARGB(255, 55, 51, 75)
-                                ])),
-                        child: Center(
-                          child: Image.asset(
-                            'assets/images/launch_icon.png',
-                            width: 120,
-                            height: 120,
-                          ),
-                        ),
-                      ),
-                      hasExpand?SizedBox.shrink():Align(
-                        alignment: Alignment.topLeft,
-                        child:IconButton(
-                          icon: Icon(
-                              Icons.arrow_back_ios
-                          ),
-                          iconSize: 36,
-                          color: Colors.white,
-                          onPressed: (){
-                            Navigator.pop(context);
-                          }
-
-                          ,
-                        ) ,
-                      ),
-                      SlideTransition(
-                        position: expandOffset,
-                        child:ClipRRect(
-                            borderRadius: BorderRadius.only(topLeft:Radius.circular(20.0),topRight: Radius.circular(20.0)),
-                        child:Container(
-                          color: Colors.transparent,
-                          height: _height*0.8,
-                          child: Column(
-                            children: <Widget>[
-                              Container(
-                                height: _height * 0.1,
-                                child: Row(
-                                  children: <Widget>[
-                                    AnimatedContainer(
-                                      width: _width * 0.5,
-                                      height: _height * 0.1,
-                                      duration: Duration(milliseconds: 500),
-                                      color: isLogin
-                                          ? Colors.white
-                                          : Color.fromARGB(255, 219, 220, 230),
-                                      child: FlatButton(
-                                        onPressed: changeToLogin,
-                                        child: Text(
-                                          'LOGIN',
-                                          style: TextStyle(
-                                              fontSize: 20,
-                                              fontWeight: FontWeight.bold,
-                                              color: Color.fromARGB(255, 69, 67, 89)),
-                                        ),
-                                      ),
-                                    ),
-                                    AnimatedContainer(
-                                      width: _width * 0.5,
-                                      height: _height * 0.1,
-                                      duration: Duration(milliseconds: 500),
-                                      color: !isLogin
-                                          ? Colors.white
-                                          : Color.fromARGB(255, 219, 220, 230),
-                                      child: FlatButton(
-                                        onPressed: changeToRegister,
-                                        child: Text(
-                                          'REGISTER',
-                                          style: TextStyle(
-                                              fontSize: 20,
-                                              fontWeight: FontWeight.bold,
-                                              color: Color.fromARGB(255, 69, 67, 89)),
-                                        ),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                              Container(
-                                color: Colors.white,
-                                child: Stack(children: [
-                                  SlideTransition(
-                                    position: offset1,
-                                    child: getRegisterPage(),
-                                  ),
-                                  SlideTransition(
-                                    position: offset2,
-                                    child: getLoginPage(),
-                                  ),
-                                ]),
-                              )
-                            ],
-                          ),
-                        )
-                      ),
-                      )
-                    ],
+            child: WillPopScope(
+          child: Container(
+            width: _width,
+            height: _height,
+            child: Stack(
+              children: <Widget>[
+                AnimatedContainer(
+                  duration: Duration(milliseconds: 500),
+                  height: hasExpand ? _height : _height * 0.2,
+                  decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                          begin: Alignment.topCenter,
+                          end: Alignment.bottomCenter,
+                          stops: [
+                        0.3,
+                        1
+                      ],
+                          colors: [
+                        Color.fromARGB(255, 69, 67, 89),
+                        Color.fromARGB(255, 55, 51, 75)
+                      ])),
+                  child: Center(
+                    child: Image.asset(
+                      'assets/images/launch_icon.png',
+                      width: 120,
+                      height: 120,
+                    ),
                   ),
                 ),
-              onWillPop: () async {
-                return true;
-              },
-        )
-        )
-      );
-    }
-  toDefaultLayout()async{
-    hasExpand = true;
-    setState(() {
+                hasExpand
+                    ? SizedBox.shrink()
+                    : Align(
+                        alignment: Alignment.topLeft,
+                        child: IconButton(
+                          icon: Icon(Icons.arrow_back_ios),
+                          iconSize: 36,
+                          color: Colors.white,
+                          onPressed: () {
+                            Navigator.pop(context);
+                          },
+                        ),
+                      ),
+                SlideTransition(
+                  position: expandOffset,
+                  child: ClipRRect(
+                      borderRadius: BorderRadius.only(
+                          topLeft: Radius.circular(20.0),
+                          topRight: Radius.circular(20.0)),
+                      child: Container(
+                        color: Colors.transparent,
+                        height: _height * 0.8,
+                        child: Column(
+                          children: <Widget>[
+                            Container(
+                              height: _height * 0.1,
+                              child: Row(
+                                children: <Widget>[
+                                  AnimatedContainer(
+                                    width: _width * 0.5,
+                                    height: _height * 0.1,
+                                    duration: Duration(milliseconds: 500),
+                                    color: isLogin
+                                        ? Colors.white
+                                        : Color.fromARGB(255, 219, 220, 230),
+                                    child: FlatButton(
+                                      onPressed: changeToLogin,
+                                      child: Text(
+                                        'LOGIN',
+                                        style: TextStyle(
+                                            fontSize: 20,
+                                            fontWeight: FontWeight.bold,
+                                            color: Color.fromARGB(
+                                                255, 69, 67, 89)),
+                                      ),
+                                    ),
+                                  ),
+                                  AnimatedContainer(
+                                    width: _width * 0.5,
+                                    height: _height * 0.1,
+                                    duration: Duration(milliseconds: 500),
+                                    color: !isLogin
+                                        ? Colors.white
+                                        : Color.fromARGB(255, 219, 220, 230),
+                                    child: FlatButton(
+                                      onPressed: changeToRegister,
+                                      child: Text(
+                                        'REGISTER',
+                                        style: TextStyle(
+                                            fontSize: 20,
+                                            fontWeight: FontWeight.bold,
+                                            color: Color.fromARGB(
+                                                255, 69, 67, 89)),
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            Container(
+                              color: Colors.white,
+                              child: Stack(children: [
+                                SlideTransition(
+                                  position: offset1,
+                                  child: getRegisterPage(),
+                                ),
+                                SlideTransition(
+                                  position: offset2,
+                                  child: getLoginPage(),
+                                ),
+                              ]),
+                            )
+                          ],
+                        ),
+                      )),
+                )
+              ],
+            ),
+          ),
+          onWillPop: () async {
+            return true;
+          },
+        )));
+  }
 
-    });
+  toDefaultLayout() async {
+    hasExpand = true;
+    setState(() {});
     await expandController.reverse();
   }
-  toDetailLayout()async{
+
+  toDetailLayout() async {
     hasExpand = false;
 
-    setState(() {
-
-    });
+    setState(() {});
     await expandController.forward();
   }
+
   Widget getLoginPage() {
     return Column(children: <Widget>[
       Container(
         width: _width * 0.95,
         height: _height * 0.1,
         child: Center(
-          child:Transform(
-            transform: Matrix4.translation(getTranslation(loginTextController)),
-            child: Text(
-              loginText,
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  color: loginValid ? NORMAL_COLOR : ERROR_COLOR,
-                  fontSize: 18),
-            ),
-          )
-        ),
+            child: Transform(
+          transform: Matrix4.translation(getTranslation(loginTextController)),
+          child: Text(
+            loginText,
+            textAlign: TextAlign.center,
+            style: TextStyle(
+                fontWeight: FontWeight.bold,
+                color: loginValid ? NORMAL_COLOR : ERROR_COLOR,
+                fontSize: 18),
+          ),
+        )),
       ),
       Container(
         height: _height * 0.45,
@@ -509,23 +509,23 @@ class _Login extends State<Login> with TickerProviderStateMixin {
     return Column(children: <Widget>[
       Container(
         width: _width * 0.95,
-        height: _height * 0.1,
+        height: _height * 0.07,
         child: Center(
-            child:Transform(
-              transform: Matrix4.translation(getTranslation(registerTextController)),
-              child: Text(
-                registerText,
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    color: registerValid ? NORMAL_COLOR : ERROR_COLOR,
-                    fontSize: 18),
-              ),
-            )
-        ),
+            child: Transform(
+          transform:
+              Matrix4.translation(getTranslation(registerTextController)),
+          child: Text(
+            registerText,
+            textAlign: TextAlign.center,
+            style: TextStyle(
+                fontWeight: FontWeight.bold,
+                color: registerValid ? NORMAL_COLOR : ERROR_COLOR,
+                fontSize: 18),
+          ),
+        )),
       ),
       Container(
-        height: _height * 0.45,
+        height: _height * 0.51,
         width: _width * 0.8,
         child: Column(
           children: <Widget>[
@@ -549,7 +549,7 @@ class _Login extends State<Login> with TickerProviderStateMixin {
         ),
       ),
       Container(
-        height: _height * 0.15,
+        height: _height * 0.09,
         width: _width,
         color: Colors.white,
         child: Column(children: <Widget>[
@@ -580,33 +580,35 @@ class _Login extends State<Login> with TickerProviderStateMixin {
     initRememberState();
     SystemChrome.setEnabledSystemUIOverlays([]);
     initAnimation();
-    loginText =  'Welcome back to IBM AR Card';
-    registerText = 'Register now to sync your scan history and\nfavourites, also creating your own AR card!';
+    loginText = 'Welcome back to IBM AR Card';
+    registerText =
+        'Register now to sync your scan history and\nfavourites, also creating your own AR card!';
   }
+
   initRememberState() {
-    SchedulerBinding.instance.addPostFrameCallback((_) async{
-      await PermissionHandler().requestPermissions([
-        PermissionGroup.camera,
-        PermissionGroup.microphone,
-        PermissionGroup.storage
-      ]);
+    SchedulerBinding.instance.addPostFrameCallback((_) async {
+      Map<Permission, PermissionStatus> statuses = await [
+        Permission.camera,
+        Permission.microphone,
+        Permission.storage
+      ].request();
       SharedPreferences preferences = await SharedPreferences.getInstance();
-      bool value = preferences.getBool('remember')??false;
-      globalData.hasLogin = preferences.getBool('hasLogin')??false;
-      if(globalData.wantLogin){
+      bool value = preferences.getBool('remember') ?? false;
+      globalData.hasLogin = preferences.getBool('hasLogin') ?? false;
+      if (globalData.wantLogin) {
         await toDetailLayout();
         return;
-      }else if(!globalData.hasLogin){
-        await Future.delayed(Duration(seconds:1));
-        if(globalData.firstTime){
-          globalData.firstTime =false;
-          Navigator.pushReplacement(context, FadeRoute(page:UnityPage()));
-        }else{
+      } else if (!globalData.hasLogin) {
+        await Future.delayed(Duration(seconds: 1));
+        if (globalData.firstTime) {
+          globalData.firstTime = false;
+          Navigator.pushReplacement(context, FadeRoute(page: UnityPage()));
+        } else {
           Navigator.pop(context);
         }
-      }else{
+      } else {
         await restoreDetail();
-        await Future.delayed(Duration(seconds:1));
+        await Future.delayed(Duration(seconds: 1));
         onLogin();
       }
     });
@@ -646,20 +648,24 @@ class _Login extends State<Login> with TickerProviderStateMixin {
     registerPasswordConfirm.dispose();
     registerEmail.dispose();
   }
-  onLogin() async{
-  //      toDefaultText();
+
+  onLogin() async {
+    //      toDefaultText();
     ProgressDialog pr = new ProgressDialog(context, isDismissible: false);
-    Map<String,dynamic> map = {
+    Map<String, dynamic> map = {
       "email": isLogin ? loginEMAIL.text : registerEmail.text,
       "password": isLogin ? loginPassword.text : registerPassword.text,
     };
     String value = jsonEncoder.convert(map);
-    try{
-      final data = await http.post('${Config.baseURl}/user/login', headers: {"Content-Type": "application/json"}, body: value).timeout(Duration(seconds: 5));
-      if(data.statusCode != 200){
+    try {
+      final data = await http
+          .post('${Config.baseURl}/user/login',
+              headers: {"Content-Type": "application/json"}, body: value)
+          .timeout(Duration(seconds: 5));
+      if (data.statusCode != 200) {
         var errorMsg = jsonDecoder.convert(data.body);
         throw Exception(errorMsg['error']);
-      }else {
+      } else {
         await toDefaultLayout();
         await storeDetail();
         var Msg = jsonDecoder.convert(data.body);
@@ -668,100 +674,111 @@ class _Login extends State<Login> with TickerProviderStateMixin {
         globalData.id = Msg['_id'];
         await fetchPost();
         globalData.hasLogin = true;
-        SharedPreferences sharedPreferences =await SharedPreferences.getInstance();
-        await sharedPreferences.setBool('hasLogin',true);
+        SharedPreferences sharedPreferences =
+            await SharedPreferences.getInstance();
+        await sharedPreferences.setBool('hasLogin', true);
         pr.hide();
-        if(globalData.firstTime){
-          globalData.firstTime =false;
-          Navigator.pushReplacement(context, FadeRoute(page:UnityPage()));
-        }else{
+        if (globalData.firstTime) {
+          globalData.firstTime = false;
+          Navigator.pushReplacement(context, FadeRoute(page: UnityPage()));
+        } else {
           Navigator.pop(context);
           return;
         }
       }
-    }catch(err){
+    } catch (err) {
       vibrateLoginText();
-      Vibration.vibrate(duration: 200,amplitude: 60);
+      Vibration.vibrate(duration: 200, amplitude: 60);
       toDetailLayout();
       print(err);
-      String errorCode = (err is SocketException || err is TimeoutException) ? 'Network error' : err.toString();
-      if(errorCode.startsWith('Exception: ')){
+      String errorCode = (err is SocketException || err is TimeoutException)
+          ? 'Network error'
+          : err.toString();
+      if (errorCode.startsWith('Exception: ')) {
         errorCode = errorCode.replaceFirst('Exception: ', '');
       }
       loginText = errorCode;
       loginValid = false;
-      setState(() {
-
-      });
-    }finally{
-    print('final');
-    pr.hide();
+      setState(() {});
+    } finally {
+      print('final');
+      pr.hide();
     }
   }
-  vibrateLoginText()async{
+
+  vibrateLoginText() async {
     await loginTextController.forward();
     await loginTextController.reverse();
   }
-  vibrateRegisterText()async{
-  await registerTextController.forward();
-  await registerTextController.reverse();
+
+  vibrateRegisterText() async {
+    await registerTextController.forward();
+    await registerTextController.reverse();
   }
-  onRegister()async{
-  //    toDefaultText();
+
+  onRegister() async {
+    //    toDefaultText();
     ProgressDialog pr = new ProgressDialog(context, isDismissible: false);
-    Map<String,dynamic> map = {
-      "username":registerUserName.text,
+    Map<String, dynamic> map = {
+      "username": registerUserName.text,
       "email": registerEmail.text,
       "password": registerPassword.text,
     };
     String value = jsonEncoder.convert(map);
-    try{
+    try {
       print('request');
-      if(registerPassword.text != registerPasswordConfirm.text){
+      if (registerPassword.text != registerPasswordConfirm.text) {
         throw Exception('pasword must match confirm password');
       }
       pr.show();
-      final data = await http.post('${Config.baseURl}/user/register', headers: {"Content-Type": "application/json"}, body: value).timeout(Duration(seconds: 5));
+      final data = await http
+          .post('${Config.baseURl}/user/register',
+              headers: {"Content-Type": "application/json"}, body: value)
+          .timeout(Duration(seconds: 5));
       pr.hide();
-      if(data.statusCode != 200){
+      if (data.statusCode != 200) {
         var errorMsg = jsonDecoder.convert(data.body);
         throw Exception(errorMsg['error']);
-      }else {
+      } else {
         var Msg = jsonDecoder.convert(data.body);
         pr.hide();
         await onLogin();
       }
-    }catch(err){
+    } catch (err) {
       pr.hide();
       print(err);
       vibrateRegisterText();
-      Vibration.vibrate(duration: 300,amplitude: 60);
+      Vibration.vibrate(duration: 300, amplitude: 60);
       toDetailLayout();
       print(err);
-      String errorCode = (err is SocketException || err is TimeoutException) ? 'Network error' : err.toString();
-      if(errorCode.startsWith('Exception: ')){
+      String errorCode = (err is SocketException || err is TimeoutException)
+          ? 'Network error'
+          : err.toString();
+      if (errorCode.startsWith('Exception: ')) {
         errorCode = errorCode.replaceFirst('Exception: ', '');
       }
       registerText = errorCode;
-      registerValid =false;
-      setState(() {
-
-      });
-    }finally{
-    pr.hide();
+      registerValid = false;
+      setState(() {});
+    } finally {
+      pr.hide();
     }
   }
-  storeDetail()async{
-    SharedPreferences preferences = await SharedPreferences.getInstance();
-    await preferences.setString('E-MAIL', isLogin ? loginEMAIL.text : registerEmail.text);
-    await preferences.setString('PASSWORD', isLogin ? loginPassword.text: registerPassword.text);
-  }
-  restoreDetail()async{
 
+  storeDetail() async {
+    SharedPreferences preferences = await SharedPreferences.getInstance();
+    await preferences.setString(
+        'E-MAIL', isLogin ? loginEMAIL.text : registerEmail.text);
+    await preferences.setString(
+        'PASSWORD', isLogin ? loginPassword.text : registerPassword.text);
+  }
+
+  restoreDetail() async {
     SharedPreferences preferences = await SharedPreferences.getInstance();
     loginEMAIL.text = preferences.getString('E-MAIL');
     loginPassword.text = preferences.getString('PASSWORD');
   }
+
   fetchPostedData(response) async {
     if (response.statusCode == 200) {
       UserData userData = UserData.toUserData(response.body);
@@ -771,7 +788,7 @@ class _Login extends State<Login> with TickerProviderStateMixin {
       storeValue.setString("UserData", response.body);
       globalData.userData = userData;
       globalData.hasData = true;
-    }else{
+    } else {
       throw Exception('login fail please try again');
 //      await showDialog(
 //          context: context,
@@ -793,15 +810,17 @@ class _Login extends State<Login> with TickerProviderStateMixin {
 //          });
     }
   }
+
   Future<void> fetchPost() async {
     Map<String, String> map = {
-      "_id":globalData.id,
+      "_id": globalData.id,
     };
     String value = JsonEncoder().convert(map);
     final retry = RetryOptions(maxAttempts: 6);
     final response = await retry.retry(
       // Make a GET request
-          () => http.post('${Config.baseURl}/profile/get?_id=${globalData.id}',headers: {"Content-Type": "application/json"}, body: value),
+      () => http.post('${Config.baseURl}/profile/get?_id=${globalData.id}',
+          headers: {"Content-Type": "application/json"}, body: value),
       // Retry on SocketException or TimeoutException
       retryIf: (e) => e is SocketException || e is TimeoutException,
     );

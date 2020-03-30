@@ -54,6 +54,10 @@ class _UnityPage extends State<UnityPage> with WidgetsBindingObserver {
   bool isFavourite = false;
   bool onSetting = false;
   bool isCamera = true;
+  bool initLogin = true;
+  bool tracked = false;
+  double width;
+  double height;
   @override
   void initState() {
     super.initState();
@@ -70,6 +74,9 @@ class _UnityPage extends State<UnityPage> with WidgetsBindingObserver {
     SchedulerBinding.instance.addPostFrameCallback((_) async {
       if (widget.doNotInit) {
         updateGender();
+        initLogin = false;
+        tracked = globalData.tracked;
+        setState(() {});
         return;
       }
       await Future.delayed(Duration(seconds: 1));
@@ -77,6 +84,8 @@ class _UnityPage extends State<UnityPage> with WidgetsBindingObserver {
       await Navigator.push(context, FadeRoute(page: Login()));
       await Navigator.push(context, FadeRoute(page: ScanQR()));
       await _unityWidgetController.resume();
+      initLogin = false;
+      tracked = globalData.tracked;
       updateGender();
     });
   }
@@ -345,59 +354,72 @@ class _UnityPage extends State<UnityPage> with WidgetsBindingObserver {
 
   @override
   Widget build(BuildContext context) {
+    width = MediaQuery.of(context).size.width;
+    height = MediaQuery.of(context).size.height;
     return Scaffold(
         body: WillPopScope(
-          child: SafeArea(
 //            child: SwipeDetector(
 //              onSwipeLeft: isCamera?navigateToSetting:(){},
 //              onSwipeRight: isCamera?navigateToMyCards:(){},
 
-              child: Stack(
+          child: Stack(
             children: <Widget>[
               UnityWidget(
                   onUnityViewCreated: onUnityCreated,
                   isARScene: true,
                   onUnityMessage: onUnityMessage),
-              _hasExtend?BackdropFilter(
-                filter: ImageFilter.blur(
-                    sigmaX: _hasExtend ? 0 : 5, sigmaY: _hasExtend ? 0 : 5),
-              ):SizedBox.shrink(),
-              _hasExtend?Positioned.fill(
-                child: AnimatedOpacity(
-                    opacity: _hasExtend ? 1 : 0,
-                    duration: Duration(milliseconds: 500),
-                    child: BackdropFilter(
-                      filter: ImageFilter.blur(sigmaY: 20, sigmaX: 20),
-                      child: Container(
-                        color: Colors.black.withOpacity(0.3),
-                      ),
-                    )),
-              ):SizedBox.shrink(),
+              _hasExtend
+                  ? BackdropFilter(
+                      filter: ImageFilter.blur(
+                          sigmaX: _hasExtend ? 0 : 5,
+                          sigmaY: _hasExtend ? 0 : 5),
+                    )
+                  : SizedBox.shrink(),
+              _hasExtend
+                  ? Positioned.fill(
+                      child: AnimatedOpacity(
+                          opacity: _hasExtend ? 1 : 0,
+                          duration: Duration(milliseconds: 500),
+                          child: BackdropFilter(
+                            filter: ImageFilter.blur(sigmaY: 20, sigmaX: 20),
+                            child: Container(
+                              color: Colors.black.withOpacity(0.3),
+                            ),
+                          )),
+                    )
+                  : SizedBox.shrink(),
               bubbleChatBoard(context),
               AnimatedSwitcher(
                 duration: Duration(milliseconds: 500),
 //                  opacity:_tracked || _hasExtend ? 0 : 1 ,
-                child: globalData.tracked || _hasExtend
-                    ? SizedBox.shrink()
-                    : flipHint(),
+                child: tracked || _hasExtend ? SizedBox.shrink() : flipHint(),
               ),
-              globalData.initLogin?Positioned.fill(child: Container(
-                decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                        begin: Alignment.topCenter,
-                        end: Alignment.bottomCenter,
-                        stops: [
-                          0.3,
-                          1
-                        ],
-                        colors: [
-                          Color.fromARGB(255, 69, 67, 89),
-                          Color.fromARGB(255, 55, 51, 75)
-                        ])),
-              )):SizedBox.shrink()
+              Center(
+                //   child: Container(
+                // width: width * 0.7,
+                // height: height * 0.3,
+                child: getCorner(),
+              ),
+              initLogin
+                  ? Positioned.fill(
+                      child: Container(
+                      decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                              begin: Alignment.topCenter,
+                              end: Alignment.bottomCenter,
+                              stops: [
+                            0.3,
+                            1
+                          ],
+                              colors: [
+                            Color.fromARGB(255, 69, 67, 89),
+                            Color.fromARGB(255, 55, 51, 75)
+                          ])),
+                    ))
+                  : SizedBox.shrink(),
             ],
 //              ),
-          )),
+          ),
           onWillPop: () async {
             navigateToScan();
             return false;
@@ -418,8 +440,9 @@ class _UnityPage extends State<UnityPage> with WidgetsBindingObserver {
 
   void onUnityMessage(controller, message) {
     print('Received message from unity: ${message.toString()}');
-    if (message == '#tracked#' && !globalData.tracked) {
+    if (message == '#tracked#' && !tracked) {
       globalData.tracked = true;
+      tracked = true;
       if (!this.widget.doNotInit)
         talk("Nice to meet you, I am " +
             globalData.scanData.firstName +
@@ -642,7 +665,7 @@ class _UnityPage extends State<UnityPage> with WidgetsBindingObserver {
                         height: 30,
                         width: 70,
                         decoration: new BoxDecoration(
-                          color: isCamera
+                          color: !isCamera
                               ? Colors.white
                               : Colors.greenAccent.shade700,
                           borderRadius:
@@ -650,9 +673,9 @@ class _UnityPage extends State<UnityPage> with WidgetsBindingObserver {
                         ),
                         child: Center(
                           child: Text(
-                            'Scene',
+                            isCamera ? 'AR ON' : 'AR OFF',
                             style: TextStyle(
-                                color: isCamera ? Colors.black : Colors.white,
+                                color: !isCamera ? Colors.black : Colors.white,
                                 fontSize: 14,
                                 fontWeight: FontWeight.bold),
                           ),
@@ -814,6 +837,7 @@ class _UnityPage extends State<UnityPage> with WidgetsBindingObserver {
 
   navigateToScan() async {
     globalData.tracked = false;
+    tracked = false;
     WidgetsBinding.instance.removeObserver(this);
     await _unityWidgetController.pause();
     await Navigator.push(context, MaterialPageRoute(builder: (context) {
@@ -847,6 +871,64 @@ class _UnityPage extends State<UnityPage> with WidgetsBindingObserver {
 //      setMessage("changeCharacter", globalData.scanData.model);
 //      Navigator.pop(context, 'Unity');
     }
+  }
+
+  Widget getCorner() {
+    print('tracked || _hasExtend ${tracked || _hasExtend}');
+    return tracked || _hasExtend
+        ? SizedBox.shrink()
+        : Container(
+            // duration: Duration(milliseconds: 500),
+            width: width * 0.7,
+            // color: Colors.black,
+            height: height * 0.25,
+            child: Column(
+              // child: tracked || _hasExtend
+              //     ? SizedBox.shrink()
+              //     : Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: <Widget>[
+                Row(
+                  // mainAxisSize: MainAxisSize.max,
+                  //     showCorner ? MainAxisSize.max : MainAxisSize.min,
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: <Widget>[
+                    RotatedBox(
+                        quarterTurns: 0,
+                        child: Image.asset(
+                          "assets/images/scan_corner.png",
+                          width: 50.0,
+                        )),
+                    RotatedBox(
+                        quarterTurns: 1,
+                        child: Image.asset(
+                          "assets/images/scan_corner.png",
+                          width: 50.0,
+                        )),
+                  ],
+                ),
+                Row(
+                  // mainAxisSize: MainAxisSize.max,
+                  //     showCorner ? MainAxisSize.max : MainAxisSize.min,
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: <Widget>[
+                    RotatedBox(
+                        quarterTurns: 3,
+                        child: Image.asset(
+                          "assets/images/scan_corner.png",
+                          width: 50.0,
+                        )),
+                    RotatedBox(
+                        quarterTurns: 2,
+                        child: Image.asset(
+                          "assets/images/scan_corner.png",
+                          width: 50.0,
+                        )),
+                  ],
+                ),
+              ],
+            ));
   }
 
   refreshPage() {
