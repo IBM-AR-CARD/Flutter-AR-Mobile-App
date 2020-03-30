@@ -54,7 +54,7 @@ class _UnityPage extends State<UnityPage> with WidgetsBindingObserver {
   bool isFavourite = false;
   bool onSetting = false;
   bool isCamera = true;
-  bool initLogin = true;
+  bool initLogin = false;
   bool tracked = false;
   double width;
   double height;

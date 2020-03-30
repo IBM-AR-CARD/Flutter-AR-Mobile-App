@@ -337,12 +337,21 @@ class _ScanQR extends State<ScanQR> with SingleTickerProviderStateMixin {
       controller.resumeCamera();
     } else {
       controller.pauseCamera();
-      await Navigator.push(
+      var isPop = await Navigator.push(
           context,
           SlideLeftRoute(
             page: Settings(),
           ));
-      controller.resumeCamera();
+      if (isPop is UserData) {
+        print('is userdata');
+        globalData.scanData = isPop;
+        Navigator.popUntil(context, (route) {
+          print(route.settings.name);
+          return ModalRoute.withName('/')(route);
+        });
+      } else {
+        controller.resumeCamera();
+      }
     }
   }
 

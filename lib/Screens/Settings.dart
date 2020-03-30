@@ -23,6 +23,8 @@ import 'package:dio/dio.dart';
 import 'package:path/path.dart' show join;
 import 'package:path_provider/path_provider.dart';
 
+import 'PersonDetail.dart';
+
 class Settings extends StatefulWidget {
   static final PERFER_NOT_TO_SAY = 0;
   static final FEMALE = 1;
@@ -441,9 +443,8 @@ class _Settings extends State<Settings> with WidgetsBindingObserver {
                                     )),
                                   ),
                                   onPressed: () async {
-                                    if (await _onLeaving()) {
-                                      Navigator.pop(context, usedOutSide);
-                                    }
+                                    changeAvatar();
+                                    Navigator.pop(context, userData);
                                   },
                                 ),
                                 FlatButton(
@@ -463,8 +464,14 @@ class _Settings extends State<Settings> with WidgetsBindingObserver {
                                     )),
                                   ),
                                   onPressed: () async {
-                                    await contentOnSave();
-                                    Navigator.pop(context, usedOutSide);
+                                    var isPop = await Navigator.push(
+                                        context,
+                                        new FadeRoute(
+                                            page: PersonDetail(userData)));
+                                    if (isPop == 'pop') {
+                                      changeAvatar();
+                                      Navigator.pop(context, userData);
+                                    }
                                   },
                                 )
                               ],
@@ -749,6 +756,10 @@ class _Settings extends State<Settings> with WidgetsBindingObserver {
           }
           return false;
         });
+  }
+
+  changeAvatar() {
+    globalData.scanData = userData;
   }
 
   contentOnSave() async {
