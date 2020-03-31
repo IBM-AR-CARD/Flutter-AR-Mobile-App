@@ -17,42 +17,42 @@ environment:
   sdk: ">=2.1.0 <3.0.0"
 
 dependencies:
-  dio:
+  dio: ^3.0.9
   flutter:
     sdk: flutter
-  swipedetector:
-  pull_to_refresh:
-  flutter_unity_widget:
-  qr_code_scanner:
-  speech_to_text:
+  swipedetector: ^1.2.0
+  pull_to_refresh: ^1.5.8
+  flutter_unity_widget: ^0.1.6+8
+  qr_code_scanner: ^0.0.12
+  speech_to_text: ^2.0.1
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
-  cupertino_icons:
-  bubble:
-  flutter_widgets:
-  auto_size_text:
-  flutter_svg:
-  flutter_tts:
-  global_configuration:
-  shared_preferences:
-  progress_dialog:
-  vibration:
-  cached_network_image:
-  icon_shadow:
-  retry:
-  animator:
-  flutter_launcher_icons:
-  qr_flutter:
-  path_provider:
+  cupertino_icons: ^0.1.3
+  bubble: ^1.1.9+1
+  flutter_widgets: ^0.1.12
+  auto_size_text: ^2.1.0
+  flutter_svg: ^0.17.3+1
+  flutter_tts: ^0.9.1
+  global_configuration: ^1.5.0
+  shared_preferences: ^0.5.6+3
+  progress_dialog: ^1.2.1
+  vibration: ^1.2.4
+  cached_network_image: ^2.0.0
+  icon_shadow: ^1.0.1
+  retry: ^3.0.0+1
+  animator: ^1.0.0+5
+  flutter_launcher_icons: ^0.7.4
+  qr_flutter: ^3.2.0
+  path_provider: ^1.6.5
   vector_math: any
-  fluttertoast:
-  image_picker:
+  fluttertoast: ^4.0.1
+  image_picker: ^0.6.4
   permission_handler: ^5.0.0+hotfix.1
   url_launcher: ^5.4.2
   #  camera:
-  image_cropper:
+  image_cropper: ^1.2.1
   flutter_icons: ^1.0.0+1
-  flutter_image_compress:
+  flutter_image_compress: ^0.6.5+1
 dev_dependencies:
   flutter_test:
     sdk: flutter
