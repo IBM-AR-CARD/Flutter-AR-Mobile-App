@@ -221,21 +221,25 @@ class _ScanQR extends State<ScanQR> with SingleTickerProviderStateMixin {
       }
       if (!_find) {
         _find = true;
-        if (scanData.startsWith("${Config.baseURl}/profile/get")) {
+        if (scanData.startsWith("${Config.baseURl}/profile/get") || scanData.contains("/profile/get")) {
           Vibration.vibrate(duration: 300);
           await setScannedUserData(scanData);
+          Navigator.popUntil(context, (route) {
+            print(route.settings.name);
+            return ModalRoute.withName('/')(route);
+          });
         } else {
-          Vibration.vibrate(duration: 300);
-          await setScannedUserData(
-              '${Config.baseURl}/profile/get?username=jonmcnamara');
+//          Vibration.vibrate(duration: 300);
+//          await setScannedUserData(
+//              '${Config.baseURl}/profile/get?username=jonmcnamara');
+//          Navigator.popUntil(context, (route) {
+//            print(route.settings.name);
+//            return ModalRoute.withName('/')(route);
+//          });
         }
 //        Navigator.pop(context);
 //        Navigator.pop(context);
 //        Navigator.popUntil(context,ModalRoute.withName('/'));
-        Navigator.popUntil(context, (route) {
-          print(route.settings.name);
-          return ModalRoute.withName('/')(route);
-        });
 //        Navigator.popUntil(context, ModalRoute.withName('/'));
       }
     });
