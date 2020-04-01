@@ -932,13 +932,15 @@ class _UnityPage extends State<UnityPage> with WidgetsBindingObserver {
   }
 
   refreshPage() {
-    WidgetsBinding.instance.removeObserver(this);
-    Navigator.push(
-        context,
-        FadeRoute(
-            page: UnityPage(
-          doNotInit: true,
-        )));
+//    WidgetsBinding.instance.removeObserver(this);
+//    dispose();
+//    Navigator.push(
+//        context,
+//        FadeRoute(
+//            page: UnityPage(
+//          doNotInit: true,
+//        )));
+//    dispose();
   }
 
   flipHint() {
