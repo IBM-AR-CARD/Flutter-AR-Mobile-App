@@ -221,7 +221,7 @@ class _ScanQR extends State<ScanQR> with SingleTickerProviderStateMixin {
       }
       if (!_find) {
         _find = true;
-        if (scanData.startsWith("${Config.baseURl}/profile/get") || scanData.contains("/profile/get")) {
+        if (scanData.startsWith("${Config.baseURl}/profile/get") ) {
           Vibration.vibrate(duration: 300);
           await setScannedUserData(scanData);
           Navigator.popUntil(context, (route) {

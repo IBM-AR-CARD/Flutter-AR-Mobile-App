@@ -571,6 +571,7 @@ class _MyCards extends State<MyCards> with TickerProviderStateMixin {
 //      pr.show();
       final response =
           await RequestCards.favouriteRemove(list[index]["userid"]);
+      list[index]["isFav"] = false;
 //      pr.hide();
       if (response.statusCode == 200) {
         _handleAllRefresh();
@@ -607,6 +608,7 @@ class _MyCards extends State<MyCards> with TickerProviderStateMixin {
     try {
 //      pr.show();
       final response = await RequestCards.favouriteAdd(list[index]["userid"]);
+      list[index]["isFav"] = true;
 //      pr.hide();
       if (response.statusCode == 200) {
         _handleAllRefresh();
