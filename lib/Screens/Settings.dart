@@ -525,7 +525,7 @@ class _Settings extends State<Settings> with WidgetsBindingObserver {
                                 ProfileTextEditor.TEXTBOX,
                                 _websiteController,
                                 hint:
-                                    'Linkedin/Facebook/Github/Pornhub or others'),
+                                    'Linkedin/Facebook/Github or others'),
                           ),
                           Padding(
                             padding: EdgeInsets.only(top: 40),
@@ -633,19 +633,6 @@ class _Settings extends State<Settings> with WidgetsBindingObserver {
                               opacity: 0.38,
                               child: Text(
                                 'You can download your QR code for printing on your physical business card by tap the button at the top right corner.',
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 15,
-                                ),
-                              ),
-                            ),
-                          ),
-                          Padding(
-                            padding: EdgeInsets.only(top: 25),
-                            child: Opacity(
-                              opacity: 0.38,
-                              child: Text(
-                                'Change your name and profile picture in your LinkedIn account.',
                                 style: TextStyle(
                                   color: Colors.white,
                                   fontSize: 15,

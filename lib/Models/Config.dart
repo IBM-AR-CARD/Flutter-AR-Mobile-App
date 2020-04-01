@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 class Config{
-  static final String baseURl = 'http://henryz.co:8080';
+  static final String baseURl = 'http://ar-card.henryz.cc:8080';
   static final primaryColor  =
   {
     50:Color.fromRGBO(41,43,66, .1),

@@ -392,7 +392,7 @@ class _UnityPage extends State<UnityPage> with WidgetsBindingObserver {
               AnimatedSwitcher(
                 duration: Duration(milliseconds: 500),
 //                  opacity:_tracked || _hasExtend ? 0 : 1 ,
-                child: tracked || _hasExtend ? SizedBox.shrink() : flipHint(),
+                child: tracked || _hasExtend || !isCamera ? SizedBox.shrink() : flipHint(),
               ),
               Center(
                 //   child: Container(
@@ -446,7 +446,7 @@ class _UnityPage extends State<UnityPage> with WidgetsBindingObserver {
       if (!this.widget.doNotInit)
         talk("Nice to meet you, I am " +
             globalData.scanData.firstName +
-            ', please click the mic icon to ask any questions.');
+            ', please click the mic icon to ask me any questions.');
     }
     setState(() {});
   }
@@ -660,7 +660,7 @@ class _UnityPage extends State<UnityPage> with WidgetsBindingObserver {
                     InkWell(
                       onTap: _switchScene,
                       child: AnimatedContainer(
-                        margin: EdgeInsets.only(left: 30, top: 10),
+                        margin: EdgeInsets.only(left: 25, top: 10),
                         duration: Duration(milliseconds: 500),
                         height: 30,
                         width: 70,
@@ -817,7 +817,7 @@ class _UnityPage extends State<UnityPage> with WidgetsBindingObserver {
             // return object of type Dialog
             return AlertDialog(
               title: new Text("Network Error"),
-              content: new Text("please contact admin"),
+              content: new Text("Please contact the developer"),
               actions: <Widget>[
                 // usually buttons at the bottom of the dialog
                 new FlatButton(
@@ -874,60 +874,63 @@ class _UnityPage extends State<UnityPage> with WidgetsBindingObserver {
   }
 
   Widget getCorner() {
-    print('tracked || _hasExtend ${tracked || _hasExtend}');
-    return tracked || _hasExtend
+//    print('tracked || _hasExtend ${tracked || _hasExtend}');
+    return tracked || _hasExtend || !isCamera
         ? SizedBox.shrink()
-        : Container(
-            // duration: Duration(milliseconds: 500),
-            width: width * 0.7,
-            // color: Colors.black,
-            height: height * 0.25,
-            child: Column(
-              // child: tracked || _hasExtend
-              //     ? SizedBox.shrink()
-              //     : Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: <Widget>[
-                Row(
-                  // mainAxisSize: MainAxisSize.max,
-                  //     showCorner ? MainAxisSize.max : MainAxisSize.min,
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: <Widget>[
-                    RotatedBox(
-                        quarterTurns: 0,
-                        child: Image.asset(
-                          "assets/images/scan_corner.png",
-                          width: 50.0,
-                        )),
-                    RotatedBox(
-                        quarterTurns: 1,
-                        child: Image.asset(
-                          "assets/images/scan_corner.png",
-                          width: 50.0,
-                        )),
-                  ],
-                ),
-                Row(
-                  // mainAxisSize: MainAxisSize.max,
-                  //     showCorner ? MainAxisSize.max : MainAxisSize.min,
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: <Widget>[
-                    RotatedBox(
-                        quarterTurns: 3,
-                        child: Image.asset(
-                          "assets/images/scan_corner.png",
-                          width: 50.0,
-                        )),
-                    RotatedBox(
-                        quarterTurns: 2,
-                        child: Image.asset(
-                          "assets/images/scan_corner.png",
-                          width: 50.0,
-                        )),
+        : Opacity(
+            opacity: 0.5,
+            child: Container(
+                    // duration: Duration(milliseconds: 500),
+                    width: width * 0.7,
+                    // color: Colors.black,
+                    height: height * 0.25,
+                    child: Column(
+                      // child: tracked || _hasExtend
+                      //     ? SizedBox.shrink()
+                      //     : Column(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: <Widget>[
+                        Row(
+                          // mainAxisSize: MainAxisSize.max,
+                          //     showCorner ? MainAxisSize.max : MainAxisSize.min,
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: <Widget>[
+                            RotatedBox(
+                                quarterTurns: 0,
+                                child: Image.asset(
+                                  "assets/images/scan_corner.png",
+                                  width: 50.0,
+                                )),
+                            RotatedBox(
+                                quarterTurns: 1,
+                                child: Image.asset(
+                                  "assets/images/scan_corner.png",
+                                  width: 50.0,
+                                )),
+                          ],
+                        ),
+                        Row(
+                          // mainAxisSize: MainAxisSize.max,
+                          //     showCorner ? MainAxisSize.max : MainAxisSize.min,
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: <Widget>[
+                            RotatedBox(
+                                quarterTurns: 3,
+                                child: Image.asset(
+                                  "assets/images/scan_corner.png",
+                                  width: 50.0,
+                                )),
+                            RotatedBox(
+                                quarterTurns: 2,
+                                child: Image.asset(
+                                  "assets/images/scan_corner.png",
+                                  width: 50.0,
+                                )),
                   ],
                 ),
               ],
+            ),
             ));
   }
 
@@ -969,7 +972,7 @@ class _UnityPage extends State<UnityPage> with WidgetsBindingObserver {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
                       Text(
-                        'Flip you card and scan the\nimage to view the avatar',
+                        "Flip your card and scan the\nimage to view the avatar",
                         style: TextStyle(color: Colors.white, fontSize: 15),
                       ),
                     ],

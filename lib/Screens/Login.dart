@@ -491,15 +491,15 @@ class _Login extends State<Login> with TickerProviderStateMixin {
                   ),
                 ),
               ),
-              FlatButton(
-                child: Text(
-                  'Forgot your user name or password?',
-                  style: TextStyle(
-                    decoration: TextDecoration.underline,
-                    color: Color.fromARGB(180, 104, 111, 139),
-                  ),
-                ),
-              )
+//              FlatButton(
+//                child: Text(
+//                  'Forgot your user name or password?',
+//                  style: TextStyle(
+//                    decoration: TextDecoration.underline,
+//                    color: Color.fromARGB(180, 104, 111, 139),
+//                  ),
+//                ),
+//              )
             ],
           ))
     ]);

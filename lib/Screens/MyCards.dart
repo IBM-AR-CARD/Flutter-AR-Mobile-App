@@ -144,7 +144,7 @@ class _MyCards extends State<MyCards> with TickerProviderStateMixin {
                                 children: <Widget>[
                                   Container(
                                     child: Text(
-                                      "MyCards",
+                                      "My Cards",
                                       textAlign: TextAlign.center,
                                       style: TextStyle(
                                           color: Colors.white,
@@ -417,7 +417,10 @@ class _MyCards extends State<MyCards> with TickerProviderStateMixin {
             // margin: EdgeInsets.only(top: height * 0.2),
             child: Align(
                 alignment: Alignment.center,
-                child: Column(
+                child:  Padding(
+                    child: Opacity(
+                    opacity: 0.5,
+                    child:Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: <Widget>[
                     Icon(Icons.history, size: 100, color: Colors.white),
@@ -432,13 +435,20 @@ class _MyCards extends State<MyCards> with TickerProviderStateMixin {
                           fontSize: 32),
                     ),
                   ],
+                ),
+                    ),
+                  padding: EdgeInsets.only(bottom: 60),
                 )));
       } else if (type == 'favourite') {
         return Container(
             // margin: EdgeInsets.only(top: height * 0.2),
             child: Align(
                 alignment: Alignment.center,
-                child: Column(
+                child:
+                Padding(
+                    child: Opacity(
+                    opacity: 0.5,
+                    child:Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: <Widget>[
                     Icon(MaterialCommunityIcons.heart_broken,
@@ -454,6 +464,9 @@ class _MyCards extends State<MyCards> with TickerProviderStateMixin {
                           fontSize: 32),
                     ),
                   ],
+                    ),
+                    ),
+                  padding: EdgeInsets.only(bottom: 70),
                 )));
       }
     }
