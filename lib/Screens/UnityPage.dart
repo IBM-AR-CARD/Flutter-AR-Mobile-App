@@ -172,6 +172,7 @@ class _UnityPage extends State<UnityPage> with WidgetsBindingObserver {
     UserData scanData = GlobalData().scanData;
     final email = scanData.email;
     if (email == null || email == '') {
+      talk("Sorry, I haven't got my email address yet.");
       return;
     }
     final Url = 'mailto:$email';
@@ -889,37 +890,39 @@ class _UnityPage extends State<UnityPage> with WidgetsBindingObserver {
 //    print('tracked || _hasExtend ${tracked || _hasExtend}');
     return tracked || _hasExtend || !isCamera
         ? SizedBox.shrink()
-        : Opacity(
-            opacity: 0.5,
-            child: Container(
-              // duration: Duration(milliseconds: 500),
-              width: width * 0.7,
-              // color: Colors.black,
-              height: height * 0.25,
-              child: Column(
-                // child: tracked || _hasExtend
-                //     ? SizedBox.shrink()
-                //     : Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: <Widget>[
-                  Row(
-                    // mainAxisSize: MainAxisSize.max,
-                    //     showCorner ? MainAxisSize.max : MainAxisSize.min,
+        : Align(
+            alignment: Alignment(0, -0.01),
+        child: Opacity(
+                opacity: 0.5,
+                child: Container(
+                  // duration: Duration(milliseconds: 500),
+                  width: width * 0.7,
+                  // color: Colors.black,
+                  height: height * 0.25,
+                  child: Column(
+                    // child: tracked || _hasExtend
+                    //     ? SizedBox.shrink()
+                    //     : Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: <Widget>[
-                      RotatedBox(
-                          quarterTurns: 0,
-                          child: Image.asset(
-                            "assets/images/scan_corner.png",
-                            width: 50.0,
-                          )),
-                      RotatedBox(
-                          quarterTurns: 1,
-                          child: Image.asset(
-                            "assets/images/scan_corner.png",
-                            width: 50.0,
-                          )),
+                      Row(
+                        // mainAxisSize: MainAxisSize.max,
+                        //     showCorner ? MainAxisSize.max : MainAxisSize.min,
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: <Widget>[
+                          RotatedBox(
+                              quarterTurns: 0,
+                              child: Image.asset(
+                                "assets/images/scan_corner.png",
+                                width: 50.0,
+                              )),
+                          RotatedBox(
+                              quarterTurns: 1,
+                              child: Image.asset(
+                                "assets/images/scan_corner.png",
+                                width: 50.0,
+                              )),
                     ],
                   ),
                   Row(
@@ -943,6 +946,7 @@ class _UnityPage extends State<UnityPage> with WidgetsBindingObserver {
                   ),
                 ],
               ),
+                )
             ));
   }
 
@@ -960,7 +964,7 @@ class _UnityPage extends State<UnityPage> with WidgetsBindingObserver {
 
   flipHint() {
     return Align(
-        alignment: Alignment(0, 0.5),
+        alignment: Alignment(0, -0.01),
         child: Opacity(
           opacity: 0.8,
           child: Container(

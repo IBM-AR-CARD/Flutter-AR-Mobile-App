@@ -256,7 +256,7 @@ class _MyCards extends State<MyCards> with TickerProviderStateMixin {
                                 Align(
                                   child: IconButton(
                                     icon: Icon(
-                                      Icons.star,
+                                      Icons.favorite,
                                       color: _colors[_status],
                                     ),
 //                        color: _colors[_status],

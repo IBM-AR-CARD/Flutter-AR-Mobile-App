@@ -159,7 +159,7 @@ class _PersonDetail extends State<PersonDetail> {
                       },
                       icon: IconShadowWidget(
                         Icon(
-                          Icons.star,
+                          Icons.favorite,
                           color:
                               isFavourite ? Colors.greenAccent : Colors.white,
                           size: 35,
@@ -422,7 +422,7 @@ class _PersonDetail extends State<PersonDetail> {
                 },
                 icon: IconShadowWidget(
                   Icon(
-                    Icons.star,
+                    Icons.favorite,
                     color: isFavourite ? Colors.greenAccent : Colors.white,
                     size: 35,
                   ),

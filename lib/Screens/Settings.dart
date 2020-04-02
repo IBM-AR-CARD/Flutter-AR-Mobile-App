@@ -458,7 +458,7 @@ class _Settings extends State<Settings> with WidgetsBindingObserver {
                                     height: 40,
                                     child: Center(
                                         child: Text(
-                                      'Profile',
+                                      'My Profile',
                                       style: TextStyle(
                                           color: Colors.white, fontSize: 15),
                                     )),
