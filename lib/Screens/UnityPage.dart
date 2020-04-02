@@ -157,10 +157,12 @@ class _UnityPage extends State<UnityPage> with WidgetsBindingObserver {
     UserData scanData = GlobalData().scanData;
     final number = scanData.phoneNumber;
     if (number == null || number == '') {
+      talk("Sorry, I haven't wrote my phone number down yet.");
       return;
     }
     final phoneUrl = 'tel:$number';
     if (await canLaunch(phoneUrl)) {
+      talk("Sure! I'll open your dial app and wrote my number down for you");
       await launch(phoneUrl);
       refreshPage();
     } else {
@@ -177,6 +179,7 @@ class _UnityPage extends State<UnityPage> with WidgetsBindingObserver {
     }
     final Url = 'mailto:$email';
     if (await canLaunch(Url)) {
+      talk("Sure! I'll open your email app with my email address written for you");
       await launch(Url);
       refreshPage();
     } else {
@@ -188,18 +191,19 @@ class _UnityPage extends State<UnityPage> with WidgetsBindingObserver {
     UserData scanData = GlobalData().scanData;
     final Url = scanData.website;
     if (Url == null || Url == '') {
+      talk("Sorry, I haven't wrote any website information yet.");
       return;
     }
     final webUrl = "http:$Url";
     if (await canLaunch(webUrl)) {
+      talk("Sure! I'll open my site in the browser for you");
       await launch(webUrl);
     } else {
       print('Could not launch $webUrl');
 //                          throw 'Could not launch $phoneUrl';
     }
   }
-
-  speak() async {
+      speak() async {
 //    UserData userData = GlobalData().scanData;
 //    String text = lastWords.toLowerCase();
     final result = await getVoiceContent();
@@ -214,6 +218,12 @@ class _UnityPage extends State<UnityPage> with WidgetsBindingObserver {
             break;
           case '**website**':
             await toWebsite();
+            break;
+          case '**dance**':
+            setMessage('changeAnimator', "dancing");
+            break;
+          case '**stop**':
+            setMessage('changeAnimator', "idle");
             break;
           default:
             await talk(result);
