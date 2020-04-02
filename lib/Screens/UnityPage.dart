@@ -333,7 +333,8 @@ class _UnityPage extends State<UnityPage> with WidgetsBindingObserver {
                   color: Colors.white,
                 ),
               ),
-              GestureDetector(
+        !globalData.unityStarted ? SizedBox.shrink()
+            :  GestureDetector(
                   onTap: speech.isListening
                       ? stopListening
                       : (_isTalking ? stopSpeaking : startListening),
@@ -576,7 +577,8 @@ class _UnityPage extends State<UnityPage> with WidgetsBindingObserver {
                                 ),
                                 Padding(
                                   padding: EdgeInsets.only(left: 15),
-                                  child: Column(
+                                  child: !globalData.unityStarted ? SizedBox.shrink()
+                                          :Column(
                                       mainAxisAlignment:
                                           MainAxisAlignment.center,
                                       crossAxisAlignment:
