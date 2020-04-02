@@ -417,26 +417,26 @@ class _MyCards extends State<MyCards> with TickerProviderStateMixin {
             // margin: EdgeInsets.only(top: height * 0.2),
             child: Align(
                 alignment: Alignment.center,
-                child:  Padding(
-                    child: Opacity(
+                child: Padding(
+                  child: Opacity(
                     opacity: 0.5,
-                    child:Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: <Widget>[
-                    Icon(Icons.history, size: 100, color: Colors.white),
-                    Divider(
-                      height: 20,
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: <Widget>[
+                        Icon(Icons.history, size: 100, color: Colors.white),
+                        Divider(
+                          height: 20,
+                        ),
+                        Text(
+                          'No history yet',
+                          style: TextStyle(
+                              color: Colors.white,
+                              // fontWeight: FontWeight.bold,
+                              fontSize: 32),
+                        ),
+                      ],
                     ),
-                    Text(
-                      'No history yet',
-                      style: TextStyle(
-                          color: Colors.white,
-                          // fontWeight: FontWeight.bold,
-                          fontSize: 32),
-                    ),
-                  ],
-                ),
-                    ),
+                  ),
                   padding: EdgeInsets.only(bottom: 60),
                 )));
       } else if (type == 'favourite') {
@@ -444,28 +444,27 @@ class _MyCards extends State<MyCards> with TickerProviderStateMixin {
             // margin: EdgeInsets.only(top: height * 0.2),
             child: Align(
                 alignment: Alignment.center,
-                child:
-                Padding(
-                    child: Opacity(
+                child: Padding(
+                  child: Opacity(
                     opacity: 0.5,
-                    child:Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: <Widget>[
-                    Icon(MaterialCommunityIcons.heart_broken,
-                        size: 100, color: Colors.white),
-                    Divider(
-                      height: 20,
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: <Widget>[
+                        Icon(MaterialCommunityIcons.heart_broken,
+                            size: 100, color: Colors.white),
+                        Divider(
+                          height: 20,
+                        ),
+                        Text(
+                          'No favourites yet',
+                          style: TextStyle(
+                              color: Colors.white,
+                              // fontWeight: FontWeight.bold,
+                              fontSize: 32),
+                        ),
+                      ],
                     ),
-                    Text(
-                      'No favourites yet',
-                      style: TextStyle(
-                          color: Colors.white,
-                          // fontWeight: FontWeight.bold,
-                          fontSize: 32),
-                    ),
-                  ],
-                    ),
-                    ),
+                  ),
                   padding: EdgeInsets.only(bottom: 70),
                 )));
       }
@@ -794,9 +793,11 @@ class _MyCards extends State<MyCards> with TickerProviderStateMixin {
     try {
 //      pr.show();
       final response = await RequestCards.getUserData(id);
+      print(response);
 //      pr.hide();
       if (response.statusCode == 200) {
         UserData userData = UserData.mapToUserData(response.data);
+        print(response.data);
         print("mapped ${userData.userName}");
         PersonDetail personDetail = new PersonDetail(userData)
           ..changeData(userData);

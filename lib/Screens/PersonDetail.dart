@@ -28,6 +28,7 @@ class _PersonDetail extends State<PersonDetail> {
   ScrollController _scrollController;
   bool hasDisplayed = false;
   bool onFavouriteRequest = false;
+  bool isFavourite = false;
   @override
   void initState() {
     super.initState();
@@ -53,6 +54,8 @@ class _PersonDetail extends State<PersonDetail> {
   double _height;
   @override
   Widget build(BuildContext context) {
+    isFavourite = userData.isFavourite;
+    print('favourite $isFavourite');
     _width = MediaQuery.of(context).size.width;
     _height = MediaQuery.of(context).size.height;
     return Scaffold(
@@ -157,13 +160,12 @@ class _PersonDetail extends State<PersonDetail> {
                       icon: IconShadowWidget(
                         Icon(
                           Icons.star,
-                          color: userData.isFavourite
-                              ? Colors.greenAccent
-                              : Colors.white,
+                          color:
+                              isFavourite ? Colors.greenAccent : Colors.white,
                           size: 35,
                         ),
                         shadowColor: Colors.greenAccent.shade200,
-                        showShadow: userData.isFavourite,
+                        showShadow: isFavourite,
                       ),
                     )),
                 Align(
@@ -299,10 +301,11 @@ class _PersonDetail extends State<PersonDetail> {
                             _scaffoldKey.currentState.showSnackBar(snackBar);
                             return;
                           }
-                          if (await canLaunch(Url)) {
-                            await launch(Url);
+                          final webUrl = "http:$Url";
+                          if (await canLaunch(webUrl)) {
+                            await launch(webUrl);
                           } else {
-                            print('Could not launch $Url');
+                            print('Could not launch $webUrl');
 //                          throw 'Could not launch $phoneUrl';
                           }
                         },
@@ -420,13 +423,11 @@ class _PersonDetail extends State<PersonDetail> {
                 icon: IconShadowWidget(
                   Icon(
                     Icons.star,
-                    color: userData.isFavourite
-                        ? Colors.greenAccent
-                        : Colors.white,
+                    color: isFavourite ? Colors.greenAccent : Colors.white,
                     size: 35,
                   ),
                   shadowColor: Colors.greenAccent.shade100,
-                  showShadow: userData.isFavourite,
+                  showShadow: isFavourite,
                 ),
               ))
           : SizedBox.shrink()
@@ -529,6 +530,7 @@ class _PersonDetail extends State<PersonDetail> {
         final response = await RequestCards.favouriteRemove(userData.id);
         if (response.statusCode == 200) {
           userData.isFavourite = false;
+          isFavourite = false;
         } else {
           throw Exception();
         }
@@ -536,6 +538,7 @@ class _PersonDetail extends State<PersonDetail> {
         final response = await RequestCards.favouriteAdd(userData.id);
         if (response.statusCode == 200) {
           userData.isFavourite = true;
+          isFavourite = true;
         } else {
           throw Exception();
         }

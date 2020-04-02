@@ -128,7 +128,6 @@ class _ScanQR extends State<ScanQR> with SingleTickerProviderStateMixin {
                                             ..onTap = () async {
                                               print(
                                                   'this is scan route context $context');
-                                              if (!globalData.hasData) return;
                                               _find = true;
                                               await setScannedUserData(
                                                   '${Config.baseURl}/profile/get?username=jonmcnamara');
@@ -221,7 +220,7 @@ class _ScanQR extends State<ScanQR> with SingleTickerProviderStateMixin {
       }
       if (!_find) {
         _find = true;
-        if (scanData.startsWith("${Config.baseURl}/profile/get") ) {
+        if (scanData.startsWith("${Config.baseURl}/profile/get")) {
           Vibration.vibrate(duration: 300);
           await setScannedUserData(scanData);
           Navigator.popUntil(context, (route) {
@@ -329,7 +328,6 @@ class _ScanQR extends State<ScanQR> with SingleTickerProviderStateMixin {
   }
 
   navigateToSetting() async {
-    if (!globalData.hasData) return;
     if (!globalData.hasLogin) {
       globalData.wantLogin = true;
       controller.pauseCamera();
@@ -360,7 +358,6 @@ class _ScanQR extends State<ScanQR> with SingleTickerProviderStateMixin {
   }
 
   navigateToMyCards() async {
-    if (!globalData.hasData) return;
     if (!globalData.hasLogin) {
       globalData.wantLogin = true;
       SharedPreferences preferences = await SharedPreferences.getInstance();

@@ -189,11 +189,11 @@ class _UnityPage extends State<UnityPage> with WidgetsBindingObserver {
     if (Url == null || Url == '') {
       return;
     }
-    if (await canLaunch(Url)) {
-      await launch(Url);
-      refreshPage();
+    final webUrl = "http:$Url";
+    if (await canLaunch(webUrl)) {
+      await launch(webUrl);
     } else {
-      print('Could not launch $Url');
+      print('Could not launch $webUrl');
 //                          throw 'Could not launch $phoneUrl';
     }
   }
@@ -392,7 +392,9 @@ class _UnityPage extends State<UnityPage> with WidgetsBindingObserver {
               AnimatedSwitcher(
                 duration: Duration(milliseconds: 500),
 //                  opacity:_tracked || _hasExtend ? 0 : 1 ,
-                child: tracked || _hasExtend || !isCamera ? SizedBox.shrink() : flipHint(),
+                child: tracked || _hasExtend || !isCamera
+                    ? SizedBox.shrink()
+                    : flipHint(),
               ),
               Center(
                 //   child: Container(
@@ -512,7 +514,7 @@ class _UnityPage extends State<UnityPage> with WidgetsBindingObserver {
       alignment: Alignment.topRight,
     );
     return Align(
-      alignment: Alignment.topCenter,
+      alignment: Alignment.bottomCenter,
       child: Column(
         children: <Widget>[
           Container(
@@ -840,10 +842,12 @@ class _UnityPage extends State<UnityPage> with WidgetsBindingObserver {
     tracked = false;
     WidgetsBinding.instance.removeObserver(this);
     await _unityWidgetController.pause();
+    globalData.bubbleMap.clear();
     await Navigator.push(context, MaterialPageRoute(builder: (context) {
       return ScanQR();
     }));
 //    await Navigator.push(context, FadeRoute(page: ScanQR()));
+    WidgetsBinding.instance.addObserver(this);
     await _unityWidgetController.resume();
 //    refreshPage();
 //    Navigator.pop(context, 'ScanQR');
@@ -865,6 +869,7 @@ class _UnityPage extends State<UnityPage> with WidgetsBindingObserver {
       await _unityWidgetController.pause();
       WidgetsBinding.instance.removeObserver(this);
       await Navigator.push(context, SlideLeftRoute(page: Settings()));
+      WidgetsBinding.instance.addObserver(this);
       await _unityWidgetController.resume();
       refreshPage();
       updateGender();
@@ -880,57 +885,57 @@ class _UnityPage extends State<UnityPage> with WidgetsBindingObserver {
         : Opacity(
             opacity: 0.5,
             child: Container(
-                    // duration: Duration(milliseconds: 500),
-                    width: width * 0.7,
-                    // color: Colors.black,
-                    height: height * 0.25,
-                    child: Column(
-                      // child: tracked || _hasExtend
-                      //     ? SizedBox.shrink()
-                      //     : Column(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: <Widget>[
-                        Row(
-                          // mainAxisSize: MainAxisSize.max,
-                          //     showCorner ? MainAxisSize.max : MainAxisSize.min,
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: <Widget>[
-                            RotatedBox(
-                                quarterTurns: 0,
-                                child: Image.asset(
-                                  "assets/images/scan_corner.png",
-                                  width: 50.0,
-                                )),
-                            RotatedBox(
-                                quarterTurns: 1,
-                                child: Image.asset(
-                                  "assets/images/scan_corner.png",
-                                  width: 50.0,
-                                )),
-                          ],
-                        ),
-                        Row(
-                          // mainAxisSize: MainAxisSize.max,
-                          //     showCorner ? MainAxisSize.max : MainAxisSize.min,
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: <Widget>[
-                            RotatedBox(
-                                quarterTurns: 3,
-                                child: Image.asset(
-                                  "assets/images/scan_corner.png",
-                                  width: 50.0,
-                                )),
-                            RotatedBox(
-                                quarterTurns: 2,
-                                child: Image.asset(
-                                  "assets/images/scan_corner.png",
-                                  width: 50.0,
-                                )),
-                  ],
-                ),
-              ],
-            ),
+              // duration: Duration(milliseconds: 500),
+              width: width * 0.7,
+              // color: Colors.black,
+              height: height * 0.25,
+              child: Column(
+                // child: tracked || _hasExtend
+                //     ? SizedBox.shrink()
+                //     : Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: <Widget>[
+                  Row(
+                    // mainAxisSize: MainAxisSize.max,
+                    //     showCorner ? MainAxisSize.max : MainAxisSize.min,
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: <Widget>[
+                      RotatedBox(
+                          quarterTurns: 0,
+                          child: Image.asset(
+                            "assets/images/scan_corner.png",
+                            width: 50.0,
+                          )),
+                      RotatedBox(
+                          quarterTurns: 1,
+                          child: Image.asset(
+                            "assets/images/scan_corner.png",
+                            width: 50.0,
+                          )),
+                    ],
+                  ),
+                  Row(
+                    // mainAxisSize: MainAxisSize.max,
+                    //     showCorner ? MainAxisSize.max : MainAxisSize.min,
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: <Widget>[
+                      RotatedBox(
+                          quarterTurns: 3,
+                          child: Image.asset(
+                            "assets/images/scan_corner.png",
+                            width: 50.0,
+                          )),
+                      RotatedBox(
+                          quarterTurns: 2,
+                          child: Image.asset(
+                            "assets/images/scan_corner.png",
+                            width: 50.0,
+                          )),
+                    ],
+                  ),
+                ],
+              ),
             ));
   }
 
