@@ -196,8 +196,9 @@ class _MyCards extends State<MyCards> with TickerProviderStateMixin {
                                       color: Colors.white,
                                       iconSize: 35.0,
                                       onPressed: () {
-                                        onSearch = !onSearch;
+                                        toDefaultSearchText();
                                         setState(() {});
+                                        onSearch = !onSearch;
                                       },
                                     ),
                                     height: 35,
@@ -215,7 +216,9 @@ class _MyCards extends State<MyCards> with TickerProviderStateMixin {
                       child: onSearch
                           ? Container(
                               height: 50,
-                              width: width * 0.9,
+                              margin: EdgeInsets.only(
+                                  left: width * 0.05, right: width * 0.05),
+//                              width: width * 0.9,
                               child: TextField(
                                 style: TextStyle(
                                     color: Colors.white, fontSize: 30),
@@ -469,9 +472,17 @@ class _MyCards extends State<MyCards> with TickerProviderStateMixin {
                 )));
       }
     }
+    print('list length ${list.length}');
+    List newList = list.where((item) {
+      return (_searchController.text == "" ||
+          item['name']
+              .toLowerCase()
+              .contains(_searchController.text.trim().toLowerCase()));
+    }).toList();
     return ListView.separated(
-      itemBuilder: (context, index) => _itemBuilder(context, index, list, type),
-      itemCount: list.length + 2,
+      itemBuilder: (context, index) =>
+          _itemBuilder(context, index, newList, type),
+      itemCount: newList.length + 2,
       separatorBuilder: (context, index) => Divider(
         height: 25,
       ),
@@ -666,12 +677,6 @@ class _MyCards extends State<MyCards> with TickerProviderStateMixin {
     }
 
     index--;
-    if (_searchController.text != "" &&
-        !list[index]['name']
-            .toLowerCase()
-            .contains(_searchController.text.trim().toLowerCase())) {
-      return SizedBox.shrink();
-    }
     return Column(children: [
       Center(
           child: Container(
