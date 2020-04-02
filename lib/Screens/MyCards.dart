@@ -574,7 +574,7 @@ class _MyCards extends State<MyCards> with TickerProviderStateMixin {
             // return object of type Dialog
             return AlertDialog(
               title: new Text("Network Error"),
-              content: new Text("please contact admin"),
+              content: new Text("Please contact the developer"),
               actions: <Widget>[
                 // usually buttons at the bottom of the dialog
                 new FlatButton(
@@ -612,7 +612,7 @@ class _MyCards extends State<MyCards> with TickerProviderStateMixin {
             // return object of type Dialog
             return AlertDialog(
               title: new Text("Network Error"),
-              content: new Text("please contact admin"),
+              content: new Text("Please contact the developer"),
               actions: <Widget>[
                 // usually buttons at the bottom of the dialog
                 new FlatButton(
@@ -649,7 +649,7 @@ class _MyCards extends State<MyCards> with TickerProviderStateMixin {
             // return object of type Dialog
             return AlertDialog(
               title: new Text("Network Error"),
-              content: new Text("please contact admin"),
+              content: new Text("Please contact the developer"),
               actions: <Widget>[
                 // usually buttons at the bottom of the dialog
                 new FlatButton(
@@ -832,7 +832,7 @@ class _MyCards extends State<MyCards> with TickerProviderStateMixin {
             // return object of type Dialog
             return AlertDialog(
               title: new Text("Network Error"),
-              content: new Text("please contact admin"),
+              content: new Text("Please contact the developer"),
               actions: <Widget>[
                 // usually buttons at the bottom of the dialog
                 new FlatButton(

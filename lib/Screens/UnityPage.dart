@@ -248,7 +248,7 @@ class _UnityPage extends State<UnityPage> with WidgetsBindingObserver {
             // return object of type Dialog
             return AlertDialog(
               title: new Text("Network Error"),
-              content: new Text("please contact admin"),
+              content: new Text("Please contact the developer"),
               actions: <Widget>[
                 // usually buttons at the bottom of the dialog
                 new FlatButton(
@@ -395,7 +395,7 @@ class _UnityPage extends State<UnityPage> with WidgetsBindingObserver {
               AnimatedSwitcher(
                 duration: Duration(milliseconds: 500),
 //                  opacity:_tracked || _hasExtend ? 0 : 1 ,
-                child: tracked || _hasExtend || !isCamera
+                child: tracked || _hasExtend || !isCamera || !globalData.unityStarted
                     ? SizedBox.shrink()
                     : flipHint(),
               ),
@@ -445,6 +445,9 @@ class _UnityPage extends State<UnityPage> with WidgetsBindingObserver {
 
   void onUnityMessage(controller, message) {
     print('Received message from unity: ${message.toString()}');
+    if (message == '#started#' && !globalData.unityStarted) {
+      globalData.unityStarted=true;
+    }
     if (message == '#tracked#' && !tracked) {
       globalData.tracked = true;
       tracked = true;
@@ -663,31 +666,52 @@ class _UnityPage extends State<UnityPage> with WidgetsBindingObserver {
                         ),
                       ],
                     ),
-                    InkWell(
-                      onTap: _switchScene,
-                      child: AnimatedContainer(
-                        margin: EdgeInsets.only(left: 25, top: 10),
-                        duration: Duration(milliseconds: 500),
-                        height: 30,
-                        width: 70,
-                        decoration: new BoxDecoration(
-                          color: !isCamera
-                              ? Colors.white
-                              : Colors.greenAccent.shade700,
-                          borderRadius:
+                    Row(
+                      children: <Widget>[
+                        InkWell(
+                          onTap: _switchScene,
+                          child: AnimatedContainer(
+                            margin: EdgeInsets.only(left: 25, top: 10),
+                            duration: Duration(milliseconds: 500),
+                            height: 30,
+                            width: 70,
+                            decoration: new BoxDecoration(
+                              color: !isCamera
+                                  ? Colors.white
+                                  : Colors.greenAccent.shade700,
+                              borderRadius:
                               new BorderRadius.all(Radius.circular(40)),
-                        ),
-                        child: Center(
-                          child: Text(
-                            isCamera ? 'AR ON' : 'AR OFF',
-                            style: TextStyle(
-                                color: !isCamera ? Colors.black : Colors.white,
-                                fontSize: 14,
-                                fontWeight: FontWeight.bold),
+                            ),
+                            child: Center(
+                              child: Text(
+                                isCamera ? 'AR ON' : 'AR OFF',
+                                style: TextStyle(
+                                    color: !isCamera ? Colors.black : Colors.white,
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.bold),
+                              ),
+                            ),
                           ),
                         ),
-                      ),
+                        Padding(
+                          child:
+                          AnimatedSwitcher(
+                            duration: Duration(milliseconds: 500),
+                          child:
+                          tracked || _hasExtend || !isCamera || !globalData.unityStarted
+                              ? SizedBox.shrink()
+                              :
+                          Text(
+                            "Doesn't have a card? Try turn AR off",
+                            style: TextStyle(color: Color.fromARGB(77, 255, 255, 255), fontSize: 15),
+                          ),
+                        ),
+                          padding: EdgeInsets.only(left: 10,top:12),
+                        )
+                      ],
                     )
+
+
                   ])),
           Padding(
             padding: EdgeInsets.only(bottom: _height * 0.2),
@@ -888,7 +912,7 @@ class _UnityPage extends State<UnityPage> with WidgetsBindingObserver {
 
   Widget getCorner() {
 //    print('tracked || _hasExtend ${tracked || _hasExtend}');
-    return tracked || _hasExtend || !isCamera
+    return tracked || _hasExtend || !isCamera || !globalData.unityStarted
         ? SizedBox.shrink()
         : Align(
             alignment: Alignment(0, -0.1),

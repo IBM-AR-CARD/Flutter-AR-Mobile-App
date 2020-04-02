@@ -10,6 +10,7 @@ class GlobalData {
   static final GlobalData globalData = GlobalData._internal();
   bool _hasData = false;
   bool initLogin = true;
+  bool unityStarted = false;
   bool get hasData => _hasData;
 
   set hasData(bool value) {
