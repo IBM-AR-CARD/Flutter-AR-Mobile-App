@@ -37,8 +37,8 @@ class UnityPage extends StatefulWidget {
 class _UnityPage extends State<UnityPage> with WidgetsBindingObserver {
   GlobalData globalData;
   String currentLocal;
-  final double CHAT_ORIGIN_HEIGHT = 150;
-  final double CHAT_EXTEND_HEIGHT = 550;
+  double CHAT_ORIGIN_HEIGHT = 150;
+  double CHAT_EXTEND_HEIGHT = 550;
   UnityWidgetController _unityWidgetController;
   final ScrollController bubbleScrollController = ScrollController();
   List<BubblePair> bubbleMap;
@@ -356,6 +356,8 @@ class _UnityPage extends State<UnityPage> with WidgetsBindingObserver {
   Widget build(BuildContext context) {
     width = MediaQuery.of(context).size.width;
     height = MediaQuery.of(context).size.height;
+    CHAT_ORIGIN_HEIGHT = height * 0.2;
+    CHAT_EXTEND_HEIGHT = height * 0.6;
     return Scaffold(
         body: WillPopScope(
 //            child: SwipeDetector(
@@ -516,6 +518,7 @@ class _UnityPage extends State<UnityPage> with WidgetsBindingObserver {
     return Align(
       alignment: Alignment.bottomCenter,
       child: Column(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: <Widget>[
           Container(
               decoration: BoxDecoration(
@@ -685,61 +688,65 @@ class _UnityPage extends State<UnityPage> with WidgetsBindingObserver {
                       ),
                     )
                   ])),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              ShaderMask(
-                shaderCallback: (rect) {
-                  return LinearGradient(
-                    begin: Alignment.bottomCenter,
-                    end: Alignment.topCenter,
-                    stops: [_hasExtend ? 0.95 : 0.6, 1.0],
-                    colors: [Colors.black, Colors.transparent],
-                  ).createShader(Rect.fromLTRB(0, 0, rect.width, rect.height));
-                },
-                blendMode: BlendMode.dstIn,
-                child: GestureDetector(
-                  onDoubleTap: changeBubbleHeight,
-                  child: AnimatedContainer(
-                    duration: Duration(milliseconds: 300),
-                    curve: Curves.easeOut,
-                    width: MediaQuery.of(context).size.width * 0.8,
-                    height:
-                        _hasExtend ? CHAT_EXTEND_HEIGHT : CHAT_ORIGIN_HEIGHT,
-                    child: Opacity(
-                        opacity: _hasExtend ? 0.9 : 0.3,
-                        child: ListView.builder(
-                          physics: ClampingScrollPhysics(),
-                          reverse: true,
-                          itemCount: bubbleMap.length,
-                          controller: bubbleScrollController,
-                          itemBuilder: (BuildContext ctxt, int Index) {
-                            BubblePair bubble;
-                            bubble = bubbleMap.elementAt(Index);
-                            if (bubble.type == BubblePair.FROM_ME) {
-                              return Bubble(
-                                style: styleMe,
-                                child: Text(
-                                  bubble.content,
-                                  style: TextStyle(fontSize: 15),
-                                ),
-                              );
-                            } else {
-                              return Bubble(
-                                style: styleSomebody,
-                                child: Text(
-                                  bubble.content,
-                                  style: TextStyle(fontSize: 15),
-                                ),
-                              );
-                            }
-                          },
-                        )),
+          Padding(
+            padding: EdgeInsets.only(bottom: _height * 0.2),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                ShaderMask(
+                  shaderCallback: (rect) {
+                    return LinearGradient(
+                      begin: Alignment.bottomCenter,
+                      end: Alignment.topCenter,
+                      stops: [_hasExtend ? 0.95 : 0.6, 1.0],
+                      colors: [Colors.black, Colors.transparent],
+                    ).createShader(
+                        Rect.fromLTRB(0, 0, rect.width, rect.height));
+                  },
+                  blendMode: BlendMode.dstIn,
+                  child: GestureDetector(
+                    onDoubleTap: changeBubbleHeight,
+                    child: AnimatedContainer(
+                      duration: Duration(milliseconds: 300),
+                      curve: Curves.easeOut,
+                      width: MediaQuery.of(context).size.width * 0.8,
+                      height:
+                          _hasExtend ? CHAT_EXTEND_HEIGHT : CHAT_ORIGIN_HEIGHT,
+                      child: Opacity(
+                          opacity: _hasExtend ? 0.9 : 0.3,
+                          child: ListView.builder(
+                            physics: ClampingScrollPhysics(),
+                            reverse: true,
+                            itemCount: bubbleMap.length,
+                            controller: bubbleScrollController,
+                            itemBuilder: (BuildContext ctxt, int Index) {
+                              BubblePair bubble;
+                              bubble = bubbleMap.elementAt(Index);
+                              if (bubble.type == BubblePair.FROM_ME) {
+                                return Bubble(
+                                  style: styleMe,
+                                  child: Text(
+                                    bubble.content,
+                                    style: TextStyle(fontSize: 15),
+                                  ),
+                                );
+                              } else {
+                                return Bubble(
+                                  style: styleSomebody,
+                                  child: Text(
+                                    bubble.content,
+                                    style: TextStyle(fontSize: 15),
+                                  ),
+                                );
+                              }
+                            },
+                          )),
+                    ),
                   ),
-                ),
-              )
-            ],
-          ),
+                )
+              ],
+            ),
+          )
         ],
       ),
     );
