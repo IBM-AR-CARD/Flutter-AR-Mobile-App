@@ -256,7 +256,8 @@ class _MyCards extends State<MyCards> with TickerProviderStateMixin {
                                 Align(
                                   child: IconButton(
                                     icon: Icon(
-                                      Icons.favorite,
+                                      Icons.favorite_border,
+                                      size:33,
                                       color: _colors[_status],
                                     ),
 //                        color: _colors[_status],
@@ -698,7 +699,7 @@ class _MyCards extends State<MyCards> with TickerProviderStateMixin {
                 child: Row(
                   children: <Widget>[
                     Padding(
-                      padding: EdgeInsets.only(left: 10),
+                      padding: EdgeInsets.only(left: 22),
                       child: SizedBox(
                         child: ClipRRect(
                           borderRadius:
@@ -722,33 +723,33 @@ class _MyCards extends State<MyCards> with TickerProviderStateMixin {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: <Widget>[
                         Padding(
-                            padding: EdgeInsets.only(top: 12, left: 20),
+                            padding: EdgeInsets.only(top: 21, left: 20),
                             child: SizedBox(
-                              width: width - width * 0.1 - 100,
+                              width: width - width * 0.1 - 120,
                               child: Text(
                                 list[index]["name"] ?? "",
                                 overflow: TextOverflow.ellipsis,
                                 softWrap: false,
                                 maxLines: 1,
                                 style: TextStyle(
-                                  fontSize: 30.0,
+                                  fontSize: 23.0,
                                   color: Colors.white,
                                   fontWeight: FontWeight.bold,
                                 ),
                               ),
                             )),
                         Padding(
-                            padding: EdgeInsets.only(top: 15, left: 20),
+                            padding: EdgeInsets.only(top: 8, left: 20),
                             child: SizedBox(
-                              width: width - width * 0.1 - 100,
+                              width: width - width * 0.1 - 120,
                               child: Text(
                                 "@${list[index]["username"]}",
                                 overflow: TextOverflow.ellipsis,
                                 softWrap: false,
                                 maxLines: 1,
                                 style: TextStyle(
-                                  fontSize: 17.0,
-                                  color: Colors.white,
+                                  fontSize: 16.0,
+                                  color: Color.fromARGB(185, 255, 255, 255)
                                 ),
                               ),
                             )),

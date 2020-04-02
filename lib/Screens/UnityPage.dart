@@ -562,7 +562,7 @@ class _UnityPage extends State<UnityPage> with WidgetsBindingObserver {
                                   ),
                                 ),
                                 Padding(
-                                  padding: EdgeInsets.only(left: 10),
+                                  padding: EdgeInsets.only(left: 15),
                                   child: Column(
                                       mainAxisAlignment:
                                           MainAxisAlignment.center,
@@ -570,7 +570,7 @@ class _UnityPage extends State<UnityPage> with WidgetsBindingObserver {
                                           CrossAxisAlignment.center,
                                       children: <Widget>[
                                         SizedBox(
-                                          width: _width * 0.4,
+                                          width: _width * 0.35,
                                           child: AutoSizeText(
                                             _firstName.toString() +
                                                 " " +
@@ -579,21 +579,21 @@ class _UnityPage extends State<UnityPage> with WidgetsBindingObserver {
                                                 color: Colors.white,
                                                 fontWeight: FontWeight.bold,
                                                 fontSize: 40),
-                                            minFontSize: 20,
+                                            minFontSize: 10,
                                             maxFontSize: 25,
                                             maxLines: 1,
                                             overflow: TextOverflow.ellipsis,
                                           ),
                                         ),
                                         SizedBox(
-                                          width: _width * 0.4,
+                                          width: _width * 0.35,
                                           child: AutoSizeText(
-                                            _username,
+                                            "@"+_username,
                                             style: TextStyle(
-                                                color: Colors.white,
+                                                color: Color.fromARGB(185, 255, 255, 255),
                                                 fontWeight: FontWeight.bold,
                                                 fontSize: 40),
-                                            minFontSize: 10,
+                                            minFontSize: 8,
                                             maxFontSize: 15,
                                             maxLines: 1,
                                             overflow: TextOverflow.ellipsis,
@@ -606,7 +606,7 @@ class _UnityPage extends State<UnityPage> with WidgetsBindingObserver {
                           ),
                         ),
                         Padding(
-                          padding: EdgeInsets.only(right: 0),
+                          padding: EdgeInsets.only(right: 10),
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.end,
 //                      crossAxisAlignment:CrossAxisAlignment.end,
@@ -891,7 +891,7 @@ class _UnityPage extends State<UnityPage> with WidgetsBindingObserver {
     return tracked || _hasExtend || !isCamera
         ? SizedBox.shrink()
         : Align(
-            alignment: Alignment(0, -0.01),
+            alignment: Alignment(0, -0.1),
         child: Opacity(
                 opacity: 0.5,
                 child: Container(
@@ -964,7 +964,7 @@ class _UnityPage extends State<UnityPage> with WidgetsBindingObserver {
 
   flipHint() {
     return Align(
-        alignment: Alignment(0, -0.01),
+        alignment: Alignment(0, -0.07),
         child: Opacity(
           opacity: 0.8,
           child: Container(
