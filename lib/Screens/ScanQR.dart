@@ -20,6 +20,7 @@ import 'package:progress_dialog/progress_dialog.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../Models/Config.dart';
 import 'package:vibration/vibration.dart';
+import 'package:icon_shadow/icon_shadow.dart';
 
 class ScanQR extends StatefulWidget {
   ScanQR({Key key, this.title}) : super(key: key);
@@ -220,7 +221,8 @@ class _ScanQR extends State<ScanQR> with SingleTickerProviderStateMixin {
       }
       if (!_find) {
         _find = true;
-        if (scanData.startsWith("${Config.baseURl}/profile/get")) {
+        if (scanData.startsWith("${Config.baseURl}/profile/get") ||
+            scanData.contains("/profile/get")) {
           Vibration.vibrate(duration: 300);
           await setScannedUserData(scanData);
           Navigator.popUntil(context, (route) {
@@ -310,19 +312,35 @@ class _ScanQR extends State<ScanQR> with SingleTickerProviderStateMixin {
                 onPressed: navigateToMyCards,
                 tooltip: 'List',
                 iconSize: 40.0,
-                icon: Icon(
-                  Icons.list,
-                  color: Colors.white,
+                icon: IconShadowWidget(
+                  Icon(
+                    Icons.list,
+                    size: 40,
+                    color: Colors.white,
+                  ),
+                  shadowColor: Colors.black,
                 ),
+//                icon: Icon(
+//                  Icons.list,
+//                  color: Colors.white,
+//                ),
               ),
               IconButton(
                 onPressed: navigateToSetting,
                 tooltip: 'Person',
                 iconSize: 40.0,
-                icon: Icon(
-                  Icons.person,
-                  color: Colors.white,
+                icon: IconShadowWidget(
+                  Icon(
+                    Icons.person,
+                    size: 40,
+                    color: Colors.white,
+                  ),
+                  shadowColor: Colors.black,
                 ),
+//                icon: Icon(
+//                  Icons.person,
+//                  color: Colors.white,
+//                ),
               ),
             ]));
   }

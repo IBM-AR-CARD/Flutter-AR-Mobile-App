@@ -257,7 +257,7 @@ class _MyCards extends State<MyCards> with TickerProviderStateMixin {
                                   child: IconButton(
                                     icon: Icon(
                                       Icons.favorite_border,
-                                      size:33,
+                                      size: 33,
                                       color: _colors[_status],
                                     ),
 //                        color: _colors[_status],
@@ -417,6 +417,7 @@ class _MyCards extends State<MyCards> with TickerProviderStateMixin {
     List list = snapshot.data["list"];
     if (list.length == 0) {
       if (type == 'history') {
+        list = list.reversed.toList();
         return Container(
             // margin: EdgeInsets.only(top: height * 0.2),
             child: Align(
@@ -748,9 +749,8 @@ class _MyCards extends State<MyCards> with TickerProviderStateMixin {
                                 softWrap: false,
                                 maxLines: 1,
                                 style: TextStyle(
-                                  fontSize: 16.0,
-                                  color: Color.fromARGB(185, 255, 255, 255)
-                                ),
+                                    fontSize: 16.0,
+                                    color: Color.fromARGB(185, 255, 255, 255)),
                               ),
                             )),
                       ],

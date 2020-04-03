@@ -179,7 +179,8 @@ class _UnityPage extends State<UnityPage> with WidgetsBindingObserver {
     }
     final Url = 'mailto:$email';
     if (await canLaunch(Url)) {
-      talk("Sure! I'll open your email app with my email address written for you");
+      talk(
+          "Sure! I'll open your email app with my email address written for you");
       await launch(Url);
       refreshPage();
     } else {
@@ -203,7 +204,8 @@ class _UnityPage extends State<UnityPage> with WidgetsBindingObserver {
 //                          throw 'Could not launch $phoneUrl';
     }
   }
-      speak() async {
+
+  speak() async {
 //    UserData userData = GlobalData().scanData;
 //    String text = lastWords.toLowerCase();
     final result = await getVoiceContent();
@@ -328,32 +330,56 @@ class _UnityPage extends State<UnityPage> with WidgetsBindingObserver {
                 onPressed: navigateToMyCards,
                 tooltip: 'List',
                 iconSize: 40.0,
-                icon: Icon(
-                  Icons.list,
-                  color: Colors.white,
+                icon: IconShadowWidget(
+                  Icon(
+                    Icons.list,
+                    size: 40,
+                    color: Colors.white,
+                  ),
+                  shadowColor: Colors.black,
                 ),
               ),
-        !globalData.unityStarted ? SizedBox.shrink()
-            :  GestureDetector(
-                  onTap: speech.isListening
-                      ? stopListening
-                      : (_isTalking ? stopSpeaking : startListening),
-                  onPanEnd: cancelListening,
-                  child: Icon(
-                    speech.isListening
-                        ? Icons.cancel
-                        : (_isTalking ? Icons.stop : Icons.mic),
-                    color: Colors.white,
-                    size: 60,
-                  )),
+              !globalData.unityStarted
+                  ? SizedBox.shrink()
+                  : GestureDetector(
+                      onTap: speech.isListening
+                          ? stopListening
+                          : (_isTalking ? stopSpeaking : startListening),
+                      onPanEnd: cancelListening,
+                      child: IconShadowWidget(
+                        Icon(
+                          speech.isListening
+                              ? Icons.cancel
+                              : (_isTalking ? Icons.stop : Icons.mic),
+                          size: 60,
+                          color: Colors.white,
+                        ),
+                        shadowColor: Colors.black,
+                      ),
+//                      child: Icon(
+//                        speech.isListening
+//                            ? Icons.cancel
+//                            : (_isTalking ? Icons.stop : Icons.mic),
+//                        color: Colors.white,
+//                        size: 60,
+//                      )
+                    ),
               IconButton(
                 onPressed: navigateToSetting,
                 tooltip: 'Person',
                 iconSize: 40.0,
-                icon: Icon(
-                  Icons.person,
-                  color: Colors.white,
+                icon: IconShadowWidget(
+                  Icon(
+                    Icons.person,
+                    size: 40,
+                    color: Colors.white,
+                  ),
+                  shadowColor: Colors.black,
                 ),
+//                icon: Icon(
+//                  Icons.person,
+//                  color: Colors.white,
+//                ),
               ),
             ]));
   }
@@ -406,7 +432,10 @@ class _UnityPage extends State<UnityPage> with WidgetsBindingObserver {
               AnimatedSwitcher(
                 duration: Duration(milliseconds: 500),
 //                  opacity:_tracked || _hasExtend ? 0 : 1 ,
-                child: tracked || _hasExtend || !isCamera || !globalData.unityStarted
+                child: tracked ||
+                        _hasExtend ||
+                        !isCamera ||
+                        !globalData.unityStarted
                     ? SizedBox.shrink()
                     : flipHint(),
               ),
@@ -416,7 +445,24 @@ class _UnityPage extends State<UnityPage> with WidgetsBindingObserver {
                 // height: height * 0.3,
                 child: getCorner(),
               ),
-              initLogin
+//              Align(
+//                alignment: Alignment.bottomCenter,
+//                child: Container(
+//                  height: height * 0.2,
+//                  decoration: BoxDecoration(
+//                    gradient: new LinearGradient(
+//                      begin: Alignment.topCenter,
+//                      end: Alignment.bottomCenter,
+//                      stops: [0.0, 1.0],
+//                      colors: [
+//                        Colors.transparent,
+//                        Color.fromARGB(110, 10, 10, 10)
+//                      ],
+//                    ),
+//                  ),
+//                ),
+//              ),
+              !globalData.unityStarted
                   ? Positioned.fill(
                       child: Container(
                       decoration: BoxDecoration(
@@ -442,7 +488,8 @@ class _UnityPage extends State<UnityPage> with WidgetsBindingObserver {
           },
         ),
         floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-        floatingActionButton: bottomRow());
+        floatingActionButton:
+            globalData.unityStarted ? bottomRow() : SizedBox.shrink());
   }
 
   void setMessage(String function, String msg) {
@@ -457,7 +504,7 @@ class _UnityPage extends State<UnityPage> with WidgetsBindingObserver {
   void onUnityMessage(controller, message) {
     print('Received message from unity: ${message.toString()}');
     if (message == '#started#' && !globalData.unityStarted) {
-      globalData.unityStarted=true;
+      globalData.unityStarted = true;
     }
     if (message == '#tracked#' && !tracked) {
       globalData.tracked = true;
@@ -577,44 +624,50 @@ class _UnityPage extends State<UnityPage> with WidgetsBindingObserver {
                                 ),
                                 Padding(
                                   padding: EdgeInsets.only(left: 15),
-                                  child: !globalData.unityStarted ? SizedBox.shrink()
-                                          :Column(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.center,
-                                      children: <Widget>[
-                                        SizedBox(
-                                          width: _width * 0.35,
-                                          child: AutoSizeText(
-                                            _firstName.toString() +
-                                                " " +
-                                                _lastName.toString(),
-                                            style: TextStyle(
-                                                color: Colors.white,
-                                                fontWeight: FontWeight.bold,
-                                                fontSize: 40),
-                                            minFontSize: 10,
-                                            maxFontSize: 25,
-                                            maxLines: 1,
-                                            overflow: TextOverflow.ellipsis,
-                                          ),
-                                        ),
-                                        SizedBox(
-                                          width: _width * 0.35,
-                                          child: AutoSizeText(
-                                            "@"+_username,
-                                            style: TextStyle(
-                                                color: Color.fromARGB(185, 255, 255, 255),
-                                                fontWeight: FontWeight.bold,
-                                                fontSize: 40),
-                                            minFontSize: 8,
-                                            maxFontSize: 15,
-                                            maxLines: 1,
-                                            overflow: TextOverflow.ellipsis,
-                                          ),
-                                        ),
-                                      ]),
+                                  child: !globalData.unityStarted
+                                      ? SizedBox.shrink()
+                                      : Column(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.center,
+                                          children: <Widget>[
+                                              SizedBox(
+                                                width: _width * 0.35,
+                                                child: AutoSizeText(
+                                                  _firstName.toString() +
+                                                      " " +
+                                                      _lastName.toString(),
+                                                  style: TextStyle(
+                                                      color: Colors.white,
+                                                      fontWeight:
+                                                          FontWeight.bold,
+                                                      fontSize: 40),
+                                                  minFontSize: 10,
+                                                  maxFontSize: 25,
+                                                  maxLines: 1,
+                                                  overflow:
+                                                      TextOverflow.ellipsis,
+                                                ),
+                                              ),
+                                              SizedBox(
+                                                width: _width * 0.35,
+                                                child: AutoSizeText(
+                                                  "@" + _username,
+                                                  style: TextStyle(
+                                                      color: Color.fromARGB(
+                                                          185, 255, 255, 255),
+                                                      fontWeight:
+                                                          FontWeight.bold,
+                                                      fontSize: 40),
+                                                  minFontSize: 8,
+                                                  maxFontSize: 15,
+                                                  maxLines: 1,
+                                                  overflow:
+                                                      TextOverflow.ellipsis,
+                                                ),
+                                              ),
+                                            ]),
                                 )
                               ],
                             ),
@@ -692,13 +745,14 @@ class _UnityPage extends State<UnityPage> with WidgetsBindingObserver {
                                   ? Colors.white
                                   : Colors.greenAccent.shade700,
                               borderRadius:
-                              new BorderRadius.all(Radius.circular(40)),
+                                  new BorderRadius.all(Radius.circular(40)),
                             ),
                             child: Center(
                               child: Text(
                                 isCamera ? 'AR ON' : 'AR OFF',
                                 style: TextStyle(
-                                    color: !isCamera ? Colors.black : Colors.white,
+                                    color:
+                                        !isCamera ? Colors.black : Colors.white,
                                     fontSize: 14,
                                     fontWeight: FontWeight.bold),
                               ),
@@ -706,24 +760,25 @@ class _UnityPage extends State<UnityPage> with WidgetsBindingObserver {
                           ),
                         ),
                         Padding(
-                          child:
-                          AnimatedSwitcher(
+                          child: AnimatedSwitcher(
                             duration: Duration(milliseconds: 500),
-                          child:
-                          tracked || _hasExtend || !isCamera || !globalData.unityStarted
-                              ? SizedBox.shrink()
-                              :
-                          Text(
-                            "Doesn't have a card? Try turn AR off",
-                            style: TextStyle(color: Color.fromARGB(77, 255, 255, 255), fontSize: 15),
+                            child: tracked ||
+                                    _hasExtend ||
+                                    !isCamera ||
+                                    !globalData.unityStarted
+                                ? SizedBox.shrink()
+                                : Text(
+                                    "Doesn't have a card? Try turn AR off",
+                                    style: TextStyle(
+                                        color:
+                                            Color.fromARGB(77, 255, 255, 255),
+                                        fontSize: 15),
+                                  ),
                           ),
-                        ),
-                          padding: EdgeInsets.only(left: 10,top:12),
+                          padding: EdgeInsets.only(left: 10, top: 12),
                         )
                       ],
                     )
-
-
                   ])),
           Padding(
             padding: EdgeInsets.only(bottom: _height * 0.2),
@@ -928,7 +983,7 @@ class _UnityPage extends State<UnityPage> with WidgetsBindingObserver {
         ? SizedBox.shrink()
         : Align(
             alignment: Alignment(0, -0.1),
-        child: Opacity(
+            child: Opacity(
                 opacity: 0.5,
                 child: Container(
                   // duration: Duration(milliseconds: 500),
@@ -959,31 +1014,30 @@ class _UnityPage extends State<UnityPage> with WidgetsBindingObserver {
                                 "assets/images/scan_corner.png",
                                 width: 50.0,
                               )),
+                        ],
+                      ),
+                      Row(
+                        // mainAxisSize: MainAxisSize.max,
+                        //     showCorner ? MainAxisSize.max : MainAxisSize.min,
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: <Widget>[
+                          RotatedBox(
+                              quarterTurns: 3,
+                              child: Image.asset(
+                                "assets/images/scan_corner.png",
+                                width: 50.0,
+                              )),
+                          RotatedBox(
+                              quarterTurns: 2,
+                              child: Image.asset(
+                                "assets/images/scan_corner.png",
+                                width: 50.0,
+                              )),
+                        ],
+                      ),
                     ],
                   ),
-                  Row(
-                    // mainAxisSize: MainAxisSize.max,
-                    //     showCorner ? MainAxisSize.max : MainAxisSize.min,
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: <Widget>[
-                      RotatedBox(
-                          quarterTurns: 3,
-                          child: Image.asset(
-                            "assets/images/scan_corner.png",
-                            width: 50.0,
-                          )),
-                      RotatedBox(
-                          quarterTurns: 2,
-                          child: Image.asset(
-                            "assets/images/scan_corner.png",
-                            width: 50.0,
-                          )),
-                    ],
-                  ),
-                ],
-              ),
-                )
-            ));
+                )));
   }
 
   refreshPage() {
