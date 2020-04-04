@@ -2,10 +2,12 @@ import 'package:flutter_app/Models/UserData.dart';
 import 'package:flutter_unity_widget/flutter_unity_widget.dart';
 import 'package:qr_code_scanner/qr_code_scanner.dart';
 import '../Models/BubblePair.dart';
-enum CameraState{
+
+enum CameraState {
   QRViewOpen,
   UnityViewOpen,
 }
+
 class GlobalData {
   static final GlobalData globalData = GlobalData._internal();
   bool _hasData = false;
@@ -16,6 +18,7 @@ class GlobalData {
   set hasData(bool value) {
     _hasData = value;
   }
+
   String _token;
   CameraState _currentState;
 
@@ -24,6 +27,7 @@ class GlobalData {
   set currentState(CameraState value) {
     _currentState = value;
   }
+
   bool tracked = false;
   bool _firstTime = false;
   List<BubblePair> bubbleMap = new List();
@@ -54,7 +58,6 @@ class GlobalData {
 
   UnityWidgetController get unityWidgetController => _unityWidgetController;
   QRViewController _qrViewController;
-
 
   QRViewController get qrViewController => _qrViewController;
 
@@ -112,41 +115,47 @@ class GlobalData {
 //    }
 //  }
 
-    set unityWidgetController(UnityWidgetController value) {
-      _unityWidgetController = value;
-    }
-    UserData _scanData;
-    bool _hasLogin = false;
-    String _id;
-
-    String get id => _id;
-
-    set id(String value) {
-      _id = value;
-    }
-
-    bool get hasLogin => _hasLogin;
-
-    set hasLogin(bool value) {
-      _hasLogin = value;
-    }
-    clearData(){
-      _hasLogin = false;
-      userData = null;
-      scanData = null;
-      wantLogin = false;
-    }
-    UserData get scanData => _scanData;
-
-    set scanData(UserData value) {
-      _scanData = value;
-    }
-
-    UserData get userData => _userData;
-
-    set userData(UserData value) {
-      _userData = value;
-    }
-
-    GlobalData._internal();
+  set unityWidgetController(UnityWidgetController value) {
+    _unityWidgetController = value;
   }
+
+  UserData _scanData;
+  bool _hasLogin = false;
+  String _id;
+
+  String get id => _id;
+
+  set id(String value) {
+    _id = value;
+  }
+
+  bool get hasLogin => _hasLogin;
+
+  set hasLogin(bool value) {
+    _hasLogin = value;
+  }
+
+  clearData() {
+    _hasLogin = false;
+    userData = null;
+    scanData = null;
+    wantLogin = false;
+  }
+
+  UserData get scanData {
+    this.bubbleMap.clear();
+    return _scanData;
+  }
+
+  set scanData(UserData value) {
+    _scanData = value;
+  }
+
+  UserData get userData => _userData;
+
+  set userData(UserData value) {
+    _userData = value;
+  }
+
+  GlobalData._internal();
+}

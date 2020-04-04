@@ -948,6 +948,7 @@ class _UnityPage extends State<UnityPage> with WidgetsBindingObserver {
 //    await Navigator.push(context, FadeRoute(page: ScanQR()));
     WidgetsBinding.instance.addObserver(this);
     await _unityWidgetController.resume();
+    updateGender();
 //    refreshPage();
 //    Navigator.pop(context, 'ScanQR');
   }
