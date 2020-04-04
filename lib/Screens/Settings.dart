@@ -766,6 +766,9 @@ class _Settings extends State<Settings> with WidgetsBindingObserver {
     userData.lastName = _lastNameController.text;
     userData.profile = _profile;
     String userJson = userData.getJson();
+    if(globalData.scanData.id == globalData.userData.id){
+      changeAvatar();
+    }
     await storeValue(userJson);
     return;
   }
