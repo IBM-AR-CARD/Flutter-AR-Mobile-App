@@ -143,11 +143,12 @@ class GlobalData {
   }
 
   UserData get scanData {
-    this.bubbleMap.clear();
+//    this.bubbleMap.clear();
     return _scanData;
   }
 
   set scanData(UserData value) {
+    globalData.bubbleMap.clear();
     _scanData = value;
   }
 
