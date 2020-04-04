@@ -417,7 +417,6 @@ class _MyCards extends State<MyCards> with TickerProviderStateMixin {
     List list = snapshot.data["list"];
     if (list.length == 0) {
       if (type == 'history') {
-        list = list.reversed.toList();
         return Container(
             // margin: EdgeInsets.only(top: height * 0.2),
             child: Align(
@@ -473,6 +472,9 @@ class _MyCards extends State<MyCards> with TickerProviderStateMixin {
                   padding: EdgeInsets.only(bottom: 70),
                 )));
       }
+    }
+    if (type == 'history') {
+      list = list.reversed.toList();
     }
     print('list length ${list.length}');
     List newList = list.where((item) {

@@ -81,10 +81,13 @@ class _UnityPage extends State<UnityPage> with WidgetsBindingObserver {
       }
       await Future.delayed(Duration(seconds: 1));
       await _unityWidgetController.pause();
+      setState(() {
+        initLogin = false;
+      });
       await Navigator.push(context, FadeRoute(page: Login()));
       await Navigator.push(context, FadeRoute(page: ScanQR()));
       await _unityWidgetController.resume();
-      initLogin = false;
+//      initLogin = false;
       tracked = globalData.tracked;
       updateGender();
     });
